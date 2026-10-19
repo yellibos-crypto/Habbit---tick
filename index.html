@@ -53,29 +53,6 @@
             overflow: hidden;
         }
 
-        /* Hai đường kẻ lề đỏ dọc hai bên trang giấy giống Hình 1 */
-        .margin-line-left {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 28px;
-            width: 1.5px;
-            background-color: var(--margin-red);
-            opacity: 0.65;
-            pointer-events: none;
-            z-index: 1;
-        }
-        .margin-line-right {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            right: 28px;
-            width: 1.5px;
-            background-color: var(--margin-red);
-            opacity: 0.65;
-            pointer-events: none;
-            z-index: 1;
-        }
 
         /* Hộp viền đen Neo-Brutalism giống Hình 1 */
         .brutal-box {
@@ -1094,37 +1071,61 @@
         }
 
         // ==================== CƠ CHẾ NHÂN VẬT ẢO CHẠY TỚI CHỖ NGƯỜI DÙNG BẤM ====================
-        let petMoveTimeout = null;
+       let petMoveTimeout = null;
+        let lastEdgeIndex = -1;
 
         function movePetToClick(clientX, clientY, customMessage) {
             const pet = document.getElementById('roamingCompanion');
             const petBody = document.getElementById('roamingPetBody');
             if (!pet || !petBody) return;
 
-            const petWidth = 140;
-            const petHeight = 175;
-            // Giới hạn để nhân vật không chạy ra ngoài mép màn hình
-            const targetX = Math.min(Math.max(clientX - petWidth / 2, 16), window.innerWidth - petWidth - 20);
-            const targetY = Math.min(Math.max(clientY - petHeight / 2, 20), window.innerHeight - petHeight - 20);
+            // Đặt z-index thấp hơn khung Chat AI để không bao giờ che chữ trong bảng chat
+            pet.style.zIndex = '40';
 
-            // Đổi biểu cảm ngẫu nhiên mỗi khi chạy tới chỗ người dùng bấm
+            const petWidth = 140;
+            const petHeight = 185;
+            const pad = 16;
+            const maxX = Math.max(window.innerWidth - petWidth - pad, pad);
+            const maxY = Math.max(window.innerHeight - petHeight - pad, pad);
+            const centerX = Math.max(Math.round((window.innerWidth - petWidth) / 2), pad);
+            const centerY = Math.max(Math.round((window.innerHeight - petHeight) / 2), pad);
+
+            // 4 vị trí mép màn hình: Trái, Phải, Trên, Dưới
+            const edgePositions = [
+                { name: 'trái', x: pad, y: centerY },         // Mép Trái
+                { name: 'phải', x: maxX, y: centerY },        // Mép Phải
+                { name: 'trên', x: centerX, y: pad },         // Mép Trên
+                { name: 'dưới', x: pad, y: maxY }             // Mép Dưới (góc trái dưới để nhường góc phải cho khung Chat)
+            ];
+
+            // Chọn ngẫu nhiên 1 trong 4 hướng (khác với vị trí đang đứng)
+            let nextIdx;
+            do {
+                nextIdx = Math.floor(Math.random() * edgePositions.length);
+            } while (nextIdx === lastEdgeIndex);
+            lastEdgeIndex = nextIdx;
+
+            const pos = edgePositions[nextIdx];
+
+            // Đổi biểu cảm ngẫu nhiên
             const randomExprs = ['cute', 'aaa', 'xexe', 'cool', 'blush'];
             state.character.expr = randomExprs[Math.floor(Math.random() * randomExprs.length)];
             renderCharacterEverywhere();
 
+            // Nhảy sang mép màn hình mới
             pet.style.bottom = 'auto';
             pet.style.right = 'auto';
-            pet.style.left = `${targetX}px`;
-            pet.style.top = `${targetY}px`;
+            pet.style.left = `${pos.x}px`;
+            pet.style.top = `${pos.y}px`;
 
             petBody.classList.remove('anim-idle', 'anim-jump');
             petBody.classList.add('anim-run');
 
             const cheers = [
-                'Mình chạy tới chỗ cậu vừa bấm rồi nè! XE-XE~',
-                'AAA! Cố lên nhé, mục này thú vị lắm đó!',
-                'Đánh dấu thêm một bước tiến mới nào! ✨',
-                'Cần mình lên Plan cùng không? Bấm vào mình nhé!'
+                'Mình nhảy sang mép màn hình cho cậu dễ nhìn bảng nhé! ✨',
+                'AAA! Cố lên nha, mình đứng bên này cổ vũ cậu!',
+                'XE-XE~ Nhảy qua góc mới coi cậu đánh dấu mục tiêu nè!',
+                'Cứ tích xanh đều đặn nhé, mình luôn ở quanh đây!'
             ];
             const bubble = document.getElementById('petSpeechBubble');
             if (bubble) {
@@ -1141,38 +1142,6 @@
                 }, 650);
             }, 750);
         }
-
-        function makePetReact(message) {
-            const bubble = document.getElementById('petSpeechBubble');
-            const petBody = document.getElementById('roamingPetBody');
-            if (bubble && message) bubble.textContent = message;
-            if (petBody) {
-                petBody.classList.remove('anim-idle');
-                petBody.classList.add('anim-jump');
-                setTimeout(() => {
-                    petBody.classList.remove('anim-jump');
-                    petBody.classList.add('anim-idle');
-                }, 650);
-            }
-        }
-
-        function makePetDanceParty(ev) {
-            if (ev) ev.stopPropagation();
-            confetti({ particleCount: 80, spread: 70, origin: { y: 0.65 } });
-            state.character.expr = 'cool';
-            renderCharacterEverywhere();
-            makePetReact('Quẩy lên nào!! Chuỗi ngày năng lượng đỉnh cao! 💃✨');
-        }
-
-        // Lắng nghe sự kiện click trên trang để nhân vật chạy lại chỗ vừa bấm
-        document.addEventListener('click', (e) => {
-            // Không di chuyển nếu người dùng đang bấm bên trong cửa sổ Chat AI hoặc bấm vào chính nhân vật
-            if (e.target.closest('#aiChatDrawer') || e.target.closest('#roamingCompanion') || e.target.closest('#weeklyReviewModal') || e.target.closest('#addHabitModal')) {
-                return;
-            }
-            movePetToClick(e.clientX, e.clientY);
-        });
-
         // ==================== LOGIC BẢNG TUẦN & BẢNG THÁNG ====================
         function calcStreak(habit) {
             const all = [...(habit.historyDays || []), ...habit.days];
