@@ -108,16 +108,16 @@
         }
 
         /* Hoạt ảnh nhân vật ảo chạy nhảy trên màn hình */
-        #roamingCompanion {
-            position: fixed;
-            bottom: 24px;
-            right: 36px;
-            z-index: 60;
-            transition: left 0.75s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.75s cubic-bezier(0.34, 1.56, 0.64, 1);
-            user-select: none;
-            cursor: pointer;
-        }
-
+       #roamingCompanion {
+         position: absolute;
+         top: 68px;
+         right: 24px;
+         z-index: 30;
+         transform: scale(0.75);
+         transform-origin: top right;
+         user-select: none;
+         cursor: pointer;
+     }
         @keyframes cuteBounce {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
             50% { transform: translateY(-9px) rotate(2deg); }
@@ -403,6 +403,49 @@
             </div>
         </main>
 
+        <!-- MỤC NHẬT KÝ NGẮN MỖI NGÀY & EMOJI CẢM XÚC -->
+            <div class="brutal-box bg-white overflow-hidden mt-8">
+                <div class="bg-[#7cc6fe] p-3.5 border-b-2 border-[#1e242b] flex flex-wrap items-center justify-between gap-2">
+                    <h3 class="font-extrabold text-sm sm:text-base uppercase flex items-center gap-2">
+                        <span>📔</span> GÓC NHẬT KÝ NGẮN MỖI NGÀY & CẢM XÚC TRONG TUẦN
+                    </h3>
+                    <span class="px-2.5 py-0.5 bg-white border-2 border-[#1e242b] text-[11px] font-black uppercase">
+                        TỰ ĐỘNG TỔNG HỢP CUỐI TUẦN
+                    </span>
+                </div>
+                <div class="p-5 space-y-4">
+                    <!-- Chọn Thứ trong tuần để ghi nhật ký -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-xs font-black uppercase mr-1">Chọn ngày:</span>
+                        <div id="diaryDayTabs" class="flex flex-wrap gap-1.5"></div>
+                    </div>
+
+                    <!-- Câu hỏi gợi mở & Chọn Emoji tâm trạng -->
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+                        <div class="md:col-span-5 p-3.5 bg-[#f7f6f2] border-2 border-[#1e242b] space-y-2.5">
+                            <p class="text-xs font-extrabold uppercase text-[#f26457]">
+                                1. Hôm nay bạn có ổn không? Chọn biểu cảm của ngày hôm nay nhé:
+                            </p>
+                            <div id="diaryEmojiSelector" class="flex flex-wrap gap-2 pt-1"></div>
+                        </div>
+                        <div class="md:col-span-7 space-y-2">
+                            <label class="text-xs font-extrabold uppercase block">
+                                2. Bạn hãy kể về ngày hôm nay của bạn được không?
+                            </label>
+                            <textarea id="diaryNoteInput" rows="3" placeholder="Viết vài dòng về điều làm bạn vui, chuyện bạn đã cố gắng hoặc cảm xúc hôm nay..." class="w-full p-3 border-2 border-[#1e242b] text-xs font-medium bg-[#f7f6f2] focus:bg-white focus:outline-none"></textarea>
+                            <div class="flex justify-end">
+                                <button onclick="saveDailyDiary()" class="brutal-btn px-4 py-2 bg-[#65b878] text-white text-xs font-black uppercase">
+                                    💾 Lưu Nhật Ký Ngày Này
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dải xem nhanh 7 ngày nhật ký trong tuần -->
+                    <div id="diaryWeekStrip" class="grid grid-cols-2 sm:grid-cols-7 gap-2 pt-2 border-t-2 border-dashed border-[#1e242b]"></div>
+                </div>
+            </div>
+
         <!-- ==================== PHẦN 2: BẢNG THÁNG (28 NGÀY) & LỊCH SỬ ==================== -->
         <section id="section-month" class="hidden px-6 sm:px-12 pt-7 space-y-8 relative z-10">
             <div class="flex flex-wrap items-center justify-between gap-4">
@@ -565,21 +608,30 @@
             <div class="brutal-box p-6 bg-white grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
                 <div class="md:col-span-8 space-y-3">
                     <h3 class="text-lg font-extrabold uppercase tracking-tight">
-                        FUMAYO HABIT — NƠI MỖI THÓI QUEN NHỎ MỞ RA HÀNH TRÌNH PHÁT TRIỂN BẢN THÂN KỲ DIỆU
-                    </h3>
-                    <p class="text-xs leading-relaxed bg-[#f4d35e] p-3 border-2 border-[#1e242b]">
-                        Chúng mình thiết kế không gian sổ tay ô ly này để mỗi lần bạn đánh dấu hoàn thành một mục tiêu đều tràn ngập niềm vui. Nhân vật ảo của bạn luôn đồng hành, chạy theo từng cú nhấp chuột và sẵn sàng cùng bạn lập kế hoạch học tập, rèn luyện kỹ năng mỗi ngày!
+                        <!-- KHỐI TRÍCH DẪN ĐỘNG LỰC MỖI NGÀY TỪ NGƯỜI NỔI TIẾNG & NHẠC THEME 10S ILLIT TICK-TACK -->
+        <section class="px-6 sm:px-12 mt-10 relative z-10">
+            <div class="brutal-box p-6 bg-white grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                <div class="md:col-span-8 space-y-2.5">
+                    <div class="inline-flex items-center gap-2 px-3 py-0.5 bg-[#f4d35e] border-2 border-[#1e242b] text-[11px] font-black uppercase">
+                        <span>🌟 THÔNG ĐIỆP PHÁT TRIỂN BẢN THÂN HÔM NAY</span>
+                        <span id="dailyQuoteDateBadge" class="text-[#f26457]"></span>
+                    </div>
+                    <blockquote id="dailyFamousQuote" class="text-sm sm:text-base font-extrabold italic leading-relaxed text-[#1e242b] bg-[#f7f6f2] p-4 border-2 border-[#1e242b]">
+                        "Chúng ta là những gì chúng ta lặp đi lặp lại mỗi ngày. Sự xuất sắc không phải là một hành động, mà là một thói quen."
+                    </blockquote>
+                    <p id="dailyFamousAuthor" class="text-xs font-black uppercase tracking-wider text-right text-[#f26457]">
+                        — ARISTOTLE (Triết gia Hy Lạp cổ đại)
                     </p>
                 </div>
-                <div class="md:col-span-4 flex flex-col items-center justify-center text-center">
-                    <button onclick="makePetDanceParty(event)" class="brutal-btn px-5 py-3 bg-[#65b878] text-white text-xs font-black uppercase tracking-wider">
-                        💃 Bấm Để Nhân Vật Nhảy Múa Cổ Vũ!
+                <div class="md:col-span-4 flex flex-col items-center justify-center gap-2 text-center border-t-2 md:border-t-0 md:border-l-2 border-[#1e242b] pt-4 md:pt-0 md:pl-4">
+                    <span class="text-[11px] font-black uppercase text-slate-500">🎵 NHẠC CHÀO MỪNG (STYLE TICK-TACK - 10S)</span>
+                    <button onclick="playTickTackTheme()" id="btnPlayTheme" class="brutal-btn w-full py-3 px-4 bg-[#f26457] text-white text-xs font-black uppercase tracking-wider">
+                        🎶 Phát Nhạc Tick-Tack (10s)
                     </button>
+                    <span class="text-[10px] font-semibold text-slate-500">*Tự động vang lên khi bạn bắt đầu mở sổ tay</span>
                 </div>
             </div>
         </section>
-    </div>
-
     <!-- ==================== NHÂN VẬT ẢO CHẠY NHẢY TRỰC TIẾP TRÊN MÀN HÌNH ==================== -->
     <div id="roamingCompanion" onclick="toggleAIChat(event)" title="Bấm vào mình để trò chuyện & lên Plan nhé!">
         <!-- Bong bóng thoại cảm xúc của nhân vật -->
@@ -1074,73 +1126,30 @@
        let petMoveTimeout = null;
         let lastEdgeIndex = -1;
 
+       let petMoveTimeout = null;
+
+        // Nhân vật đứng yên ở đầu trang, chỉ nhún nhảy nhẹ và đổi câu nói tại chỗ
         function movePetToClick(clientX, clientY, customMessage) {
-            const pet = document.getElementById('roamingCompanion');
+            makePetReact(customMessage);
+        }
+
+        function makePetReact(message) {
+            const bubble = document.getElementById('petSpeechBubble');
             const petBody = document.getElementById('roamingPetBody');
-            if (!pet || !petBody) return;
-
-            // Đặt z-index thấp hơn khung Chat AI để không bao giờ che chữ trong bảng chat
-            pet.style.zIndex = '40';
-
-            const petWidth = 140;
-            const petHeight = 185;
-            const pad = 16;
-            const maxX = Math.max(window.innerWidth - petWidth - pad, pad);
-            const maxY = Math.max(window.innerHeight - petHeight - pad, pad);
-            const centerX = Math.max(Math.round((window.innerWidth - petWidth) / 2), pad);
-            const centerY = Math.max(Math.round((window.innerHeight - petHeight) / 2), pad);
-
-            // 4 vị trí mép màn hình: Trái, Phải, Trên, Dưới
-            const edgePositions = [
-                { name: 'trái', x: pad, y: centerY },         // Mép Trái
-                { name: 'phải', x: maxX, y: centerY },        // Mép Phải
-                { name: 'trên', x: centerX, y: pad },         // Mép Trên
-                { name: 'dưới', x: pad, y: maxY }             // Mép Dưới (góc trái dưới để nhường góc phải cho khung Chat)
-            ];
-
-            // Chọn ngẫu nhiên 1 trong 4 hướng (khác với vị trí đang đứng)
-            let nextIdx;
-            do {
-                nextIdx = Math.floor(Math.random() * edgePositions.length);
-            } while (nextIdx === lastEdgeIndex);
-            lastEdgeIndex = nextIdx;
-
-            const pos = edgePositions[nextIdx];
-
-            // Đổi biểu cảm ngẫu nhiên
             const randomExprs = ['cute', 'aaa', 'xexe', 'cool', 'blush'];
             state.character.expr = randomExprs[Math.floor(Math.random() * randomExprs.length)];
             renderCharacterEverywhere();
 
-            // Nhảy sang mép màn hình mới
-            pet.style.bottom = 'auto';
-            pet.style.right = 'auto';
-            pet.style.left = `${pos.x}px`;
-            pet.style.top = `${pos.y}px`;
-
-            petBody.classList.remove('anim-idle', 'anim-jump');
-            petBody.classList.add('anim-run');
-
-            const cheers = [
-                'Mình nhảy sang mép màn hình cho cậu dễ nhìn bảng nhé! ✨',
-                'AAA! Cố lên nha, mình đứng bên này cổ vũ cậu!',
-                'XE-XE~ Nhảy qua góc mới coi cậu đánh dấu mục tiêu nè!',
-                'Cứ tích xanh đều đặn nhé, mình luôn ở quanh đây!'
-            ];
-            const bubble = document.getElementById('petSpeechBubble');
-            if (bubble) {
-                bubble.textContent = customMessage || cheers[Math.floor(Math.random() * cheers.length)];
-            }
-
-            clearTimeout(petMoveTimeout);
-            petMoveTimeout = setTimeout(() => {
-                petBody.classList.remove('anim-run');
+            if (bubble && message) bubble.textContent = message;
+            if (petBody) {
+                petBody.classList.remove('anim-idle', 'anim-run');
                 petBody.classList.add('anim-jump');
-                setTimeout(() => {
+                clearTimeout(petMoveTimeout);
+                petMoveTimeout = setTimeout(() => {
                     petBody.classList.remove('anim-jump');
                     petBody.classList.add('anim-idle');
-                }, 650);
-            }, 750);
+                }, 600);
+            }
         }
         // ==================== LOGIC BẢNG TUẦN & BẢNG THÁNG ====================
         function calcStreak(habit) {
@@ -1618,10 +1627,245 @@
             `;
         }
 
+        // ==================== 1. DANH NGÔN NGƯỜI NỔI TIẾNG THAY ĐỔI MỖI NGÀY ====================
+        const FAMOUS_QUOTES = [
+            { quote: "Chúng ta là những gì chúng ta lặp đi lặp lại mỗi ngày. Sự xuất sắc không phải là một hành động, mà là một thói quen.", author: "Aristotle — Triết gia Hy Lạp cổ đại" },
+            { quote: "Mỗi hành động bạn thực hiện đều là một lá phiếu bầu cho kiểu người mà bạn muốn trở thành.", author: "James Clear — Tác giả sách Atomic Habits" },
+            { quote: "Bạn không cần phải vĩ đại mới bắt đầu, nhưng bạn phải bắt đầu thì mới có thể trở nên vĩ đại.", author: "Zig Ziglar — Diễn giả & Tác giả truyền cảm hứng" },
+            { quote: "Kỷ luật là cây cầu nối giữa mục tiêu và thành tựu của bạn.", author: "Jim Rohn — Chuyên gia huấn luyện phát triển cá nhân" },
+            { quote: "Hãy biến mỗi ngày của bạn thành tác phẩm nghệ thuật tuyệt vời nhất.", author: "John Wooden — Huấn luyện viên huyền thoại" },
+            { quote: "Tương lai phụ thuộc vào những gì bạn làm trong ngày hôm nay, chứ không phải ngày mai.", author: "Mahatma Gandhi — Anh hùng dân tộc Ấn Độ" },
+            { quote: "Thành công là tổng hợp của những nỗ lực nhỏ bé được lặp đi lặp lại ngày này qua ngày khác.", author: "Robert Collier — Tác giả sách phát triển bản thân" }
+        ];
+
+        function renderDailyFamousQuote() {
+            const now = new Date();
+            const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
+            const item = FAMOUS_QUOTES[dayOfYear % FAMOUS_QUOTES.length];
+            const qEl = document.getElementById('dailyFamousQuote');
+            const aEl = document.getElementById('dailyFamousAuthor');
+            const dEl = document.getElementById('dailyQuoteDateBadge');
+            if (qEl) qEl.textContent = `"${item.quote}"`;
+            if (aEl) aEl.textContent = `— ${item.author}`;
+            if (dEl) dEl.textContent = `• NGÀY ${now.getDate()}/${now.getMonth() + 1}`;
+        }
+
+        // ==================== 2. NHẬT KÝ NGẮN MỖI NGÀY & TỔNG KẾT TUẦN ====================
+        const DIARY_EMOJIS = [
+            { icon: '🥰', label: 'Hạnh phúc' },
+            { icon: '✨', label: 'Năng lượng' },
+            { icon: '😊', label: 'Bình yên' },
+            { icon: '🤔', label: 'Suy tư' },
+            { icon: '😮‍💨', label: 'Hơi mệt' },
+            { icon: '🌧️', label: 'Tụt mood' }
+        ];
+
+        if (!state.diary) {
+            state.diary = DAYS.map(() => ({ emoji: '😊', label: 'Bình yên', note: '' }));
+        }
+        let activeDiaryDay = (new Date().getDay() + 6) % 7; // Mặc định chọn đúng thứ hôm nay (T2=0 ... CN=6)
+
+        function selectDiaryDay(idx) {
+            activeDiaryDay = idx;
+            renderDiarySection();
+        }
+
+        function selectDiaryEmoji(emoji, label) {
+            state.diary[activeDiaryDay].emoji = emoji;
+            state.diary[activeDiaryDay].label = label;
+            saveState();
+            renderDiarySection();
+        }
+
+        function saveDailyDiary() {
+            const noteVal = document.getElementById('diaryNoteInput').value.trim();
+            state.diary[activeDiaryDay].note = noteVal;
+            saveState();
+            renderDiarySection();
+            makePetReact(`Đã lưu nhật ký ngày ${DAYS[activeDiaryDay]} (${state.diary[activeDiaryDay].emoji})! Cậu làm tốt lắm! ✨`);
+        }
+
+        function renderDiarySection() {
+            const tabsEl = document.getElementById('diaryDayTabs');
+            const emojiEl = document.getElementById('diaryEmojiSelector');
+            const noteInput = document.getElementById('diaryNoteInput');
+            const stripEl = document.getElementById('diaryWeekStrip');
+            if (!tabsEl || !emojiEl || !noteInput || !stripEl) return;
+
+            tabsEl.innerHTML = DAYS.map((d, i) => `
+                <button onclick="selectDiaryDay(${i})" class="px-3 py-1 border-2 border-[#1e242b] text-xs font-black ${
+                    i === activeDiaryDay ? 'bg-[#f26457] text-white shadow-[2px_2px_0px_#1e242b]' : 'bg-white hover:bg-[#f4d35e]'
+                }">
+                    ${d} ${state.diary[i]?.note ? '✓' : ''}
+                </button>
+            `).join('');
+
+            const cur = state.diary[activeDiaryDay] || { emoji: '😊', label: 'Bình yên', note: '' };
+            emojiEl.innerHTML = DIARY_EMOJIS.map(e => `
+                <button onclick="selectDiaryEmoji('${e.icon}', '${e.label}')" class="px-2.5 py-1.5 border-2 border-[#1e242b] text-xs font-bold flex items-center gap-1 ${
+                    cur.emoji === e.icon ? 'bg-[#f4d35e] shadow-[2px_2px_0px_#1e242b]' : 'bg-white'
+                }">
+                    <span class="text-base">${e.icon}</span> <span>${e.label}</span>
+                </button>
+            `).join('');
+
+            noteInput.value = cur.note || '';
+
+            stripEl.innerHTML = DAYS.map((d, i) => {
+                const entry = state.diary[i] || { emoji: '😊', label: 'Bình yên', note: '' };
+                return `
+                    <div onclick="selectDiaryDay(${i})" class="cursor-pointer p-2 border-2 border-[#1e242b] bg-[#f7f6f2] hover:bg-[#f4d35e]/30 text-[11px]">
+                        <div class="flex justify-between items-center font-black">
+                            <span>${d}</span>
+                            <span class="text-base">${entry.emoji}</span>
+                        </div>
+                        <p class="text-[10px] text-slate-600 truncate mt-1">${entry.note || 'Chưa ghi chú...'}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==================== 3. TỰ ĐỘNG RESET VÀO THỨ 2 HÀNG TUẦN & LƯU BẢNG THÁNG ====================
+        function getMondayKey(d) {
+            const date = new Date(d);
+            const day = date.getDay();
+            const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+            const monday = new Date(date.setDate(diff));
+            return `${monday.getFullYear()}-${monday.getMonth() + 1}-${monday.getDate()}`;
+        }
+
+        function checkAutoMondayReset() {
+            const currentMonday = getMondayKey(new Date());
+            if (!state.lastMondayKey) {
+                state.lastMondayKey = currentMonday;
+                saveState();
+                return;
+            }
+            // Nếu bước sang Thứ 2 của một tuần mới -> tự động lưu tuần cũ vào Bảng Tháng và reset các ô tick V
+            if (state.lastMondayKey !== currentMonday) {
+                const anyChecked = state.habits.some(h => h.days.some(Boolean));
+                if (anyChecked) {
+                    const data = getWeeklyAnalysisData();
+                    const diaryCount = (state.diary || []).filter(d => d.note).length;
+                    const moodList = (state.diary || []).map(d => d.emoji).join(' ');
+                    state.pastWeeks.unshift({
+                        week: state.currentWeek,
+                        date: `Tự động chốt Thứ 2 (${currentMonday})`,
+                        pct: data.pct,
+                        rank: data.rank,
+                        best: data.best,
+                        weak: data.weak,
+                        advice: `${data.solutions[0]} | 📔 Cảm xúc tuần: ${moodList} (${diaryCount}/7 ngày nhật ký)`
+                    });
+                    state.habits.forEach(h => {
+                        if (!h.historyDays) h.historyDays = [];
+                        h.historyDays.push(...h.days);
+                        if (h.historyDays.length > 21) h.historyDays = h.historyDays.slice(h.historyDays.length - 21);
+                        h.days = [false, false, false, false, false, false, false];
+                    });
+                    state.diary = DAYS.map(() => ({ emoji: '😊', label: 'Bình yên', note: '' }));
+                    state.currentWeek += 1;
+                }
+                state.lastMondayKey = currentMonday;
+                saveState();
+            }
+        }
+
+        // Bổ sung tổng kết cảm xúc Nhật ký vào Bảng Tổng Kết Tuần
+        const _origOpenReview = openWeeklyReviewModal;
+        openWeeklyReviewModal = function(ev) {
+            _origOpenReview(ev);
+            const diaryWritten = (state.diary || []).filter(d => d.note.trim() !== '').length;
+            const emojiRow = (state.diary || []).map((d, i) => `${DAYS[i]}:${d.emoji}`).join(' • ');
+            const solBox = document.getElementById('modalSolutionsList');
+            if (solBox) {
+                solBox.innerHTML += `
+                    <div class="mt-2 pt-2 border-t border-[#1e242b]">
+                        <p><strong>📔 Tổng kết Nhật ký & Cảm xúc tuần:</strong> Đã viết <strong>${diaryWritten}/7 ngày</strong> (${emojiRow}).</p>
+                    </div>
+                `;
+            }
+        };
+
+        // ==================== 4. NHẠC THEME 10 GIÂY PHONG CÁCH "TICK-TACK" (ILLIT) ====================
+        let isPlayingTheme = false;
+        function playTickTackTheme() {
+            if (isPlayingTheme) return;
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return;
+            const ctx = new AudioCtx();
+            isPlayingTheme = true;
+
+            const btn = document.getElementById('btnPlayTheme');
+            if (btn) btn.textContent = '🎵 Đang phát Tick-Tack (10s)...';
+
+            // Giai điệu Chiptune / Synth-pop tươi sáng, nảy nhịp kiểu Tick-Tack (ILLIT) trong 10 giây
+            const bpm = 144;
+            const step = 60 / bpm / 2; // nốt móc đơn
+            const notes = [
+                659.25, 783.99, 880.00, 783.99, 1046.50, 0, 987.77, 783.99,
+                659.25, 783.99, 880.00, 1046.50, 1174.66, 1046.50, 880.00, 0,
+                587.33, 698.46, 880.00, 698.46, 987.77, 0, 880.00, 698.46,
+                659.25, 783.99, 987.77, 1046.50, 1318.51, 1046.50, 1046.50, 0
+            ];
+
+            const startTime = ctx.currentTime + 0.05;
+            const totalSteps = 48; // ~10 giây
+
+            for (let i = 0; i < totalSteps; i++) {
+                const freq = notes[i % notes.length];
+                const t = startTime + i * step;
+
+                // Tiếng "Tick-Tack" gõ nhịp dễ thương ở mỗi phách
+                const clickOsc = ctx.createOscillator();
+                const clickGain = ctx.createGain();
+                clickOsc.type = 'triangle';
+                clickOsc.frequency.setValueAtTime(i % 2 === 0 ? 1600 : 1200, t);
+                clickGain.gain.setValueAtTime(0.035, t);
+                clickGain.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+                clickOsc.connect(clickGain);
+                clickGain.connect(ctx.destination);
+                clickOsc.start(t);
+                clickOsc.stop(t + 0.045);
+
+                // Giai điệu chính Kawaii Synth
+                if (freq > 0) {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(freq, t);
+                    gain.gain.setValueAtTime(0.06, t);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + step * 0.85);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(t);
+                    osc.stop(t + step * 0.9);
+                }
+            }
+
+            setTimeout(() => {
+                isPlayingTheme = false;
+                if (btn) btn.textContent = '🎶 Phát Nhạc Tick-Tack (10s)';
+                ctx.close();
+            }, 10000);
+        }
+
+        // Tự động phát nhạc chào mừng 10s ngay ở lần chạm đầu tiên khi vào web
+        let welcomedAudio = false;
+        window.addEventListener('pointerdown', () => {
+            if (!welcomedAudio) {
+                welcomedAudio = true;
+                playTickTackTheme();
+            }
+        }, { once: true });
+
         function renderAll() {
+            checkAutoMondayReset();
             renderCharacterEverywhere();
             renderWeekTable();
             renderStatsAndCharts();
+            renderDiarySection();
+            renderDailyFamousQuote();
         }
 
         renderAll();
