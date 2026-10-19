@@ -4,1190 +4,764 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Theo Dõi Thói Quen & Chuỗi Ngày (Habit Tracker)</title>
-    <title>Theo Dõi Thói Quen & Chuỗi Ngày (Habit Tracker)</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌸</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌸</text></svg>">
-    <!-- Tailwind CSS -->
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="apple-touch-icon" href="icon.png">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Plus Jakarta Sans & Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        display: ['Plus Jakarta Sans', 'sans-serif'],
-                    },
-                    colors: {
-                        sun: {
-                            50: '#fefce8',
-                            100: '#fef9c3',
-                            200: '#fef08a',
-                            300: '#fde047',
-                            400: '#facc15',
-                            500: '#eab308',
-                            600: '#ca8a04',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <style>
         body {
-            background-color: #f8fafc;
-            color: #0f172a;
-            overflow-x: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #eff6ff 50%, #fdf4ff 100%);
+            min-height: 100vh;
         }
-        /* Hiệu ứng nút check thói quen */
-        .habit-check-btn {
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+        .check-anim {
             transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        .habit-check-btn:active {
+        .check-anim:active {
             transform: scale(0.85);
-        }
-        .habit-check-btn.completed {
-            animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        @keyframes popIn {
-            0% { transform: scale(0.8); }
-            50% { transform: scale(1.12); }
-            100% { transform: scale(1); }
-        }
-        /* Thanh cuộn tinh gọn */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 8px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 8px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-        /* Hiệu ứng vòng tròn tiến độ SVG */
-        .progress-ring__circle {
-            transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: rotate(-90deg);
-            transform-origin: 50% 50%;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between selection:bg-amber-300 selection:text-slate-900">
+<body class="text-slate-800 pb-20">
 
-    <!-- Thông báo Toast (Thay thế alert) -->
-    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
-
-    <!-- Header / Navbar -->
-    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-30 border-b border-slate-200/80">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-wrap items-center justify-between gap-4">
+    <!-- Header -->
+    <header class="sticky top-0 z-30 glass-card shadow-sm border-b border-slate-100">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-300 via-amber-400 to-yellow-500 flex items-center justify-center shadow-md shadow-amber-500/20 text-slate-900">
-                    <i data-lucide="sparkles" class="w-6 h-6 stroke-[2.2]"></i>
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white shadow-md shadow-emerald-200">
+                    <i data-lucide="Flame" class="w-6 h-6"></i>
                 </div>
                 <div>
-                    <div class="flex items-center gap-2">
-                        <h1 class="font-display font-extrabold text-xl sm:text-2xl text-slate-900 tracking-tight">Nhịp Sống Tích Cực</h1>
-                        <span class="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-900 border border-amber-300">
-                            Mỗi ngày 1% tốt hơn
-                        </span>
-                    </div>
-                    <p id="current-date-text" class="text-xs sm:text-sm text-slate-500 font-medium">Đang tải ngày...</p>
+                    <h1 class="text-xl font-extrabold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+                        Happy Habit Tracker
+                    </h1>
+                    <p id="currentWeekLabel" class="text-xs text-slate-500 font-medium">Tuần hiện tại: Tuần 1</p>
                 </div>
             </div>
 
-            <!-- Chọn ngày đang xem & Nút hành động -->
-            <div class="flex items-center gap-2.5 sm:gap-3">
-                <button onclick="openResetModal()" title="Khôi phục dữ liệu mẫu" class="p-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 transition flex items-center gap-1.5 text-sm font-medium">
-                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-                    <span class="hidden md:inline">Dữ liệu mẫu</span>
+            <!-- Chuyển đổi chế độ xem Tuần / Tháng -->
+            <div class="flex items-center bg-slate-100 p-1 rounded-xl">
+                <button onclick="switchTab('week')" id="tabWeekBtn" class="px-4 py-2 rounded-lg text-xs font-bold transition-all bg-white text-emerald-600 shadow-sm flex items-center gap-1.5">
+                    <i data-lucide="calendar-days" class="w-4 h-4"></i> Bảng Tuần
                 </button>
-                <button onclick="openAddModal()" class="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-500 active:bg-amber-600 text-slate-950 font-display font-bold text-sm shadow-md shadow-amber-400/25 border border-amber-500/30 transition flex items-center gap-2">
-                    <i data-lucide="plus-circle" class="w-4 h-4 stroke-[2.5]"></i>
-                    <span>Thêm thói quen</span>
+                <button onclick="switchTab('month')" id="tabMonthBtn" class="px-4 py-2 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900 flex items-center gap-1.5">
+                    <i data-lucide="layout-grid" class="w-4 h-4"></i> Bảng Tháng & Lịch Sử
+                </button>
+            </div>
+
+            <!-- Nút Tổng kết tuần & Thêm thói quen -->
+            <div class="flex items-center gap-2">
+                <button onclick="openWeeklyReviewModal()" class="px-3.5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-sm shadow-amber-200 flex items-center gap-1.5 transition">
+                    <i data-lucide="award" class="w-4 h-4"></i> Tổng Kết & Sang Tuần Mới
+                </button>
+                <button onclick="openAddModal()" class="px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm shadow-emerald-200 flex items-center gap-1.5 transition">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Thêm Mới
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- Nội dung chính -->
-    <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8 flex-1">
+    <main class="max-w-6xl mx-auto px-4 mt-6 space-y-6">
 
-        <!-- 4 Thẻ Chỉ Số Quan Trọng (KPI Cards) -->
-        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-            <!-- Card 1: Tiến độ ngày đang chọn -->
-            <div class="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-sm flex items-center justify-between relative overflow-hidden">
-                <div class="space-y-1 z-10">
-                    <span id="selected-day-badge" class="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-amber-700 bg-amber-100/80 px-2.5 py-0.5 rounded-md">
-                        Hôm nay
-                    </span>
-                    <h2 class="text-slate-500 text-xs font-medium pt-1">Hoàn thành trong ngày</h2>
-                    <div class="flex items-baseline gap-1.5">
-                        <span id="stat-daily-count" class="font-display font-extrabold text-2xl sm:text-3xl text-slate-900">0/0</span>
-                        <span class="text-xs font-semibold text-slate-400">mục tiêu</span>
-                    </div>
-                    <p id="stat-daily-msg" class="text-xs text-slate-500 pt-0.5">Hãy bắt đầu ngày mới thật năng lượng!</p>
+        <!-- Thẻ chỉ số nhanh (Stats Cards) -->
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="glass-card p-4 rounded-2xl shadow-sm flex items-center gap-3.5">
+                <div class="p-3 rounded-xl bg-emerald-100 text-emerald-600">
+                    <i data-lucide="check-circle-2" class="w-6 h-6"></i>
                 </div>
-                <!-- Vòng tròn SVG -->
-                <div class="relative w-20 h-20 flex items-center justify-center shrink-0">
-                    <svg class="w-20 h-20" viewBox="0 0 80 80">
-                        <circle class="text-slate-100" stroke-width="8" stroke="currentColor" fill="transparent" r="32" cx="40" cy="40"/>
-                        <circle id="daily-progress-ring" class="text-amber-400 progress-ring__circle" stroke-width="8" stroke-linecap="round" stroke="currentColor" fill="transparent" r="32" cx="40" cy="40" stroke-dasharray="201.06" stroke-dashoffset="201.06"/>
-                    </svg>
-                    <span id="stat-daily-percent" class="absolute font-display font-bold text-sm text-slate-800">0%</span>
+                <div>
+                    <p class="text-xs text-slate-500 font-medium">Tiến độ tuần này</p>
+                    <p id="statWeeklyPercent" class="text-2xl font-extrabold text-slate-800">0%</p>
                 </div>
             </div>
-
-            <!-- Card 2: Chuỗi ngày tổng thể (Overall Streak) -->
-            <div class="bg-gradient-to-br from-amber-400 via-amber-400 to-yellow-300 rounded-3xl p-5 border border-amber-500/20 shadow-md shadow-amber-500/10 flex items-center justify-between text-slate-950 relative overflow-hidden">
-                <div class="space-y-1 z-10">
-                    <span class="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider bg-slate-950/10 text-slate-900 px-2.5 py-0.5 rounded-md">
-                        Chuỗi Năng Lượng
-                    </span>
-                    <h2 class="text-slate-800 text-xs font-semibold pt-1">Chuỗi ngày liên tiếp</h2>
-                    <div class="flex items-baseline gap-1.5">
-                        <span id="stat-overall-streak" class="font-display font-extrabold text-2xl sm:text-3xl text-slate-950">0</span>
-                        <span class="text-xs font-bold text-slate-800">ngày đạt ≥ 50%</span>
-                    </div>
-                    <p id="stat-streak-sub" class="text-xs text-slate-800/90 font-medium pt-0.5">Giữ lửa đều đặn mỗi ngày nhé!</p>
+            <div class="glass-card p-4 rounded-2xl shadow-sm flex items-center gap-3.5">
+                <div class="p-3 rounded-xl bg-orange-100 text-orange-600">
+                    <i data-lucide="flame" class="w-6 h-6"></i>
                 </div>
-                <div class="w-14 h-14 rounded-2xl bg-white/40 backdrop-blur-sm flex items-center justify-center shrink-0 border border-white/50 shadow-inner">
-                    <i data-lucide="flame" class="w-8 h-8 text-orange-600 fill-orange-500"></i>
+                <div>
+                    <p class="text-xs text-slate-500 font-medium">Chuỗi Kỷ Lục</p>
+                    <p id="statBestStreak" class="text-2xl font-extrabold text-slate-800">0 ngày</p>
                 </div>
             </div>
-
-            <!-- Card 3: Tổng lượt hoàn thành trong tuần -->
-            <div class="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-sm flex items-center justify-between">
-                <div class="space-y-1">
-                    <span class="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2.5 py-0.5 rounded-md">
-                        Hiệu suất tuần
-                    </span>
-                    <h2 class="text-slate-500 text-xs font-medium pt-1">Tỷ lệ hoàn thành tuần</h2>
-                    <div class="flex items-baseline gap-1.5">
-                        <span id="stat-weekly-rate" class="font-display font-extrabold text-2xl sm:text-3xl text-slate-900">0%</span>
-                        <span id="stat-weekly-total" class="text-xs font-semibold text-slate-400">(0/0)</span>
-                    </div>
-                    <p class="text-xs text-slate-500 pt-0.5">Tổng hợp từ Thứ 2 đến Chủ Nhật</p>
+            <div class="glass-card p-4 rounded-2xl shadow-sm flex items-center gap-3.5">
+                <div class="p-3 rounded-xl bg-blue-100 text-blue-600">
+                    <i data-lucide="calendar-check" class="w-6 h-6"></i>
                 </div>
-                <div class="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
-                    <i data-lucide="trending-up" class="w-7 h-7"></i>
+                <div>
+                    <p class="text-xs text-slate-500 font-medium">Tích lũy cả tháng</p>
+                    <p id="statMonthlyTotal" class="text-2xl font-extrabold text-slate-800">0 lần</p>
                 </div>
             </div>
-
-            <!-- Card 4: Thói quen xuất sắc nhất -->
-            <div class="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-sm flex items-center justify-between">
-                <div class="space-y-1 pr-2">
-                    <span class="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 border border-indigo-200/60 px-2.5 py-0.5 rounded-md">
-                        Bền bỉ nhất
-                    </span>
-                    <h2 class="text-slate-500 text-xs font-medium pt-1">Chuỗi dẫn đầu</h2>
-                    <div class="font-display font-bold text-base sm:text-lg text-slate-900 line-clamp-1" id="stat-best-habit-name">
-                        Chưa có dữ liệu
-                    </div>
-                    <p id="stat-best-habit-streak" class="text-xs font-semibold text-amber-600 pt-0.5">0 ngày liên tiếp</p>
+            <div class="glass-card p-4 rounded-2xl shadow-sm flex items-center gap-3.5">
+                <div class="p-3 rounded-xl bg-purple-100 text-purple-600">
+                    <i data-lucide="history" class="w-6 h-6"></i>
                 </div>
-                <div class="w-14 h-14 rounded-2xl bg-amber-50 border border-amber-200/60 flex items-center justify-center text-amber-500 shrink-0">
-                    <i data-lucide="trophy" class="w-7 h-7"></i>
+                <div>
+                    <p class="text-xs text-slate-500 font-medium">Số tuần đã hoàn tất</p>
+                    <p id="statCompletedWeeks" class="text-2xl font-extrabold text-slate-800">0 tuần</p>
                 </div>
             </div>
         </section>
 
-        <!-- Khu vực chính: Bảng Thói Quen (Trái) & Biểu Đồ Tuần (Phải) -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
-            
-            <!-- Cột Trái (7/12): Bảng đánh dấu thói quen từ Thứ 2 -> Chủ Nhật -->
-            <section class="lg:col-span-7 bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden flex flex-col">
-                <!-- Tiêu đề bảng & Bộ lọc danh mục -->
-                <div class="p-5 sm:p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <h2 class="font-display font-bold text-lg sm:text-xl text-slate-900">Bảng Theo Dõi Hằng Ngày</h2>
-                            <span id="habit-count-badge" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-slate-100 text-slate-700">0</span>
-                        </div>
-                        <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Nhấn vào các ô ngày để đánh dấu hoàn thành hoặc chọn cột ngày để xem chi tiết</p>
-                    </div>
-
-                    <!-- Bộ lọc danh mục -->
-                    <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0" id="category-filters">
-                        <button onclick="setCategoryFilter('all')" data-cat="all" class="cat-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition whitespace-nowrap bg-slate-900 text-amber-300">
-                            Tất cả
-                        </button>
-                        <button onclick="setCategoryFilter('Kỹ năng')" data-cat="Kỹ năng" class="cat-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">
-                            Kỹ năng
-                        </button>
-                        <button onclick="setCategoryFilter('Tinh thần')" data-cat="Tinh thần" class="cat-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">
-                            Tinh thần
-                        </button>
-                        <button onclick="setCategoryFilter('Thể chất')" data-cat="Thể chất" class="cat-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">
-                            Thể chất
-                        </button>
-                    </div>
+        <!-- ================= VIEW 1: BẢNG TUẦN ================= -->
+        <div id="weekViewSection" class="space-y-6">
+            <!-- Bộ lọc danh mục -->
+            <div class="flex items-center justify-between flex-wrap gap-2">
+                <div class="flex items-center gap-2 overflow-x-auto pb-1">
+                    <button onclick="filterCategory('all')" id="cat-all" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-white transition">Tất cả</button>
+                    <button onclick="filterCategory('Kỹ năng')" id="cat-Kỹ năng" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white text-slate-600 hover:bg-slate-100 transition">🎯 Kỹ năng</button>
+                    <button onclick="filterCategory('Tinh thần')" id="cat-Tinh thần" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white text-slate-600 hover:bg-slate-100 transition">🧠 Tinh thần</button>
+                    <button onclick="filterCategory('Thể chất')" id="cat-Thể chất" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white text-slate-600 hover:bg-slate-100 transition">💪 Thể chất</button>
                 </div>
+                <span class="text-xs text-slate-500 italic">💡 Nhấn vào các ô từ T2 - CN để ghi nhận mục tiêu mỗi ngày</span>
+            </div>
 
-                <!-- Bảng lưới Thứ 2 - Chủ Nhật -->
+            <!-- Bảng tích chọn 7 ngày trong tuần -->
+            <div class="glass-card rounded-3xl shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse min-w-[640px]">
+                    <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="border-b border-slate-100 bg-slate-50/70 text-slate-500 text-xs font-semibold">
-                                <th class="py-3.5 pl-6 pr-3 w-[240px]">Thói quen & Mục tiêu</th>
-                                <!-- Các cột Thứ 2 -> CN sẽ được render động để highlight ngày đang chọn -->
-                                <th id="th-day-0" class="py-3 px-1.5 text-center cursor-pointer transition hover:bg-amber-50/60" onclick="selectDay(0)">T2</th>
-                                <th id="th-day-1" class="py-3 px-1.5 text-center cursor-pointer transition hover:bg-amber-50/60" onclick="selectDay(1)">T3</th>
-                                <th id="th-day-2" class="py-3 px-1.5 text-center cursor-pointer transition hover:bg-amber-50/60" onclick="selectDay(2)">T4</th>
-                                <th id="th-day-3" class="py-3 px-1.5 text-center cursor-pointer transition hover:bg-amber-50/60" onclick="selectDay(3)">T5</th>
-                                <th id="th-day-4" class="py-3 px-1.5 text-center cursor-pointer transition hover:bg-amber-50/60" onclick="selectDay(4)">T6</th>
-                                <th id="th-day-5" class="py-3 px-1.5 text-center cursor-pointer transition hover:bg-amber-50/60" onclick="selectDay(5)">T7</th>
-                                <th id="th-day-6" class="py-3 px-1.5 text-center cursor-pointer transition hover:bg-amber-50/60" onclick="selectDay(6)">CN</th>
-                                <th class="py-3.5 pl-2 pr-6 text-right w-[100px]">Chuỗi</th>
+                            <tr class="border-b border-slate-100 bg-slate-50/70 text-xs font-bold text-slate-500 uppercase">
+                                <th class="py-4 px-5 min-w-[220px]">Thói quen hằng ngày</th>
+                                <th class="py-4 px-2 text-center w-14">T2</th>
+                                <th class="py-4 px-2 text-center w-14">T3</th>
+                                <th class="py-4 px-2 text-center w-14">T4</th>
+                                <th class="py-4 px-2 text-center w-14">T5</th>
+                                <th class="py-4 px-2 text-center w-14">T6</th>
+                                <th class="py-4 px-2 text-center w-14 text-emerald-600">T7</th>
+                                <th class="py-4 px-2 text-center w-14 text-rose-500">CN</th>
+                                <th class="py-4 px-4 text-center w-28">Chuỗi</th>
+                                <th class="py-4 px-3 text-center w-12">Xóa</th>
                             </tr>
                         </thead>
-                        <tbody id="habit-table-body" class="divide-y divide-slate-100 text-sm">
-                            <!-- Nội dung JS chèn vào -->
+                        <tbody id="habitTableBody" class="divide-y divide-slate-100 text-sm">
+                            <!-- Dữ liệu render bằng JS -->
                         </tbody>
                     </table>
                 </div>
+            </div>
 
-                <!-- Chân bảng: Nút đánh dấu nhanh cả ngày & Chú thích -->
-                <div class="p-4 sm:px-6 bg-slate-50/80 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500">
-                    <div class="flex items-center gap-4">
-                        <span class="inline-flex items-center gap-1.5">
-                            <span class="w-3 h-3 rounded-md bg-amber-400 inline-block border border-amber-500/40"></span> Đã hoàn thành
-                        </span>
-                        <span class="inline-flex items-center gap-1.5">
-                            <span class="w-3 h-3 rounded-md bg-slate-200 inline-block"></span> Chưa hoàn thành
-                        </span>
+            <!-- Biểu đồ tiến độ tuần -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="md:col-span-2 glass-card p-6 rounded-3xl shadow-sm">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-base">Biểu Đồ Mức Độ Duy Trì Trong Tuần</h3>
+                            <p class="text-xs text-slate-500">Số thói quen hoàn thành qua từng ngày từ Thứ 2 đến Chủ Nhật</p>
+                        </div>
                     </div>
-                    <button onclick="completeAllForSelectedDay()" class="inline-flex items-center gap-1.5 font-semibold text-amber-700 hover:text-amber-800 bg-amber-100/80 hover:bg-amber-200/70 px-3 py-1.5 rounded-xl transition">
-                        <i data-lucide="check-check" class="w-4 h-4"></i>
-                        <span id="btn-complete-all-text">Hoàn thành tất cả hôm nay</span>
+                    <div id="weeklyBarChart" class="grid grid-cols-7 gap-3 items-end h-44 pt-6 px-2 border-b border-slate-100">
+                        <!-- Cột biểu đồ tự động tạo bằng JS -->
+                    </div>
+                </div>
+
+                <!-- Góc Cố Vấn Nhanh Trong Tuần -->
+                <div class="glass-card p-6 rounded-3xl shadow-sm flex flex-col justify-between bg-gradient-to-br from-emerald-50/90 to-teal-50/80 border border-emerald-100">
+                    <div>
+                        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-600 text-white text-xs font-bold mb-3">
+                            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Nhận xét nhanh
+                        </div>
+                        <h3 id="quickAdviceTitle" class="font-extrabold text-slate-800 text-lg mb-2">Hãy khởi động ngày mới!</h3>
+                        <p id="quickAdviceText" class="text-xs text-slate-600 leading-relaxed">
+                            Mỗi ô tích xanh hôm nay sẽ là một viên gạch xây dựng kỷ luật cho cả tháng. Khi kết thúc Chủ Nhật, hãy bấm nút "Tổng Kết & Sang Tuần Mới" ở góc trên để nhận giải pháp chi tiết nhé!
+                        </p>
+                    </div>
+                    <button onclick="openWeeklyReviewModal()" class="mt-4 w-full py-2.5 rounded-xl bg-white hover:bg-emerald-50 text-emerald-700 font-bold text-xs border border-emerald-200 shadow-sm transition flex items-center justify-center gap-1.5">
+                        <i data-lucide="file-bar-chart-2" class="w-4 h-4"></i> Xem Báo Cáo Tổng Kết Tuần
                     </button>
                 </div>
-            </section>
-
-            <!-- Cột Phải (5/12): Biểu đồ hằng tuần & Phân tích chuỗi ngày -->
-            <section class="lg:col-span-5 flex flex-col gap-6">
-                
-                <!-- Khối Biểu Đồ Hằng Tuần -->
-                <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-6">
-                    <div class="flex items-center justify-between gap-2 mb-5">
-                        <div>
-                            <h2 class="font-display font-bold text-lg text-slate-900">Biểu Đồ Tiến Độ Tuần</h2>
-                            <p class="text-xs text-slate-500 mt-0.5">Số lượng & tỷ lệ thói quen hoàn thành từ T2 đến CN</p>
-                        </div>
-                        <!-- Chuyển đổi Biểu đồ Cột / Đường -->
-                        <div class="inline-flex rounded-xl bg-slate-100 p-1 border border-slate-200/60">
-                            <button id="btn-chart-bar" onclick="switchChartType('bar')" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1 bg-white text-slate-900 shadow-sm">
-                                <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 text-amber-500"></i>
-                                <span>Cột</span>
-                            </button>
-                            <button id="btn-chart-line" onclick="switchChartType('line')" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1 text-slate-600 hover:text-slate-900">
-                                <i data-lucide="activity" class="w-3.5 h-3.5"></i>
-                                <span>Đường</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Vùng hiển thị Biểu đồ (Cột hoặc Đường SVG) -->
-                    <div id="weekly-chart-container" class="h-56 w-full pt-4 pb-2 px-1 select-none">
-                        <!-- Render bằng JS -->
-                    </div>
-
-                    <!-- Chú thích ngưỡng mục tiêu -->
-                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                        <span class="inline-flex items-center gap-1.5">
-                            <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span> Ngày đạt ≥ 80% mục tiêu
-                        </span>
-                        <span id="chart-summary-badge" class="font-semibold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-lg">
-                            Đỉnh tuần: --
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Khối Thống kê Chuỗi Liên Tiếp Từng Thói Quen (Streak Ranking) -->
-                <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <div>
-                            <h2 class="font-display font-bold text-lg text-slate-900">Bảng Phong Độ Chuỗi Ngày</h2>
-                            <p class="text-xs text-slate-500 mt-0.5">Chuỗi liên tiếp (Streak) & mức độ duy trì trong tuần</p>
-                        </div>
-                        <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
-                            <i data-lucide="flame" class="w-5 h-5"></i>
-                        </div>
-                    </div>
-
-                    <div id="streak-breakdown-list" class="space-y-3.5">
-                        <!-- Render bằng JS -->
-                    </div>
-                </div>
-
-                <!-- Góc truyền cảm hứng / Khích lệ -->
-                <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-5 text-white shadow-md relative overflow-hidden">
-                    <div class="absolute -right-6 -bottom-6 w-28 h-28 rounded-full bg-amber-400/15 blur-xl pointer-events-none"></div>
-                    <div class="flex items-start gap-3.5 relative z-10">
-                        <div class="w-10 h-10 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center shrink-0 font-bold shadow">
-                            <i data-lucide="quote" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <p id="motivational-quote" class="text-xs sm:text-sm text-slate-100 font-medium leading-relaxed italic">
-                                "Chúng ta là những gì chúng ta lặp đi lặp lại mỗi ngày. Sự xuất sắc không phải là một hành động nhất thời, mà là một thói quen."
-                            </p>
-                            <p id="motivational-author" class="text-[11px] font-semibold text-amber-300 mt-1.5 uppercase tracking-wider">
-                                — Aristotle
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-            </section>
+            </div>
         </div>
+
+        <!-- ================= VIEW 2: BẢNG THÁNG & LỊCH SỬ ================= -->
+        <div id="monthViewSection" class="hidden space-y-6">
+            <!-- Bảng Ma Trận Tháng (4 Tuần = 28 Ngày) cho từng thói quen -->
+            <div class="glass-card p-6 rounded-3xl shadow-sm">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+                    <div>
+                        <h2 class="text-lg font-extrabold text-slate-800 flex items-center gap-2">
+                            <i data-lucide="calendar-range" class="w-5 h-5 text-emerald-600"></i>
+                            Bảng Tổng Quan Tháng (Hành Trình 4 Tuần)
+                        </h2>
+                        <p class="text-xs text-slate-500">Nhìn lại toàn bộ các tuần bạn đã chốt sổ cùng với tuần hiện tại đang thực hiện</p>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs font-medium text-slate-600">
+                        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-slate-200 inline-block"></span> Chưa làm</span>
+                        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-emerald-500 inline-block"></span> Đã hoàn thành</span>
+                    </div>
+                </div>
+
+                <div id="monthlyHabitGrid" class="space-y-4">
+                    <!-- Render lưới 28 ngày của từng thói quen -->
+                </div>
+            </div>
+
+            <!-- Lịch sử các bản Tổng Kết Tuần đã lưu -->
+            <div class="glass-card p-6 rounded-3xl shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="text-base font-extrabold text-slate-800 flex items-center gap-2">
+                            <i data-lucide="archive" class="w-5 h-5 text-amber-500"></i>
+                            Nhật Ký Các Tuần Đã Qua
+                        </h3>
+                        <p class="text-xs text-slate-500">Lưu lại kết quả và lời khuyên của từng tuần sau khi bạn làm mới bảng</p>
+                    </div>
+                    <button onclick="clearMonthHistory()" class="text-xs text-rose-500 hover:underline font-semibold">Xóa lịch sử tháng</button>
+                </div>
+                <div id="pastWeeksList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Render danh sách các tuần cũ -->
+                </div>
+            </div>
+        </div>
+
     </main>
 
-    <!-- Footer -->
-    <footer class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center sm:flex sm:items-center sm:justify-between text-xs text-slate-400 border-t border-slate-200/60 mt-8">
-        <p>© 2026 Nhịp Sống Tích Cực — Bảng theo dõi thói quen cá nhân hóa.</p>
-        <p class="mt-1 sm:mt-0">Tự động lưu trữ an toàn trên trình duyệt của bạn (LocalStorage).</p>
-    </footer>
-
-    <!-- MODAL 1: Thêm Thói Quen Mới -->
-    <div id="add-habit-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 animate-[popIn_0.2s_ease-out]">
-            <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+    <!-- ================= MODAL 1: BÁO CÁO TỔNG KẾT TUẦN & GIẢI PHÁP ================= -->
+    <div id="weeklyReviewModal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
-                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+                    <div class="p-2.5 rounded-2xl bg-amber-100 text-amber-600">
+                        <i data-lucide="award" class="w-6 h-6"></i>
                     </div>
-                    <h3 class="font-display font-bold text-lg text-slate-900">Tạo Thói Quen Mới</h3>
+                    <div>
+                        <h3 class="text-lg font-extrabold text-slate-800" id="reviewModalTitle">Tổng Kết Tuần 1</h3>
+                        <p class="text-xs text-slate-500">Đánh giá chi tiết & định hướng cải thiện cho tuần tiếp theo</p>
+                    </div>
                 </div>
-                <button onclick="closeAddModal()" class="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+                <button onclick="closeWeeklyReviewModal()" class="text-slate-400 hover:text-slate-600">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
 
-            <form id="add-habit-form" onsubmit="handleCreateHabit(event)" class="space-y-4 mt-4">
+            <!-- Điểm số tổng kết -->
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Tên thói quen / Mục tiêu ngày *</label>
-                    <input id="input-habit-name" type="text" required maxlength="50" placeholder="VD: Luyện thanh 15p, Học 10 từ tiếng Trung..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-amber-400 focus:ring-3 focus:ring-amber-200/50 outline-none text-sm font-medium text-slate-900 placeholder:text-slate-400">
+                    <p class="text-xs font-semibold text-slate-500 uppercase">Tỷ lệ hoàn thành tuần</p>
+                    <p id="reviewScoreText" class="text-3xl font-extrabold text-emerald-600 mt-0.5">0%</p>
+                    <p id="reviewRankBadge" class="text-xs font-bold text-slate-700 mt-1">Đang phân tích...</p>
                 </div>
+                <div class="text-right text-xs text-slate-500 space-y-1">
+                    <p>🌟 Tốt nhất: <strong id="reviewBestHabit" class="text-slate-800">-</strong></p>
+                    <p>⚠️ Cần chú ý: <strong id="reviewWeakHabit" class="text-rose-600">-</strong></p>
+                </div>
+            </div>
 
+            <!-- Hướng giải quyết cá nhân hóa -->
+            <div class="space-y-2">
+                <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                    <i data-lucide="lightbulb" class="w-4 h-4 text-amber-500"></i> Hướng giải quyết & Lời khuyên tuần tới:
+                </h4>
+                <div id="reviewSolutionsBox" class="p-4 rounded-2xl bg-amber-50/80 border border-amber-200/70 text-xs text-slate-700 space-y-2 leading-relaxed">
+                    <!-- Nội dung giải pháp tự động sinh -->
+                </div>
+            </div>
+
+            <!-- Các nút hành động -->
+            <div class="pt-2 border-t border-slate-100 flex flex-col sm:flex-row gap-2.5">
+                <button onclick="closeWeeklyReviewModal()" class="flex-1 py-3 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition">
+                    Đóng & Tiếp tục tuần này
+                </button>
+                <button onclick="archiveAndResetWeek()" class="flex-1 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-200 transition flex items-center justify-center gap-1.5">
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i> Lưu Vào Bảng Tháng & Làm Mới Tuần
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL 2: THÊM THÓI QUEN MỚI ================= -->
+    <div id="addHabitModal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-extrabold text-slate-800">Thêm Thói Quen Mới</h3>
+                <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="text-xs font-bold text-slate-600 block mb-1">Tên thói quen</label>
+                    <input id="newHabitName" type="text" placeholder="VD: Luyện thanh 15p, Học tiếng Trung..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-emerald-500">
+                </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Danh mục</label>
-                        <select id="input-habit-category" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:border-amber-400 outline-none text-sm font-medium text-slate-800 bg-white">
-                            <option value="Kỹ năng">Kỹ năng</option>
-                            <option value="Tinh thần">Tinh thần</option>
-                            <option value="Thể chất">Thể chất</option>
+                        <label class="text-xs font-bold text-slate-600 block mb-1">Danh mục</label>
+                        <select id="newHabitCat" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm">
+                            <option value="Kỹ năng">🎯 Kỹ năng</option>
+                            <option value="Tinh thần">🧠 Tinh thần</option>
+                            <option value="Thể chất">💪 Thể chất</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Chuỗi ban đầu (ngày)</label>
-                        <input id="input-habit-streak" type="number" min="0" max="999" value="0" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-amber-400 outline-none text-sm font-medium text-slate-900">
+                        <label class="text-xs font-bold text-slate-600 block mb-1">Biểu tượng Emoji</label>
+                        <input id="newHabitIcon" type="text" value="✨" maxlength="2" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-center text-lg">
                     </div>
                 </div>
-
-                <!-- Chọn biểu tượng -->
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Chọn biểu tượng</label>
-                    <div id="emoji-picker" class="grid grid-cols-6 gap-2">
-                        <!-- Render bằng JS -->
-                    </div>
-                </div>
-
-                <!-- Chọn tông màu điểm nhấn -->
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Sắc thái hiển thị</label>
-                    <div id="color-picker" class="flex items-center gap-2.5">
-                        <!-- Render bằng JS -->
-                    </div>
-                </div>
-
-                <div class="pt-3 flex items-center justify-end gap-2 border-t border-slate-100">
-                    <button type="button" onclick="closeAddModal()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">
-                        Hủy
-                    </button>
-                    <button type="submit" class="px-5 py-2.5 rounded-xl text-xs font-bold bg-amber-400 hover:bg-amber-500 text-slate-950 shadow-sm transition">
-                        Lưu thói quen
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL 2: Xác nhận khôi phục dữ liệu mẫu -->
-    <div id="reset-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-100">
-            <div class="w-11 h-11 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center mb-3">
-                <i data-lucide="refresh-cw" class="w-6 h-6"></i>
             </div>
-            <h3 class="font-display font-bold text-lg text-slate-900">Khôi phục danh sách mẫu?</h3>
-            <p class="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
-                Hệ thống sẽ đặt lại 5 thói quen mẫu (Luyện thanh, Học tiếng Trung, Đọc sách tâm lý, Tập Vịnh Xuân, Uống 2L nước) cùng dữ liệu mẫu trong tuần.
-            </p>
-            <div class="mt-5 flex items-center justify-end gap-2">
-                <button onclick="closeResetModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">
-                    Giữ nguyên
-                </button>
-                <button onclick="confirmResetDefault()" class="px-4 py-2 rounded-xl text-xs font-bold bg-amber-400 hover:bg-amber-500 text-slate-950 transition">
-                    Khôi phục ngay
-                </button>
+            <div class="flex gap-2 pt-2">
+                <button onclick="closeAddModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600">Hủy</button>
+                <button onclick="addNewHabit()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700">Tạo Thói Quen</button>
             </div>
         </div>
     </div>
 
-    <!-- JAVASCRIPT XỬ LÝ TƯƠNG TÁC -->
     <script>
-        const STORAGE_KEY = 'nhip_song_tich_cuc_habits_v1';
+        const DAYS = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+        const STORAGE_KEY = 'happy_habit_tracker_v2';
 
-        const DAYS_SHORT = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
-        const DAYS_FULL = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật'];
-
-        const EMOJI_OPTIONS = ['🎙️', '🀄', '📖', '🥋', '💧', '🧘', '🏃', '🎸', '🥗', '✍️', '🧠', '☀️'];
-
-        const COLOR_THEMES = {
-            amber: { name: 'Vàng Nắng', bg: 'bg-amber-100', text: 'text-amber-800', border: 'border-amber-300', checkBg: 'bg-amber-400 hover:bg-amber-500 text-slate-950', bar: 'bg-amber-400', ring: '#facc15' },
-            emerald: { name: 'Xanh Ngọc', bg: 'bg-emerald-100', text: 'text-emerald-800', border: 'border-emerald-300', checkBg: 'bg-emerald-500 hover:bg-emerald-600 text-white', bar: 'bg-emerald-500', ring: '#10b981' },
-            sky: { name: 'Xanh Dương', bg: 'bg-sky-100', text: 'text-sky-800', border: 'border-sky-300', checkBg: 'bg-sky-500 hover:bg-sky-600 text-white', bar: 'bg-sky-500', ring: '#0ea5e9' },
-            rose: { name: 'Hồng Đào', bg: 'bg-rose-100', text: 'text-rose-800', border: 'border-rose-300', checkBg: 'bg-rose-500 hover:bg-rose-600 text-white', bar: 'bg-rose-500', ring: '#f43f5e' },
-            violet: { name: 'Tím Oải Hương', bg: 'bg-violet-100', text: 'text-violet-800', border: 'border-violet-300', checkBg: 'bg-violet-500 hover:bg-violet-600 text-white', bar: 'bg-violet-500', ring: '#8b5cf6' }
+        const defaultData = {
+            currentWeekNumber: 1,
+            selectedCategory: 'all',
+            habits: [
+                { id: 1, name: 'Luyện thanh / Hát 15p', category: 'Kỹ năng', icon: '🎤', days: [true, true, false, true, false, false, false], historyDays: [] },
+                { id: 2, name: 'Học tiếng Trung (20p)', category: 'Kỹ năng', icon: '🇨🇳', days: [true, true, true, false, false, false, false], historyDays: [] },
+                { id: 3, name: 'Đọc sách tâm lý', category: 'Tinh thần', icon: '📖', days: [false, true, true, true, false, false, false], historyDays: [] },
+                { id: 4, name: 'Tập thể dục / Vịnh Xuân', category: 'Thể chất', icon: '🥋', days: [true, false, true, false, false, false, false], historyDays: [] },
+                { id: 5, name: 'Uống đủ 2L nước', category: 'Thể chất', icon: '💧', days: [true, true, true, true, false, false, false], historyDays: [] }
+            ],
+            pastWeeks: [] // Lưu báo cáo các tuần trước
         };
 
-        const QUOTES = [
-            { text: "Kỷ luật là cầu nối giữa mục tiêu và thành tựu. Mỗi dấu tích nhỏ hôm nay tạo nên bước tiến lớn ngày mai.", author: "Jim Rohn" },
-            { text: "Một giờ luyện thanh, vài trang sách tâm lý hay vài thế Vịnh Xuân mỗi ngày đều đang âm thầm nâng tầm con người bạn.", author: "Nhịp Sống Tích Cực" },
-            { text: "Đừng đợi có cảm hứng mới bắt đầu. Chính thói quen hằng ngày sẽ đánh thức nguồn cảm hứng trong bạn.", author: "James Clear" }
-        ];
+        let appState = loadData();
 
-        // Dữ liệu mẫu gần gũi
-        function getDefaultHabits() {
-            return [
-                {
-                    id: 'h-1',
-                    name: 'Luyện thanh / Hát 15p',
-                    icon: '🎙️',
-                    category: 'Kỹ năng',
-                    color: 'amber',
-                    baseStreak: 5, // Chuỗi từ tuần trước
-                    days: [true, true, true, false, false, false, false]
-                },
-                {
-                    id: 'h-2',
-                    name: 'Học tiếng Trung (20p)',
-                    icon: '🀄',
-                    category: 'Kỹ năng',
-                    color: 'rose',
-                    baseStreak: 8,
-                    days: [true, true, true, false, false, false, false]
-                },
-                {
-                    id: 'h-3',
-                    name: 'Đọc sách tâm lý',
-                    icon: '📖',
-                    category: 'Tinh thần',
-                    color: 'violet',
-                    baseStreak: 3,
-                    days: [true, false, true, false, false, false, false]
-                },
-                {
-                    id: 'h-4',
-                    name: 'Tập thể dục / Vịnh Xuân',
-                    icon: '🥋',
-                    category: 'Thể chất',
-                    color: 'emerald',
-                    baseStreak: 4,
-                    days: [true, true, false, false, false, false, false]
-                },
-                {
-                    id: 'h-5',
-                    name: 'Uống đủ 2L nước',
-                    icon: '💧',
-                    category: 'Thể chất',
-                    color: 'sky',
-                    baseStreak: 12,
-                    days: [true, true, true, false, false, false, false]
-                }
-            ];
-        }
-
-        // Trạng thái ứng dụng
-        let habits = [];
-        let selectedDayIndex = 2; // Mặc định Thứ Tư (index 2) hoặc theo thứ thực tế
-        let currentCategoryFilter = 'all';
-        let currentChartType = 'bar'; // 'bar' hoặc 'line'
-        let selectedEmoji = EMOJI_OPTIONS[0];
-        let selectedColor = 'amber';
-
-        // Xác định thứ trong tuần thực tế (0: Thứ 2 -> 6: Chủ nhật)
-        function detectTodayIndex() {
-            const jsDay = new Date().getDay(); // 0 là CN, 1 là T2...
-            return jsDay === 0 ? 6 : jsDay - 1;
-        }
-
-        // Khởi tạo ứng dụng
-        function initApp() {
-            selectedDayIndex = detectTodayIndex();
-            loadHabitsFromStorage();
-            updateHeaderDate();
-            renderEmojiAndColorPickers();
-            renderAll();
-            lucide.createIcons();
-        }
-
-        function loadHabitsFromStorage() {
+        function loadData() {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return JSON.parse(JSON.stringify(defaultData));
             try {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                if (raw) {
-                    const parsed = JSON.parse(raw);
-                    if (Array.isArray(parsed) && parsed.length > 0) {
-                        habits = parsed;
-                        return;
-                    }
-                }
+                const parsed = JSON.parse(raw);
+                // Đảm bảo tương thích cấu trúc
+                if (!parsed.pastWeeks) parsed.pastWeeks = [];
+                if (!parsed.currentWeekNumber) parsed.currentWeekNumber = 1;
+                parsed.habits.forEach(h => {
+                    if (!h.historyDays) h.historyDays = [];
+                });
+                return parsed;
             } catch (e) {
-                console.error('Không thể đọc LocalStorage:', e);
-            }
-            habits = getDefaultHabits();
-            saveHabitsToStorage();
-        }
-
-        function saveHabitsToStorage() {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(habits));
-            } catch (e) {
-                console.error('Không thể lưu LocalStorage:', e);
+                return JSON.parse(JSON.stringify(defaultData));
             }
         }
 
-        function updateHeaderDate() {
-            const now = new Date();
-            const dayIdx = detectTodayIndex();
-            const dateStr = now.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
-            document.getElementById('current-date-text').textContent = `${DAYS_FULL[dayIdx]}, ${dateStr} • Tuần hiện tại`;
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
         }
 
-        // Tính chuỗi liên tiếp của 1 thói quen tính đến ngày đang chọn
-        function calculateHabitStreak(habit, upToDayIdx = selectedDayIndex) {
-            let consecutiveThisWeek = 0;
-            // Đếm ngược từ ngày đang chọn (hoặc ngày trước đó nếu hôm nay chưa đánh dấu)
-            let startCheck = upToDayIdx;
-            if (!habit.days[startCheck] && startCheck > 0 && habit.days[startCheck - 1]) {
-                startCheck = startCheck - 1;
+        // Tính chuỗi liên tiếp (gồm cả lịch sử tuần trước + tuần này)
+        function calculateStreak(habit) {
+            const allDays = [...(habit.historyDays || []), ...habit.days];
+            let currentStreak = 0;
+            // Đếm ngược từ ngày gần nhất có đánh dấu
+            let lastCheckedIndex = allDays.lastIndexOf(true);
+            if (lastCheckedIndex === -1) return 0;
+            for (let i = lastCheckedIndex; i >= 0; i--) {
+                if (allDays[i]) currentStreak++;
+                else break;
             }
-            for (let i = startCheck; i >= 0; i--) {
-                if (habit.days[i]) {
-                    consecutiveThisWeek++;
-                } else {
-                    break;
-                }
-            }
-            // Nếu chuỗi tuần này nối liền tới Thứ 2 (index 0) và Thứ 2 đã hoàn thành, cộng thêm baseStreak từ tuần trước
-            const reachedMonday = (startCheck >= 0) && habit.days.slice(0, startCheck + 1).every(Boolean) && habit.days[0];
-            return reachedMonday ? (habit.baseStreak || 0) + consecutiveThisWeek : consecutiveThisWeek;
+            return currentStreak;
         }
 
-        // Tính chuỗi ngày tổng thể của người dùng (ngày đạt >= 50% số thói quen)
-        function calculateOverallStreak() {
-            if (habits.length === 0) return 0;
-            let activeDays = 0;
-            for (let d = 0; d <= selectedDayIndex; d++) {
-                const doneCount = habits.filter(h => h.days[d]).length;
-                const ratio = doneCount / habits.length;
-                if (ratio >= 0.5) {
-                    activeDays++;
-                } else if (d < selectedDayIndex) {
-                    activeDays = 0;
-                }
-            }
-            // Cộng chuỗi nền 4 ngày từ tuần trước nếu Thứ 2 đạt >= 50%
-            const mondayDone = habits.filter(h => h.days[0]).length / habits.length >= 0.5;
-            return mondayDone && activeDays > 0 ? activeDays + 4 : activeDays;
-        }
-
-        // Đổi ngày đang xem chi tiết
-        function selectDay(dayIdx) {
-            selectedDayIndex = dayIdx;
-            renderAll();
-        }
-
-        // Lọc danh mục
-        function setCategoryFilter(category) {
-            currentCategoryFilter = category;
-            document.querySelectorAll('.cat-filter-btn').forEach(btn => {
-                if (btn.dataset.cat === category) {
-                    btn.className = 'cat-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition whitespace-nowrap bg-slate-900 text-amber-300 shadow-xs';
-                } else {
-                    btn.className = 'cat-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200';
-                }
-            });
-            renderHabitTable();
-        }
-
-        // Đánh dấu hoàn thành 1 ô ngày của thói quen
-        function toggleHabitDay(habitId, dayIdx) {
-            const habit = habits.find(h => h.id === habitId);
+        function toggleDay(habitId, dayIdx) {
+            const habit = appState.habits.find(h => h.id === habitId);
             if (!habit) return;
-
             habit.days[dayIdx] = !habit.days[dayIdx];
-            selectedDayIndex = dayIdx;
-            saveHabitsToStorage();
+            saveData();
             renderAll();
 
-            // Kiểm tra nếu đã hoàn thành 100% thói quen của ngày đó
-            const doneToday = habits.filter(h => h.days[dayIdx]).length;
-            if (habit.days[dayIdx] && doneToday === habits.length && habits.length > 0) {
-                triggerCelebration(DAYS_FULL[dayIdx]);
-            } else if (habit.days[dayIdx]) {
-                showToast(`Đã ghi nhận "${habit.name}" (${DAYS_SHORT[dayIdx]})`, 'success');
+            // Bắn pháo giấy nếu ngày đó hoàn thành 100% các thói quen
+            const allDoneToday = appState.habits.length > 0 && appState.habits.every(h => h.days[dayIdx]);
+            if (allDoneToday && habit.days[dayIdx]) {
+                confetti({ particleCount: 70, spread: 60, origin: { y: 0.7 } });
             }
         }
 
-        // Đánh dấu hoàn thành tất cả thói quen trong ngày đang chọn
-        function completeAllForSelectedDay() {
-            if (habits.length === 0) return;
-            const allCompleted = habits.every(h => h.days[selectedDayIndex]);
-            habits.forEach(h => {
-                h.days[selectedDayIndex] = !allCompleted;
-            });
-            saveHabitsToStorage();
-            renderAll();
-
-            if (!allCompleted) {
-                triggerCelebration(DAYS_FULL[selectedDayIndex]);
-            } else {
-                showToast(`Đã bỏ đánh dấu toàn bộ ngày ${DAYS_FULL[selectedDayIndex]}`, 'info');
-            }
-        }
-
-        // Xóa thói quen
-        function deleteHabit(habitId) {
-            const index = habits.findIndex(h => h.id === habitId);
-            if (index === -1) return;
-            const removedName = habits[index].name;
-            habits.splice(index, 1);
-            saveHabitsToStorage();
-            renderAll();
-            showToast(`Đã xóa thói quen "${removedName}"`, 'info');
-        }
-
-        // Hiệu ứng pháo giấy & thông báo khi hoàn thành xuất sắc
-        function triggerCelebration(dayLabel) {
-            if (typeof confetti === 'function') {
-                confetti({
-                    particleCount: 70,
-                    spread: 65,
-                    origin: { y: 0.65 },
-                    colors: ['#facc15', '#eab308', '#10b981', '#0ea5e9', '#f43f5e']
-                });
-            }
-            showToast(`Tuyệt vời! Bạn đã hoàn thành 100% mục tiêu ${dayLabel}! 🎉`, 'celebrate');
-        }
-
-        // Hiển thị thông báo Toast
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            const bgClass = type === 'celebrate'
-                ? 'bg-slate-900 text-amber-300 border-amber-400/50'
-                : type === 'info'
-                    ? 'bg-slate-800 text-white border-slate-700'
-                    : 'bg-slate-900 text-white border-slate-800';
-
-            toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-2xl border shadow-lg text-xs sm:text-sm font-medium transition-all duration-300 ${bgClass}`;
-            toast.innerHTML = `
-                <span class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
-                <span>${message}</span>
-            `;
-            container.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateY(8px)';
-                setTimeout(() => toast.remove(), 250);
-            }, 2600);
-        }
-
-        // Render toàn bộ giao diện
-        function renderAll() {
-            renderDayHeaderHighlight();
-            renderKPICards();
-            renderHabitTable();
-            renderWeeklyChart();
-            renderStreakBreakdown();
-            lucide.createIcons();
-        }
-
-        // Highlight cột Thứ đang chọn trên bảng
-        function renderDayHeaderHighlight() {
-            const todayReal = detectTodayIndex();
-            for (let i = 0; i < 7; i++) {
-                const th = document.getElementById(`th-day-${i}`);
-                if (!th) continue;
-                const isSelected = i === selectedDayIndex;
-                const isToday = i === todayReal;
-
-                th.className = `py-3 px-1.5 text-center cursor-pointer transition select-none ${
-                    isSelected
-                        ? 'bg-amber-100/90 text-slate-950 font-extrabold border-b-2 border-amber-500'
-                        : 'hover:bg-slate-100 text-slate-500'
-                }`;
-                th.innerHTML = `
-                    <div class="flex flex-col items-center">
-                        <span>${DAYS_SHORT[i]}</span>
-                        ${isToday ? '<span class="w-1.5 h-1.5 rounded-full bg-amber-500 mt-0.5" title="Hôm nay"></span>' : '<span class="w-1.5 h-1.5 mt-0.5"></span>'}
-                    </div>
-                `;
-            }
-
-            // Cập nhật chữ trên nút hoàn thành nhanh
-            const allDone = habits.length > 0 && habits.every(h => h.days[selectedDayIndex]);
-            const btnText = document.getElementById('btn-complete-all-text');
-            if (btnText) {
-                btnText.textContent = allDone
-                    ? `Bỏ chọn tất cả (${DAYS_SHORT[selectedDayIndex]})`
-                    : `Hoàn thành tất cả (${DAYS_SHORT[selectedDayIndex]})`;
-            }
-        }
-
-        // Render 4 thẻ thống kê KPI
-        function renderKPICards() {
-            const totalHabits = habits.length;
-            const completedSelectedDay = habits.filter(h => h.days[selectedDayIndex]).length;
-            const dailyPercent = totalHabits > 0 ? Math.round((completedSelectedDay / totalHabits) * 100) : 0;
-
-            const todayIdx = detectTodayIndex();
-            document.getElementById('selected-day-badge').textContent =
-                selectedDayIndex === todayIdx ? `Hôm nay • ${DAYS_SHORT[selectedDayIndex]}` : DAYS_FULL[selectedDayIndex];
-
-            document.getElementById('stat-daily-count').textContent = `${completedSelectedDay}/${totalHabits}`;
-            document.getElementById('stat-daily-percent').textContent = `${dailyPercent}%`;
-
-            // Vòng tròn SVG (r=32 => chu vi = 201.06)
-            const circumference = 201.06;
-            const offset = circumference - (dailyPercent / 100) * circumference;
-            const ring = document.getElementById('daily-progress-ring');
-            if (ring) ring.style.strokeDashoffset = offset;
-
-            const msgEl = document.getElementById('stat-daily-msg');
-            if (dailyPercent === 100 && totalHabits > 0) {
-                msgEl.textContent = 'Xuất sắc! Đã hoàn thành trọn vẹn mục tiêu!';
-                msgEl.className = 'text-xs text-emerald-600 font-semibold pt-0.5';
-            } else if (dailyPercent >= 50) {
-                msgEl.textContent = 'Đã đi hơn nửa chặng đường hôm nay!';
-                msgEl.className = 'text-xs text-amber-700 font-medium pt-0.5';
-            } else {
-                msgEl.textContent = 'Hãy tích lũy từng bước nhỏ ngay hôm nay!';
-                msgEl.className = 'text-xs text-slate-500 pt-0.5';
-            }
-
-            // Chuỗi tổng thể
-            const overallStreak = calculateOverallStreak();
-            document.getElementById('stat-overall-streak').textContent = overallStreak;
-
-            // Tỷ lệ hoàn thành cả tuần
-            const totalPossibleWeek = totalHabits * 7;
-            const totalDoneWeek = habits.reduce((acc, h) => acc + h.days.filter(Boolean).length, 0);
-            const weeklyRate = totalPossibleWeek > 0 ? Math.round((totalDoneWeek / totalPossibleWeek) * 100) : 0;
-            document.getElementById('stat-weekly-rate').textContent = `${weeklyRate}%`;
-            document.getElementById('stat-weekly-total').textContent = `(${totalDoneWeek}/${totalPossibleWeek})`;
-
-            // Thói quen có chuỗi cao nhất
-            if (totalHabits > 0) {
-                let bestHabit = habits[0];
-                let maxStreak = calculateHabitStreak(habits[0]);
-                habits.forEach(h => {
-                    const s = calculateHabitStreak(h);
-                    if (s > maxStreak) {
-                        maxStreak = s;
-                        bestHabit = h;
+        function filterCategory(cat) {
+            appState.selectedCategory = cat;
+            ['all', 'Kỹ năng', 'Tinh thần', 'Thể chất'].forEach(c => {
+                const btn = document.getElementById('cat-' + c);
+                if (btn) {
+                    if (c === cat) {
+                        btn.className = 'px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-white transition';
+                    } else {
+                        btn.className = 'px-3.5 py-1.5 rounded-full text-xs font-bold bg-white text-slate-600 hover:bg-slate-100 transition';
                     }
-                });
-                document.getElementById('stat-best-habit-name').textContent = `${bestHabit.icon} ${bestHabit.name}`;
-                document.getElementById('stat-best-habit-streak').textContent = `🔥 ${maxStreak} ngày liên tiếp`;
+                }
+            });
+            renderWeekTable();
+        }
+
+        function switchTab(tab) {
+            const weekSec = document.getElementById('weekViewSection');
+            const monthSec = document.getElementById('monthViewSection');
+            const btnWeek = document.getElementById('tabWeekBtn');
+            const btnMonth = document.getElementById('tabMonthBtn');
+
+            if (tab === 'week') {
+                weekSec.classList.remove('hidden');
+                monthSec.classList.add('hidden');
+                btnWeek.className = 'px-4 py-2 rounded-lg text-xs font-bold transition-all bg-white text-emerald-600 shadow-sm flex items-center gap-1.5';
+                btnMonth.className = 'px-4 py-2 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900 flex items-center gap-1.5';
             } else {
-                document.getElementById('stat-best-habit-name').textContent = 'Chưa có thói quen';
-                document.getElementById('stat-best-habit-streak').textContent = 'Hãy thêm mục tiêu mới';
+                weekSec.classList.add('hidden');
+                monthSec.classList.remove('hidden');
+                btnMonth.className = 'px-4 py-2 rounded-lg text-xs font-bold transition-all bg-white text-emerald-600 shadow-sm flex items-center gap-1.5';
+                btnWeek.className = 'px-4 py-2 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900 flex items-center gap-1.5';
+                renderMonthView();
             }
         }
 
-        // Render danh sách thói quen và các ô đánh dấu T2 -> CN
-        function renderHabitTable() {
-            const tbody = document.getElementById('habit-table-body');
-            const filtered = currentCategoryFilter === 'all'
-                ? habits
-                : habits.filter(h => h.category === currentCategoryFilter);
-
-            document.getElementById('habit-count-badge').textContent = `${filtered.length} mục tiêu`;
+        function renderWeekTable() {
+            const tbody = document.getElementById('habitTableBody');
+            const filtered = appState.selectedCategory === 'all'
+                ? appState.habits
+                : appState.habits.filter(h => h.category === appState.selectedCategory);
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="9" class="py-12 text-center text-slate-400">
-                            <div class="flex flex-col items-center gap-2">
-                                <span class="text-3xl">🌱</span>
-                                <p class="text-sm font-medium text-slate-600">Chưa có thói quen nào trong mục này</p>
-                                <button onclick="openAddModal()" class="mt-1 px-3.5 py-1.5 rounded-xl bg-amber-100 text-amber-800 font-semibold text-xs hover:bg-amber-200 transition">
-                                    + Thêm thói quen đầu tiên
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
+                tbody.innerHTML = `<tr><td colspan="10" class="text-center py-8 text-slate-400 text-xs">Chưa có thói quen nào trong mục này. Hãy bấm "Thêm Mới"!</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = filtered.map(habit => {
-                const theme = COLOR_THEMES[habit.color] || COLOR_THEMES.amber;
-                const streak = calculateHabitStreak(habit);
-                const weekDoneCount = habit.days.filter(Boolean).length;
-
-                const dayCells = habit.days.map((done, dIdx) => {
-                    const isSelectedCol = dIdx === selectedDayIndex;
-                    return `
-                        <td class="py-3 px-1.5 text-center ${isSelectedCol ? 'bg-amber-50/50' : ''}">
-                            <button
-                                onclick="toggleHabitDay('${habit.id}', ${dIdx})"
-                                aria-label="Đánh dấu ${habit.name} ngày ${DAYS_SHORT[dIdx]}"
-                                class="habit-check-btn w-9 h-9 rounded-xl mx-auto flex items-center justify-center font-bold text-sm border transition ${
-                                    done
-                                        ? `${theme.checkBg} border-transparent shadow-xs completed`
-                                        : 'bg-slate-100/90 hover:bg-slate-200/80 text-transparent border-slate-200/80'
-                                }"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 stroke-[3]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                            </button>
-                        </td>
-                    `;
-                }).join('');
+                const streak = calculateStreak(habit);
+                const dayCells = habit.days.map((done, idx) => `
+                    <td class="py-3.5 px-2 text-center">
+                        <button onclick="toggleDay(${habit.id}, ${idx})" class="check-anim w-9 h-9 rounded-xl inline-flex items-center justify-center border transition ${
+                            done
+                                ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm shadow-emerald-200'
+                                : 'bg-slate-50 border-slate-200 text-transparent hover:border-emerald-300'
+                        }">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        </button>
+                    </td>
+                `).join('');
 
                 return `
-                    <tr class="group hover:bg-slate-50/80 transition">
-                        <td class="py-3.5 pl-6 pr-3">
+                    <tr class="hover:bg-slate-50/80 transition">
+                        <td class="py-3.5 px-5">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-2xl ${theme.bg} ${theme.border} border flex items-center justify-center text-lg shrink-0">
-                                    ${habit.icon}
-                                </div>
-                                <div class="min-w-0 flex-1">
-                                    <div class="font-semibold text-slate-900 truncate">${habit.name}</div>
-                                    <div class="flex items-center gap-2 mt-0.5">
-                                        <span class="text-[11px] font-semibold px-2 py-0.2 rounded-md ${theme.bg} ${theme.text}">
-                                            ${habit.category}
-                                        </span>
-                                        <span class="text-[11px] text-slate-400 font-medium">${weekDoneCount}/7 ngày</span>
-                                    </div>
+                                <span class="text-xl w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center">${habit.icon}</span>
+                                <div>
+                                    <p class="font-bold text-slate-800 text-sm">${habit.name}</p>
+                                    <span class="text-[11px] font-semibold text-slate-400">${habit.category}</span>
                                 </div>
                             </div>
                         </td>
                         ${dayCells}
-                        <td class="py-3.5 pl-2 pr-5 text-right">
-                            <div class="inline-flex items-center justify-end gap-2">
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold ${
-                                    streak > 0 ? 'bg-amber-100 text-amber-900 border border-amber-300/70' : 'bg-slate-100 text-slate-500'
-                                }">
-                                    <span>🔥</span>
-                                    <span>${streak}</span>
-                                </span>
-                                <button
-                                    onclick="deleteHabit('${habit.id}')"
-                                    title="Xóa thói quen"
-                                    class="opacity-70 sm:opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
-                                >
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                </button>
-                            </div>
+                        <td class="py-3.5 px-4 text-center">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold ${streak > 0 ? 'bg-orange-100 text-orange-600' : 'bg-slate-100 text-slate-400'}">
+                                🔥 ${streak} ngày
+                            </span>
+                        </td>
+                        <td class="py-3.5 px-3 text-center">
+                            <button onclick="deleteHabit(${habit.id})" class="text-slate-300 hover:text-rose-500 transition p-1" title="Xóa">
+                                ✕
+                            </button>
                         </td>
                     </tr>
                 `;
             }).join('');
         }
 
-        // Chuyển đổi loại biểu đồ tuần (Cột / Đường)
-        function switchChartType(type) {
-            currentChartType = type;
-            const barBtn = document.getElementById('btn-chart-bar');
-            const lineBtn = document.getElementById('btn-chart-line');
+        function renderStatsAndChart() {
+            document.getElementById('currentWeekLabel').textContent = `Tuần hiện tại: Tuần ${appState.currentWeekNumber} trong tháng`;
 
-            if (type === 'bar') {
-                barBtn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1 bg-white text-slate-900 shadow-sm';
-                lineBtn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1 text-slate-600 hover:text-slate-900';
-            } else {
-                lineBtn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1 bg-white text-slate-900 shadow-sm';
-                barBtn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1 text-slate-600 hover:text-slate-900';
-            }
-            renderWeeklyChart();
-            lucide.createIcons();
-        }
+            const totalHabits = appState.habits.length;
+            const totalPossibleWeek = totalHabits * 7;
+            let totalDoneWeek = 0;
+            let bestStreak = 0;
+            let totalDoneMonth = 0;
 
-        // Render biểu đồ tiến độ tuần (Cột hoặc Đường trực quan)
-        function renderWeeklyChart() {
-            const container = document.getElementById('weekly-chart-container');
-            const totalHabits = habits.length;
-
-            const dailyCounts = DAYS_SHORT.map((_, dIdx) => habits.filter(h => h.days[dIdx]).length);
-            const dailyRates = dailyCounts.map(count => (totalHabits > 0 ? Math.round((count / totalHabits) * 100) : 0));
-
-            // Tìm ngày tốt nhất trong tuần
-            let bestDayIdx = 0;
-            dailyCounts.forEach((c, idx) => {
-                if (c > dailyCounts[bestDayIdx]) bestDayIdx = idx;
+            appState.habits.forEach(h => {
+                const weekDone = h.days.filter(Boolean).length;
+                const histDone = (h.historyDays || []).filter(Boolean).length;
+                totalDoneWeek += weekDone;
+                totalDoneMonth += weekDone + histDone;
+                const s = calculateStreak(h);
+                if (s > bestStreak) bestStreak = s;
             });
-            const summaryBadge = document.getElementById('chart-summary-badge');
-            if (summaryBadge) {
-                summaryBadge.textContent = totalHabits > 0 && dailyCounts[bestDayIdx] > 0
-                    ? `Đỉnh tuần: ${DAYS_SHORT[bestDayIdx]} (${dailyRates[bestDayIdx]}%)`
-                    : 'Chưa có dữ liệu tuần';
-            }
 
-            if (currentChartType === 'bar') {
-                // Biểu đồ cột tương tác
-                container.innerHTML = `
-                    <div class="h-full flex items-end justify-between gap-2 sm:gap-3 pt-4">
-                        ${DAYS_SHORT.map((dayName, idx) => {
-                            const rate = dailyRates[idx];
-                            const count = dailyCounts[idx];
-                            const isSelected = idx === selectedDayIndex;
-                            const isHigh = rate >= 80;
-                            const barColor = isHigh
-                                ? 'bg-gradient-to-t from-amber-500 to-amber-300 border-amber-400'
-                                : rate > 0
-                                    ? 'bg-slate-800'
-                                    : 'bg-slate-200';
+            const weekPercent = totalPossibleWeek > 0 ? Math.round((totalDoneWeek / totalPossibleWeek) * 100) : 0;
 
-                            return `
-                                <div onclick="selectDay(${idx})" class="flex-1 h-full flex flex-col items-center justify-end group cursor-pointer">
-                                    <div class="text-[11px] font-bold mb-1.5 transition ${
-                                        isSelected ? 'text-amber-700 scale-105' : 'text-slate-500 group-hover:text-slate-800'
-                                    }">
-                                        ${rate}%
-                                    </div>
-                                    <div class="w-full max-w-[38px] h-36 bg-slate-100 rounded-2xl p-1 flex items-end border ${
-                                        isSelected ? 'border-amber-400 ring-2 ring-amber-200/70' : 'border-slate-200/60'
-                                    }">
-                                        <div
-                                            style="height: ${Math.max(rate, 8)}%"
-                                            class="w-full rounded-xl transition-all duration-500 ${barColor} relative"
-                                            title="${DAYS_FULL[idx]}: ${count}/${totalHabits} thói quen"
-                                        ></div>
-                                    </div>
-                                    <div class="mt-2 px-2 py-0.5 rounded-lg text-xs font-bold ${
-                                        isSelected ? 'bg-amber-400 text-slate-950' : 'text-slate-500'
-                                    }">
-                                        ${dayName}
-                                    </div>
-                                </div>
-                            `;
-                        }).join('')}
+            document.getElementById('statWeeklyPercent').textContent = `${weekPercent}%`;
+            document.getElementById('statBestStreak').textContent = `${bestStreak} ngày`;
+            document.getElementById('statMonthlyTotal').textContent = `${totalDoneMonth} lần`;
+            document.getElementById('statCompletedWeeks').textContent = `${appState.pastWeeks.length} tuần`;
+
+            // Render biểu đồ cột 7 ngày
+            const chartEl = document.getElementById('weeklyBarChart');
+            chartEl.innerHTML = DAYS.map((dayName, idx) => {
+                const doneCount = appState.habits.filter(h => h.days[idx]).length;
+                const pct = totalHabits > 0 ? Math.round((doneCount / totalHabits) * 100) : 0;
+                return `
+                    <div class="flex flex-col items-center h-full justify-end group">
+                        <span class="text-[11px] font-bold text-slate-500 mb-1">${doneCount}/${totalHabits}</span>
+                        <div class="w-full max-w-[38px] bg-slate-100 rounded-t-xl h-28 flex items-end overflow-hidden p-0.5">
+                            <div class="w-full rounded-t-lg transition-all duration-500 ${pct === 100 ? 'bg-gradient-to-t from-emerald-500 to-teal-400' : 'bg-emerald-400'}" style="height: ${Math.max(pct, 6)}%"></div>
+                        </div>
+                        <span class="text-xs font-bold text-slate-600 mt-2">${dayName}</span>
                     </div>
                 `;
+            }).join('');
+
+            // Cập nhật góc nhận xét nhanh
+            const adviceTitle = document.getElementById('quickAdviceTitle');
+            const adviceText = document.getElementById('quickAdviceText');
+            if (weekPercent >= 80) {
+                adviceTitle.textContent = 'Phong độ tuyệt vời! 🌟';
+                adviceText.textContent = `Bạn đã đạt ${weekPercent}% mục tiêu tuần này. Hãy giữ vững nhịp độ này và bấm "Tổng Kết & Sang Tuần Mới" vào cuối Chủ Nhật để lưu kỷ lục vào Bảng Tháng nhé!`;
+            } else if (weekPercent >= 45) {
+                adviceTitle.textContent = 'Đang đi đúng hướng! 💪';
+                adviceText.textContent = `Bạn đã hoàn thành ${weekPercent}% mục tiêu tuần. Hãy ưu tiên làm thói quen dễ nhất vào buổi sáng để tránh bị đứt chuỗi ngày liên tiếp.`;
             } else {
-                // Biểu đồ đường (SVG Line Chart)
-                const width = 420;
-                const height = 165;
-                const padX = 28;
-                const padY = 22;
-                const usableW = width - padX * 2;
-                const usableH = height - padY * 2;
-
-                const points = dailyRates.map((rate, i) => {
-                    const x = padX + (i * (usableW / 6));
-                    const y = padY + usableH - (rate / 100) * usableH;
-                    return { x, y, rate, count: dailyCounts[i], day: DAYS_SHORT[i], idx: i };
-                });
-
-                const polylinePoints = points.map(p => `${p.x},${p.y}`).join(' ');
-                const areaPoints = `${points[0].x},${padY + usableH} ${polylinePoints} ${points[points.length - 1].x},${padY + usableH}`;
-
-                container.innerHTML = `
-                    <div class="w-full h-full flex flex-col justify-between">
-                        <svg viewBox="0 0 ${width} ${height}" class="w-full h-44 overflow-visible">
-                            <defs>
-                                <linearGradient id="amberAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#facc15" stop-opacity="0.45"/>
-                                    <stop offset="100%" stop-color="#facc15" stop-opacity="0.0"/>
-                                </linearGradient>
-                            </defs>
-                            <!-- Đường kẻ ngang tham chiếu -->
-                            <line x1="${padX}" y1="${padY}" x2="${width - padX}" y2="${padY}" stroke="#f1f5f9" stroke-width="1.5" stroke-dasharray="4 4" />
-                            <line x1="${padX}" y1="${padY + usableH / 2}" x2="${width - padX}" y2="${padY + usableH / 2}" stroke="#f1f5f9" stroke-width="1.5" stroke-dasharray="4 4" />
-                            <line x1="${padX}" y1="${padY + usableH}" x2="${width - padX}" y2="${padY + usableH}" stroke="#e2e8f0" stroke-width="1.5" />
-
-                            <!-- Vùng tô màu dưới đường -->
-                            <polygon points="${areaPoints}" fill="url(#amberAreaGrad)" />
-
-                            <!-- Đường nối chính -->
-                            <polyline fill="none" stroke="#eab308" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" points="${polylinePoints}" />
-
-                            <!-- Các điểm nút từng ngày -->
-                            ${points.map(p => `
-                                <g class="cursor-pointer" onclick="selectDay(${p.idx})">
-                                    <circle cx="${p.x}" cy="${p.y}" r="${p.idx === selectedDayIndex ? 7 : 5}" fill="${p.rate >= 80 ? '#facc15' : '#0f172a'}" stroke="#ffffff" stroke-width="2.5" />
-                                    <text x="${p.x}" y="${p.y - 10}" text-anchor="middle" class="text-[10px] font-bold fill-slate-700">${p.rate}%</text>
-                                    <text x="${p.x}" y="${height - 2}" text-anchor="middle" class="text-[11px] font-bold ${p.idx === selectedDayIndex ? 'fill-amber-600' : 'fill-slate-500'}">${p.day}</text>
-                                </g>
-                            `).join('')}
-                        </svg>
-                    </div>
-                `;
+                adviceTitle.textContent = 'Bắt đầu từ bước nhỏ nhất! 🌱';
+                adviceText.textContent = `Tuần này mới đạt ${weekPercent}%. Đừng áp lực! Hãy áp dụng quy tắc 2 phút: chỉ cần làm mỗi thói quen trong 2 phút hôm nay để lấy lại đà hứng khởi.`;
             }
         }
 
-        // Render danh sách thanh tiến độ & chuỗi ngày từng thói quen bên cột phải
-        function renderStreakBreakdown() {
-            const container = document.getElementById('streak-breakdown-list');
-            if (habits.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">Chưa có thói quen nào để thống kê.</p>`;
-                return;
+        // ================= TỔNG KẾT TUẦN & ĐƯA RA HƯỚNG GIẢI QUYẾT =================
+        function generateWeeklyAnalysis() {
+            const totalHabits = appState.habits.length;
+            if (totalHabits === 0) {
+                return {
+                    weekPercent: 0,
+                    rank: 'Chưa có dữ liệu',
+                    bestHabit: 'Chưa có',
+                    weakHabit: 'Chưa có',
+                    solutions: ['Hãy thêm ít nhất 1-3 thói quen để bắt đầu theo dõi nhé!']
+                };
             }
 
-            // Sắp xếp theo chuỗi giảm dần
-            const sorted = [...habits].sort((a, b) => calculateHabitStreak(b) - calculateHabitStreak(a));
+            let sorted = [...appState.habits].map(h => ({
+                name: h.name,
+                count: h.days.filter(Boolean).length
+            })).sort((a, b) => b.count - a.count);
 
-            container.innerHTML = sorted.map(h => {
-                const theme = COLOR_THEMES[h.color] || COLOR_THEMES.amber;
-                const streak = calculateHabitStreak(h);
-                const doneCount = h.days.filter(Boolean).length;
-                const weekPct = Math.round((doneCount / 7) * 100);
+            const best = sorted[0];
+            const weak = sorted[sorted.length - 1];
+            const totalDone = sorted.reduce((acc, cur) => acc + cur.count, 0);
+            const weekPercent = Math.round((totalDone / (totalHabits * 7)) * 100);
+
+            let rank = '';
+            let solutions = [];
+
+            if (weekPercent >= 80) {
+                rank = '🏆 Hạng Kim Cương - Kỷ Luật Xuất Sắc';
+                solutions = [
+                    `<strong>Khen ngợi:</strong> Thói quen <em>"${best.name}"</em> (${best.count}/7 ngày) đang là điểm tựa vững chắc nhất của bạn.`,
+                    `<strong>Hướng giải quyết cho "${weak.name}" (${weak.count}/7 ngày):</strong> Hãy ghép thói quen này ngay sau lúc bạn vừa làm xong <em>"${best.name}"</em> (Phương pháp Habit Stacking) để kéo cả hai cùng lên 100%.`,
+                    `<strong>Thử thách tuần mới:</strong> Bạn có thể tăng thời lượng thực hiện lên thêm 5 phút hoặc nâng độ khó nhẹ cho tuần kế tiếp.`
+                ];
+            } else if (weekPercent >= 50) {
+                rank = '⚡ Hạng Vàng - Duy Trì Khá Tốt';
+                solutions = [
+                    `<strong>Điểm sáng:</strong> Bạn làm tốt nhất ở <em>"${best.name}"</em> (${best.count}/7 ngày). Đây là khung giờ vàng bạn có nhiều năng lượng nhất.`,
+                    `<strong>Khắc phục "${weak.name}" (${weak.count}/7 ngày):</strong> Nguyên nhân thường do để đến cuối ngày mới làm nên dễ mệt. Hãy đổi lịch thực hiện thói quen này lên đầu buổi sáng hoặc giờ nghỉ trưa.`,
+                    `<strong>Mẹo giữ chuỗi:</strong> Đặt sẵn dụng cụ (sách, đàn, bình nước...) ngay trước mắt ở bàn học tối hôm trước.`
+                ];
+            } else {
+                rank = '🌱 Hạng Khởi Động - Cần Tái Tạo Năng Lượng';
+                solutions = [
+                    `<strong>Đừng nản lòng:</strong> Tuần qua có thể bạn bận rộn nên tỷ lệ đạt ${weekPercent}%. Nhưng bạn vẫn giữ được <em>"${best.name}"</em> (${best.count}/7 ngày)!`,
+                    `<strong>Giải pháp "Quy tắc 2 phút" cho "${weak.name}":</strong> Tuần mới, đừng đặt mục tiêu quá nặng. Chỉ cần đọc 1 trang sách, tập 2 phút hoặc học 3 từ vựng là đã được tính hoàn thành để não bộ quen nhịp lại.`,
+                    `<strong>Tinh gọn mục tiêu:</strong> Tập trung hoàn thành đúng 2 thói quen quan trọng nhất trước khi ôm đồm tất cả.`
+                ];
+            }
+
+            return {
+                weekPercent,
+                rank,
+                bestHabit: `${best.name} (${best.count}/7)`,
+                weakHabit: `${weak.name} (${weak.count}/7)`,
+                solutions
+            };
+        }
+
+        function openWeeklyReviewModal() {
+            const analysis = generateWeeklyAnalysis();
+            document.getElementById('reviewModalTitle').textContent = `Báo Cáo Tổng Kết Tuần ${appState.currentWeekNumber}`;
+            document.getElementById('reviewScoreText').textContent = `${analysis.weekPercent}%`;
+            document.getElementById('reviewRankBadge').textContent = analysis.rank;
+            document.getElementById('reviewBestHabit').textContent = analysis.bestHabit;
+            document.getElementById('reviewWeakHabit').textContent = analysis.weakHabit;
+
+            document.getElementById('reviewSolutionsBox').innerHTML = analysis.solutions
+                .map(s => `<div class="flex items-start gap-2"><span class="text-amber-500 font-bold">•</span><p>${s}</p></div>`)
+                .join('');
+
+            document.getElementById('weeklyReviewModal').classList.remove('hidden');
+        }
+
+        function closeWeeklyReviewModal() {
+            document.getElementById('weeklyReviewModal').classList.add('hidden');
+        }
+
+        // Lưu tuần hiện tại vào Bảng Tháng và làm mới các cột T2 - CN
+        function archiveAndResetWeek() {
+            const analysis = generateWeeklyAnalysis();
+            const now = new Date();
+            const dateStr = `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
+
+            // 1. Lưu bản tóm tắt tuần vào danh sách pastWeeks
+            appState.pastWeeks.unshift({
+                weekNumber: appState.currentWeekNumber,
+                date: dateStr,
+                percent: analysis.weekPercent,
+                rank: analysis.rank,
+                bestHabit: analysis.bestHabit,
+                weakHabit: analysis.weakHabit,
+                solutionSummary: analysis.solutions[1] || analysis.solutions[0]
+            });
+
+            // 2. Đẩy 7 ngày của tuần hiện tại vào historyDays (giữ tối đa 21 ngày cũ + 7 ngày mới = 28 ngày tháng)
+            appState.habits.forEach(h => {
+                if (!h.historyDays) h.historyDays = [];
+                h.historyDays.push(...h.days);
+                if (h.historyDays.length > 21) {
+                    h.historyDays = h.historyDays.slice(h.historyDays.length - 21);
+                }
+                // Làm mới 7 cột T2 -> CN về false cho tuần mới
+                h.days = [false, false, false, false, false, false, false];
+            });
+
+            appState.currentWeekNumber += 1;
+            saveData();
+            closeWeeklyReviewModal();
+            renderAll();
+
+            confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 } });
+            // Chuyển sang Bảng Tháng để người dùng nhìn thấy ngay thành quả vừa lưu
+            switchTab('month');
+        }
+
+        // ================= RENDER BẢNG THÁNG (28 NGÀY) & LỊCH SỬ =================
+        function renderMonthView() {
+            const gridContainer = document.getElementById('monthlyHabitGrid');
+
+            gridContainer.innerHTML = appState.habits.map(h => {
+                // Ghép lịch sử các tuần trước + tuần hiện tại và lấp đầy thành 28 ô (4 tuần)
+                const combined = [...(h.historyDays || []), ...h.days];
+                const totalDone = combined.filter(Boolean).length;
+                const cells = [];
+
+                for (let i = 0; i < 28; i++) {
+                    const isDone = combined[i] === true;
+                    const weekNum = Math.floor(i / 7) + 1;
+                    const dayName = DAYS[i % 7];
+                    cells.push(`
+                        <div title="Tuần ${weekNum} - ${dayName}" class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg flex items-center justify-center text-[10px] font-bold transition ${
+                            isDone ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-200' : 'bg-slate-100 text-slate-400'
+                        }">
+                            ${i + 1}
+                        </div>
+                    `);
+                }
 
                 return `
-                    <div class="p-3 rounded-2xl bg-slate-50/90 border border-slate-100 hover:border-slate-200 transition">
-                        <div class="flex items-center justify-between text-xs mb-1.5">
-                            <div class="flex items-center gap-2 font-semibold text-slate-800 truncate pr-2">
-                                <span>${h.icon}</span>
-                                <span class="truncate">${h.name}</span>
+                    <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div class="min-w-[200px]">
+                            <div class="flex items-center gap-2">
+                                <span class="text-lg">${h.icon}</span>
+                                <h4 class="font-bold text-slate-800 text-sm">${h.name}</h4>
                             </div>
-                            <div class="flex items-center gap-2 shrink-0">
-                                <span class="text-slate-400 font-medium">${doneCount}/7 ngày</span>
-                                <span class="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-900 font-bold">
-                                    🔥 ${streak} ngày
-                                </span>
-                            </div>
+                            <p class="text-xs text-slate-500 mt-1">Đã hoàn thành: <strong class="text-emerald-600">${totalDone} ngày</strong> trong tháng</p>
                         </div>
-                        <div class="w-full h-2 rounded-full bg-slate-200/80 overflow-hidden">
-                            <div class="h-full rounded-full ${theme.bar} transition-all duration-500" style="width: ${weekPct}%"></div>
+                        <div class="flex flex-wrap gap-1.5">
+                            ${cells.join('')}
                         </div>
                     </div>
                 `;
             }).join('');
+
+            // Render danh sách báo cáo các tuần đã chốt
+            const pastList = document.getElementById('pastWeeksList');
+            if (appState.pastWeeks.length === 0) {
+                pastList.innerHTML = `
+                    <div class="col-span-2 text-center py-8 text-xs text-slate-400 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                        Chưa có tuần nào được chốt sổ. Khi hết tuần, hãy bấm nút <strong>"Tổng Kết & Sang Tuần Mới"</strong> để lưu lại lịch sử vào đây nhé!
+                    </div>
+                `;
+            } else {
+                pastList.innerHTML = appState.pastWeeks.map(w => `
+                    <div class="p-4 rounded-2xl bg-white border border-slate-100 shadow-sm space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-700 font-extrabold text-xs">Tuần ${w.weekNumber}</span>
+                            <span class="text-[11px] text-slate-400">Chốt ngày: ${w.date}</span>
+                        </div>
+                        <div class="flex items-baseline justify-between pt-1">
+                            <p class="text-xs font-bold text-slate-700">${w.rank}</p>
+                            <p class="text-xl font-extrabold text-emerald-600">${w.percent}%</p>
+                        </div>
+                        <div class="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl space-y-1">
+                            <p>🌟 Tốt nhất: <strong>${w.bestHabit}</strong></p>
+                            <p>⚠️ Cần cải thiện: <strong>${w.weakHabit}</strong></p>
+                        </div>
+                        <p class="text-[11px] text-slate-500 leading-relaxed pt-1">${w.solutionSummary}</p>
+                    </div>
+                `).join('');
+            }
         }
 
-        // Render bộ chọn Emoji và Màu sắc trong Modal
-        function renderEmojiAndColorPickers() {
-            const emojiContainer = document.getElementById('emoji-picker');
-            emojiContainer.innerHTML = EMOJI_OPTIONS.map(emoji => `
-                <button
-                    type="button"
-                    onclick="selectEmojiOption('${emoji}')"
-                    class="emoji-opt-btn h-10 rounded-xl border text-lg flex items-center justify-center transition ${
-                        emoji === selectedEmoji
-                            ? 'bg-amber-100 border-amber-400 ring-2 ring-amber-200'
-                            : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
-                    }"
-                >
-                    ${emoji}
-                </button>
-            `).join('');
-
-            const colorContainer = document.getElementById('color-picker');
-            colorContainer.innerHTML = Object.entries(COLOR_THEMES).map(([key, cfg]) => `
-                <button
-                    type="button"
-                    onclick="selectColorOption('${key}')"
-                    class="px-3 py-1.5 rounded-xl text-xs font-bold border transition flex items-center gap-1.5 ${
-                        key === selectedColor
-                            ? `${cfg.bg} ${cfg.text} ${cfg.border} ring-2 ring-amber-300`
-                            : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                    }"
-                >
-                    <span class="w-2.5 h-2.5 rounded-full ${cfg.bar}"></span>
-                    <span>${cfg.name}</span>
-                </button>
-            `).join('');
+        function clearMonthHistory() {
+            if (!confirm('Bạn có chắc muốn xóa lịch sử các tuần cũ và đặt lại về Tuần 1 không?')) return;
+            appState.pastWeeks = [];
+            appState.currentWeekNumber = 1;
+            appState.habits.forEach(h => h.historyDays = []);
+            saveData();
+            renderAll();
+            renderMonthView();
         }
 
-        function selectEmojiOption(emoji) {
-            selectedEmoji = emoji;
-            renderEmojiAndColorPickers();
-        }
-
-        function selectColorOption(colorKey) {
-            selectedColor = colorKey;
-            renderEmojiAndColorPickers();
-        }
-
-        // Điều khiển Modal Thêm Thói Quen
+        // Thêm / Xóa thói quen
         function openAddModal() {
-            const modal = document.getElementById('add-habit-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            document.getElementById('input-habit-name').focus();
+            document.getElementById('addHabitModal').classList.remove('hidden');
         }
-
         function closeAddModal() {
-            const modal = document.getElementById('add-habit-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            document.getElementById('add-habit-form').reset();
+            document.getElementById('addHabitModal').classList.add('hidden');
         }
-
-        function handleCreateHabit(event) {
-            event.preventDefault();
-            const nameInput = document.getElementById('input-habit-name');
-            const categoryInput = document.getElementById('input-habit-category');
-            const streakInput = document.getElementById('input-habit-streak');
-
+        function addNewHabit() {
+            const nameInput = document.getElementById('newHabitName');
+            const catInput = document.getElementById('newHabitCat');
+            const iconInput = document.getElementById('newHabitIcon');
             const name = nameInput.value.trim();
-            if (!name) return;
+            if (!name) return alert('Vui lòng nhập tên thói quen!');
 
-            const newHabit = {
-                id: 'h-' + Date.now(),
+            appState.habits.push({
+                id: Date.now(),
                 name,
-                icon: selectedEmoji,
-                category: categoryInput.value,
-                color: selectedColor,
-                baseStreak: Math.max(0, parseInt(streakInput.value, 10) || 0),
-                days: [false, false, false, false, false, false, false]
-            };
-
-            habits.push(newHabit);
-            saveHabitsToStorage();
+                category: catInput.value,
+                icon: iconInput.value.trim() || '✨',
+                days: [false, false, false, false, false, false, false],
+                historyDays: []
+            });
+            nameInput.value = '';
+            saveData();
             closeAddModal();
             renderAll();
-            showToast(`Đã thêm thói quen "${name}"!`, 'success');
         }
 
-        // Điều khiển Modal Khôi phục dữ liệu mẫu
-        function openResetModal() {
-            const modal = document.getElementById('reset-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeResetModal() {
-            const modal = document.getElementById('reset-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function confirmResetDefault() {
-            habits = getDefaultHabits();
-            saveHabitsToStorage();
-            closeResetModal();
+        function deleteHabit(id) {
+            if (!confirm('Xóa thói quen này khỏi danh sách?')) return;
+            appState.habits = appState.habits.filter(h => h.id !== id);
+            saveData();
             renderAll();
-            showToast('Đã khôi phục danh sách thói quen mẫu!', 'success');
         }
 
-        // Khởi chạy khi tải trang
-        window.addEventListener('DOMContentLoaded', initApp);
+        function renderAll() {
+            renderWeekTable();
+            renderStatsAndChart();
+            lucide.createIcons();
+        }
+
+        renderAll();
     </script>
 </body>
 </html>
