@@ -47,13 +47,13 @@ h1,h2,h3,.font-retro{font-family:'Space Grotesk',sans-serif}
     </div>
     <nav class="flex flex-wrap items-center gap-2 sm:gap-5 text-xs font-extrabold uppercase tracking-wider">
       <button onclick="switchSection('week',event)" id="nav-week" class="px-3 py-1.5 bg-[#65b878] text-white border-2 border-[#1e242b] shadow-[2px_2px_0px_#1e242b]">01. Bảng Tuần</button>
-      <button onclick="switchSection('month',event)" id="nav-month" class="px-3 py-1.5 bg-white hover:bg-[#f4d35e] border-2 border-[#1e242b] transition">02. Bảng Tháng (28 Ngày)</button>
+      <button onclick="switchSection('month',event)" id="nav-month" class="px-3 py-1.5 bg-white hover:bg-[#f4d35e] border-2 border-[#1e242b] transition">02. Tổng Kết</button>
       <button onclick="switchSection('avatar',event)" id="nav-avatar" class="px-3 py-1.5 bg-white hover:bg-[#7cc6fe] border-2 border-[#1e242b] transition">03. Tạo Nhân Vật Ảo</button>
       <button onclick="toggleAIChat(event)" class="px-3 py-1.5 bg-[#f4d35e] hover:bg-[#f26457] hover:text-white border-2 border-[#1e242b] shadow-[2px_2px_0px_#1e242b] transition flex items-center gap-1"><span>💬</span> AI Lên Plan</button>
     </nav>
     <div class="hidden lg:flex items-center gap-2">
-      <span id="headerWeekBadge" class="text-xs font-extrabold px-3 py-1 border-2 border-[#1e242b] rounded-full bg-[#f7f6f2]">TUẦN 1</span>
-      <button onclick="openWeeklyReviewModal(event)" class="brutal-btn px-3 py-1.5 bg-[#f26457] text-white text-xs font-bold uppercase">Chốt Tuần ★</button>
+      <span id="headerWeekBadge" class="text-xs font-extrabold px-3 py-1 border-2 border-[#1e242b] rounded-full bg-[#f7f6f2]">TUẦN</span>
+      <button onclick="openWeeklyReviewModal(event)" class="brutal-btn px-3 py-1.5 bg-[#f26457] text-white text-xs font-bold uppercase">Tổng Kết Tuần ★</button>
     </div>
   </header>
 
@@ -69,7 +69,7 @@ h1,h2,h3,.font-retro{font-family:'Space Grotesk',sans-serif}
         <p class="text-xs sm:text-sm text-slate-700 max-w-xl leading-relaxed">💡 <strong>Mẹo:</strong> Mỗi lần bạn tích hoàn thành một mục tiêu, <strong>nhân vật ảo ở góc dưới bên trái</strong> sẽ nhảy lên và đổi biểu cảm cổ vũ bạn. Bấm vào nhân vật để trò chuyện lên plan.</p>
         <div class="flex flex-wrap gap-2.5 pt-1">
           <button onclick="openAddHabitModal(event)" class="brutal-btn px-4 py-2 bg-[#65b878] text-white text-xs font-extrabold uppercase tracking-wider">+ Thêm Thói Quen Mới</button>
-          <button onclick="openWeeklyReviewModal(event)" class="brutal-btn px-4 py-2 bg-[#f4d35e] text-xs font-extrabold uppercase tracking-wider">📊 Tổng Kết & Sang Tuần Mới</button>
+          <button onclick="openWeeklyReviewModal(event)" class="brutal-btn px-4 py-2 bg-[#f4d35e] text-xs font-extrabold uppercase tracking-wider">📊 Tổng Kết Tuần Này</button>
           <button onclick="switchSection('avatar',event)" class="brutal-btn px-4 py-2 bg-white text-xs font-extrabold uppercase tracking-wider">🎀 Đổi Đồ & Biểu Cảm Nhân Vật</button>
         </div>
       </div>
@@ -110,15 +110,7 @@ h1,h2,h3,.font-retro{font-family:'Space Grotesk',sans-serif}
 
     <div class="brutal-box overflow-hidden"><div class="overflow-x-auto">
       <table class="w-full text-left border-collapse">
-        <thead><tr class="border-b-2 border-[#1e242b] bg-[#f4d35e] text-xs font-black uppercase">
-          <th class="py-3.5 px-4 border-r-2 border-[#1e242b] min-w-[210px]">Mục tiêu / Thói quen</th>
-          <th class="py-3.5 px-2 text-center border-r-2 border-[#1e242b] w-14">T2</th><th class="py-3.5 px-2 text-center border-r-2 border-[#1e242b] w-14">T3</th>
-          <th class="py-3.5 px-2 text-center border-r-2 border-[#1e242b] w-14">T4</th><th class="py-3.5 px-2 text-center border-r-2 border-[#1e242b] w-14">T5</th>
-          <th class="py-3.5 px-2 text-center border-r-2 border-[#1e242b] w-14">T6</th>
-          <th class="py-3.5 px-2 text-center border-r-2 border-[#1e242b] w-14 bg-[#65b878] text-white">T7</th>
-          <th class="py-3.5 px-2 text-center border-r-2 border-[#1e242b] w-14 bg-[#f26457] text-white">CN</th>
-          <th class="py-3.5 px-3 text-center border-r-2 border-[#1e242b] w-28">Chuỗi</th><th class="py-3.5 px-2 text-center w-12">Xóa</th>
-        </tr></thead>
+        <thead><tr id="weekHeadRow" class="border-b-2 border-[#1e242b] bg-[#f4d35e] text-xs font-black uppercase"></tr></thead>
         <tbody id="habitTableBody" class="divide-y-2 divide-[#1e242b] text-sm bg-white"></tbody>
       </table>
     </div></div>
@@ -184,18 +176,48 @@ h1,h2,h3,.font-retro{font-family:'Space Grotesk',sans-serif}
   <section id="section-month" class="hidden px-6 sm:px-12 pt-7 space-y-8 relative z-10">
     <div class="flex flex-wrap items-center justify-between gap-4">
       <div>
-        <h2 class="text-2xl font-extrabold uppercase">BẢNG THEO DÕI THÁNG (HÀNH TRÌNH 4 TUẦN)</h2>
-        <p class="text-xs text-slate-600 mt-0.5">Các tuần đã chốt và tuần hiện tại được ghép thành ma trận 28 ngày</p>
+        <h2 class="text-2xl font-extrabold uppercase">TỔNG KẾT</h2>
+        <p class="text-xs text-slate-600 mt-0.5 max-w-xl">Theo lịch dương Việt Nam (giờ Hà Nội, tuần bắt đầu từ Thứ 2). Bảng tuần tự làm mới mỗi Thứ 2, tổng kết tháng và năm tự tính lại từ những ngày bạn đã tích.</p>
       </div>
-      <button onclick="openWeeklyReviewModal(event)" class="brutal-btn px-4 py-2 bg-[#f26457] text-white text-xs font-extrabold uppercase">+ Chốt Tuần Hiện Tại Vào Bảng Tháng</button>
+      <div class="flex flex-wrap gap-2">
+        <button onclick="exportData()" class="brutal-btn px-3 py-2 bg-[#7cc6fe] text-xs font-extrabold uppercase">⬇ Sao lưu (JSON)</button>
+        <label class="brutal-btn px-3 py-2 bg-white text-xs font-extrabold uppercase cursor-pointer">⬆ Nhập sao lưu<input type="file" accept="application/json,.json" class="hidden" onchange="importData(event)"></label>
+      </div>
     </div>
-    <div id="monthlyMatrixContainer" class="space-y-4"></div>
-    <div class="brutal-box p-5 space-y-4">
-      <div class="flex items-center justify-between border-b-2 border-[#1e242b] pb-3">
-        <h3 class="font-extrabold text-base uppercase">NHẬT KÝ TỔNG KẾT CÁC TUẦN ĐÃ QUA</h3>
-        <button onclick="resetMonthlyHistory(event)" class="text-xs font-bold text-[#f26457] underline">Làm mới lịch sử tháng</button>
+    <div class="brutal-box overflow-hidden">
+      <div class="bg-[#f4d35e] p-3.5 border-b-2 border-[#1e242b] flex flex-wrap items-center justify-between gap-2">
+        <h3 id="sumMonthTitle" class="font-extrabold text-base uppercase">THÁNG</h3>
+        <div class="flex gap-1.5">
+          <button onclick="shiftMonth(-1)" aria-label="Tháng trước" class="brutal-btn px-3 py-1 bg-white text-xs font-black">←</button>
+          <button onclick="shiftMonth(0)" class="brutal-btn px-3 py-1 bg-white text-xs font-black uppercase">Hôm nay</button>
+          <button onclick="shiftMonth(1)" aria-label="Tháng sau" class="brutal-btn px-3 py-1 bg-white text-xs font-black">→</button>
+        </div>
       </div>
-      <div id="pastWeeksArchiveGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      <div class="p-5 space-y-6">
+        <div id="sumMonthStats" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+        <div class="space-y-2"><h4 class="font-black uppercase text-xs">Ma trận theo ngày</h4><div id="sumMonthMatrix" class="space-y-3"></div><p id="sumHolidays" class="text-[11px] font-semibold text-slate-600"></p></div>
+        <div class="space-y-2"><h4 class="font-black uppercase text-xs">Tổng kết theo tuần</h4><div id="sumMonthWeeks" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div></div>
+        <div class="space-y-2"><h4 class="font-black uppercase text-xs bg-[#7cc6fe] inline-block px-2 py-0.5 border border-[#1e242b]">💡 Nhận xét & hướng giải quyết</h4><div id="sumMonthAdvice" class="p-3.5 border-2 border-[#1e242b] bg-[#f7f6f2] space-y-2 text-xs leading-relaxed"></div></div>
+      </div>
+    </div>
+    <div class="brutal-box overflow-hidden">
+      <div class="bg-[#65b878] text-white p-3.5 border-b-2 border-[#1e242b] flex flex-wrap items-center justify-between gap-2">
+        <h3 id="sumYearTitle" class="font-extrabold text-base uppercase">NĂM</h3>
+        <div class="flex gap-1.5 text-[#1e242b]">
+          <button onclick="shiftYear(-1)" aria-label="Năm trước" class="brutal-btn px-3 py-1 bg-white text-xs font-black">←</button>
+          <button onclick="shiftYear(0)" class="brutal-btn px-3 py-1 bg-white text-xs font-black uppercase">Năm nay</button>
+          <button onclick="shiftYear(1)" aria-label="Năm sau" class="brutal-btn px-3 py-1 bg-white text-xs font-black">→</button>
+        </div>
+      </div>
+      <div class="p-5 space-y-4">
+        <div id="yearStats" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+        <div class="overflow-x-auto border-2 border-[#1e242b]"><table id="yearTable" class="w-full border-collapse"></table></div>
+        <p class="text-[11px] font-semibold text-slate-600">Mỗi ô là tỷ lệ hoàn thành của một thói quen trong tháng: xanh lá từ 70%, vàng từ 40%, xanh dương dưới 40%, trắng là chưa có dữ liệu.</p>
+      </div>
+    </div>
+    <div id="legacyBox" class="hidden brutal-box p-5 space-y-3">
+      <h3 class="font-extrabold text-sm uppercase">Lịch sử tuần cũ (trước khi chuyển sang lịch dương)</h3>
+      <div id="legacyGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
     </div>
   </section>
 
@@ -331,8 +353,8 @@ h1,h2,h3,.font-retro{font-family:'Space Grotesk',sans-serif}
         <div id="modalSolutionsList" class="p-3.5 border-2 border-[#1e242b] bg-[#f7f6f2] space-y-2 leading-relaxed"></div>
       </div>
       <div class="flex flex-col sm:flex-row gap-2.5 pt-2">
-        <button onclick="closeWeeklyReviewModal()" class="brutal-btn flex-1 py-2.5 bg-white font-extrabold uppercase">Để sau</button>
-        <button onclick="confirmArchiveAndNewWeek()" class="brutal-btn flex-1 py-2.5 bg-[#65b878] text-white font-extrabold uppercase">✓ Lưu Vào Bảng Tháng & Làm Mới Tuần</button>
+        <button onclick="closeWeeklyReviewModal()" class="brutal-btn flex-1 py-2.5 bg-white font-extrabold uppercase">Đóng</button>
+        <button onclick="goToSummary()" class="brutal-btn flex-1 py-2.5 bg-[#65b878] text-white font-extrabold uppercase">Xem Tổng Kết Tháng →</button>
       </div>
     </div>
   </div>
@@ -359,43 +381,140 @@ h1,h2,h3,.font-retro{font-family:'Space Grotesk',sans-serif}
 
 <script>
 const DAYS = ['T2','T3','T4','T5','T6','T7','CN'];
-const STORAGE_KEY = 'fumayo_habit_ai_studio_v3';
-const NEUTRAL_DIARY = () => DAYS.map(() => ({ emoji: '😊', label: 'Bình yên', note: '' }));
+const STORAGE_KEY = 'fumayo_habit_ai_studio_v4';
+const OLD_KEY = 'fumayo_habit_ai_studio_v3';
+const TZ = 'Asia/Ho_Chi_Minh';
 const clone = o => JSON.parse(JSON.stringify(o));
-
-const defaultState = {
-  currentWeek: 1, categoryFilter: 'all', geminiApiKey: '',
-  character: { name: 'Bina-chan', hair: 'buns', outfit: 'starSweater', expr: 'cute', bg: 'bg-polka' },
-  habits: [
-    { id: 1, name: 'Luyện thanh / Hát 15p', category: 'Kỹ năng', icon: '🎤', days: [true,true,false,true,false,false,false], historyDays: [] },
-    { id: 2, name: 'Học tiếng Trung (20p)', category: 'Kỹ năng', icon: '🇨🇳', days: [true,true,true,false,false,false,false], historyDays: [] },
-    { id: 3, name: 'Đọc sách tâm lý', category: 'Tinh thần', icon: '📖', days: [false,true,true,true,false,false,false], historyDays: [] },
-    { id: 4, name: 'Tập thể dục / Vịnh Xuân', category: 'Thể chất', icon: '🥋', days: [true,false,true,false,false,false,false], historyDays: [] },
-    { id: 5, name: 'Uống đủ 2L nước', category: 'Thể chất', icon: '💧', days: [true,true,true,true,false,false,false], historyDays: [] }
-  ],
-  pastWeeks: [], diary: null
-};
-
-function loadState() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return clone(defaultState);
-    const p = JSON.parse(raw);
-    p.character = Object.assign(clone(defaultState.character), p.character || {});
-    p.pastWeeks = p.pastWeeks || [];
-    p.habits = p.habits || clone(defaultState.habits);
-    return p;
-  } catch (e) { return clone(defaultState); }
-}
-function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {} }
-
-let state = loadState();
-if (!Array.isArray(state.diary) || state.diary.length !== 7) state.diary = NEUTRAL_DIARY();
-let activeDiaryDay = (new Date().getDay() + 6) % 7;
-
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
+
+// ==================== LỊCH DƯƠNG VIỆT NAM (giờ Hà Nội, tuần bắt đầu Thứ 2) ====================
+const pad = n => String(n).padStart(2, '0');
+const todayStr = () => new Intl.DateTimeFormat('en-CA', { timeZone: TZ }).format(new Date()); // YYYY-MM-DD
+const parseD = s => { const [y, m, d] = s.split('-').map(Number); return new Date(Date.UTC(y, m - 1, d)); };
+const fmtD = dt => `${dt.getUTCFullYear()}-${pad(dt.getUTCMonth() + 1)}-${pad(dt.getUTCDate())}`;
+const addDays = (s, n) => { const d = parseD(s); d.setUTCDate(d.getUTCDate() + n); return fmtD(d); };
+const dowIdx = s => (parseD(s).getUTCDay() + 6) % 7;            // T2=0 ... CN=6
+const mondayOf = s => addDays(s, -dowIdx(s));
+const weekDates = s => { const m = mondayOf(s); return Array.from({ length: 7 }, (_, i) => addDays(m, i)); };
+const ddmm = s => `${s.slice(8)}/${s.slice(5, 7)}`;
+const daysInMonth = (y, m) => new Date(Date.UTC(y, m, 0)).getUTCDate();
+const monthDates = (y, m) => Array.from({ length: daysInMonth(y, m) }, (_, i) => `${y}-${pad(m)}-${pad(i + 1)}`);
+// Ngày lễ / kỷ niệm theo dương lịch (Tết Nguyên đán, Giỗ Tổ tính theo âm lịch nên không có ở đây)
+const HOLIDAYS = {
+  '01-01': 'Tết Dương lịch', '03-08': 'Quốc tế Phụ nữ', '04-30': 'Giải phóng miền Nam', '05-01': 'Quốc tế Lao động',
+  '06-01': 'Quốc tế Thiếu nhi', '09-02': 'Quốc khánh', '10-20': 'Phụ nữ Việt Nam', '11-20': 'Nhà giáo Việt Nam', '12-25': 'Giáng sinh'
+};
+
+// ==================== DỮ LIỆU: nhật ký theo NGÀY THẬT ====================
+// state.log   = { 'YYYY-MM-DD': [idThóiQuen, ...] }
+// state.diary = { 'YYYY-MM-DD': { emoji, label, note } }
+function freshState() {
+  const mon = mondayOf(todayStr());
+  const mk = (id, name, category, icon) => ({ id, name, category, icon, start: mon });
+  return {
+    version: 4, geminiApiKey: '', categoryFilter: 'all',
+    character: { name: 'Bina-chan', hair: 'buns', outfit: 'starSweater', expr: 'cute', bg: 'bg-polka' },
+    habits: [
+      mk(1, 'Luyện thanh / Hát 15p', 'Kỹ năng', '🎤'), mk(2, 'Học tiếng Trung (20p)', 'Kỹ năng', '🇨🇳'),
+      mk(3, 'Đọc sách tâm lý', 'Tinh thần', '📖'), mk(4, 'Tập thể dục / Vịnh Xuân', 'Thể chất', '🥋'),
+      mk(5, 'Uống đủ 2L nước', 'Thể chất', '💧')
+    ],
+    log: {}, diary: {}, legacyWeeks: []
+  };
+}
+function normalize(p) {
+  const f = freshState();
+  p.character = Object.assign(f.character, p.character || {});
+  p.habits = Array.isArray(p.habits) ? p.habits : f.habits;
+  p.log = p.log && typeof p.log === 'object' ? p.log : {};
+  p.diary = p.diary && typeof p.diary === 'object' && !Array.isArray(p.diary) ? p.diary : {};
+  p.legacyWeeks = Array.isArray(p.legacyWeeks) ? p.legacyWeeks : [];
+  p.categoryFilter = p.categoryFilter || 'all';
+  p.geminiApiKey = p.geminiApiKey || '';
+  p.version = 4;
+  p.habits.forEach(h => { if (!h.start) h.start = mondayOf(todayStr()); });
+  return p;
+}
+function markLog(s, date, id, on) {
+  const a = s.log[date] || [], i = a.indexOf(id);
+  if (on && i < 0) a.push(id);
+  if (!on && i >= 0) a.splice(i, 1);
+  if (a.length) s.log[date] = a; else delete s.log[date];
+}
+// Chuyển dữ liệu v3 (7 ô theo thứ) sang ngày thật
+function migrateV3(o) {
+  const s = normalize({ character: o.character, habits: [], geminiApiKey: o.geminiApiKey, categoryFilter: o.categoryFilter, legacyWeeks: o.pastWeeks || [] });
+  const mon = mondayOf(todayStr()), today = todayStr();
+  s.habits = (o.habits || []).map(h => {
+    const hist = h.historyDays || [], first = addDays(mon, -hist.length);
+    const hh = { id: h.id, name: h.name, category: h.category, icon: h.icon, start: hist.length ? first : mon };
+    hist.forEach((v, i) => { const d = addDays(first, i); if (v && d <= today) markLog(s, d, hh.id, true); });
+    (h.days || []).forEach((v, i) => { const d = addDays(mon, i); if (v && d <= today) markLog(s, d, hh.id, true); });
+    return hh;
+  });
+  if (Array.isArray(o.diary)) o.diary.forEach((d, i) => {
+    const day = addDays(mon, i);
+    if (d && day <= today && (d.note || d.emoji !== '😊')) s.diary[day] = { emoji: d.emoji, label: d.label, note: d.note || '' };
+  });
+  return s;
+}
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return normalize(JSON.parse(raw));
+    const old = localStorage.getItem(OLD_KEY);
+    if (old) return migrateV3(JSON.parse(old));
+  } catch (e) {}
+  return freshState();
+}
+function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {} }
+let state = loadState();
+
+const isDone = (id, date) => (state.log[date] || []).includes(id);
+const eligible = (h, date) => h.start <= date;
+
+function rateFor(habits, dates) {
+  const t = todayStr(); let done = 0, total = 0;
+  dates.forEach(d => { if (d > t) return; habits.forEach(h => { if (!eligible(h, d)) return; total++; if (isDone(h.id, d)) done++; }); });
+  return { done, total, pct: total ? Math.round(done / total * 100) : 0 };
+}
+function habitRate(h, dates) { const r = rateFor([h], dates); return { c: r.done, n: r.total }; }
+function habitStats(dates) {
+  return state.habits.map(h => { const r = habitRate(h, dates); return { h, name: h.name, c: r.c, n: r.n, pct: r.n ? r.c / r.n : 0 }; });
+}
+function currentStreak(h) {
+  const t = todayStr(); let d = isDone(h.id, t) ? t : addDays(t, -1), c = 0;
+  while (isDone(h.id, d)) { c++; d = addDays(d, -1); }
+  return c;
+}
+function longestStreak(h, dates) {
+  let best = 0, c = 0;
+  dates.forEach(d => { if (isDone(h.id, d)) { c++; best = Math.max(best, c); } else c = 0; });
+  return best;
+}
+function analyze(dates, label) {
+  if (!state.habits.length) return { pct: 0, done: 0, total: 0, rank: 'Chưa có mục tiêu', best: '-', weak: '-', solutions: ['Hãy thêm thói quen mới!'] };
+  const r = rateFor(state.habits, dates);
+  const s = habitStats(dates).filter(x => x.n > 0).sort((a, b) => b.pct - a.pct || b.c - a.c);
+  if (!s.length) return { pct: 0, done: 0, total: 0, rank: 'Chưa có dữ liệu', best: '-', weak: '-', solutions: [`Chưa có ngày nào trong ${label} này để tổng kết.`] };
+  const top = s[0], low = s[s.length - 1];
+  const tn = escapeHtml(top.name), ln = escapeHtml(low.name), next = label === 'tuần' ? 'tuần tới' : 'tháng tới';
+  let rank, solutions;
+  if (r.pct >= 80) {
+    rank = '🏆 HẠNG KIM CƯƠNG - KỶ LUẬT ĐỈNH CAO';
+    solutions = [`<strong>Khen ngợi:</strong> Cậu duy trì <em>"${tn}"</em> quá xuất sắc!`, `<strong>Chiến lược ${next}:</strong> Ghép <em>"${ln}"</em> ngay sau khung giờ của <em>"${tn}"</em> để đạt trọn vẹn 100%.`];
+  } else if (r.pct >= 50) {
+    rank = '⚡ HẠNG VÀNG - DUY TRÌ ỔN ĐỊNH';
+    solutions = [`<strong>Điểm mạnh:</strong> <em>"${tn}"</em> là thói quen mỏ neo rất tốt của cậu.`, `<strong>Hướng giải quyết cho "${ln}":</strong> Đừng đợi tới tối muộn mới làm. Hãy đẩy lên đầu buổi sáng hoặc giờ nghỉ trưa.`];
+  } else {
+    rank = '🌱 HẠNG KHỞI ĐỘNG - ÁP DỤNG QUY TẮC 2 PHÚT';
+    solutions = [`<strong>Đừng áp lực:</strong> ${label} này đạt ${r.pct}%, nhưng cậu vẫn giữ được <em>"${tn}"</em>.`, `<strong>Giải pháp ${next}:</strong> Thu nhỏ mục tiêu <em>"${ln}"</em> xuống chỉ còn 2 phút mỗi ngày để lấy lại đà liên tiếp.`];
+  }
+  return { pct: r.pct, done: r.done, total: r.total, rank, best: `${top.name} (${top.c}/${top.n})`, weak: `${low.name} (${low.c}/${low.n})`, solutions };
+}
+const getWeeklyAnalysisData = () => analyze(weekDates(todayStr()), 'tuần');
 
 // ==================== NHÂN VẬT SVG ====================
 const EXPR_META = {
@@ -517,58 +636,58 @@ function makePetReact(message, expr) {
   }
 }
 
-// ==================== BẢNG TUẦN / THÁNG ====================
-function calcStreak(h) {
-  const all = [...(h.historyDays || []), ...h.days];
-  let i = all.lastIndexOf(true), c = 0;
-  if (i === -1) return 0;
-  for (; i >= 0 && all[i]; i--) c++;
-  return c;
-}
-
-function toggleHabitDay(id, dayIdx, ev) {
+// ==================== BẢNG TUẦN ====================
+function toggleHabitDay(id, date, ev) {
   if (ev) ev.stopPropagation();
+  if (date > todayStr()) return;
   const h = state.habits.find(x => x.id === id);
   if (!h) return;
-  h.days[dayIdx] = !h.days[dayIdx];
-  if (h.days[dayIdx]) makePetReact(`Tuyệt vời! Đã hoàn thành "${h.name}" ngày ${DAYS[dayIdx]}! 🌟`, Math.random() > 0.4 ? 'aaa' : 'cool');
+  const on = !isDone(id, date);
+  markLog(state, date, id, on);
+  if (on && date < h.start) h.start = date;
+  if (on) makePetReact(`Tuyệt vời! Đã hoàn thành "${h.name}" ngày ${ddmm(date)}! 🌟`, Math.random() > 0.4 ? 'aaa' : 'cool');
   else makePetReact(`Ơ kìa, nhớ hoàn thành "${h.name}" sớm nhé! 😤`, 'pout');
   saveState(); renderAll();
-  if (state.habits.length && state.habits.every(x => x.days[dayIdx]) && typeof confetti === 'function')
+  if (on && state.habits.every(x => isDone(x.id, date)) && typeof confetti === 'function')
     confetti({ particleCount: 90, spread: 65, origin: { y: 0.6 } });
 }
-
 function setCategoryFilter(cat, ev) {
   if (ev) movePetToClick(0, 0, `Đang lọc danh mục: ${cat === 'all' ? 'TẤT CẢ' : cat.toUpperCase()} 🎯`);
   state.categoryFilter = cat; saveState();
   renderFilterButtons(); renderWeekTable();
 }
 function renderFilterButtons() {
-  ['all','Kỹ năng','Tinh thần','Thể chất'].forEach(c => {
+  ['all', 'Kỹ năng', 'Tinh thần', 'Thể chất'].forEach(c => {
     const b = document.getElementById('filter-' + c);
     if (b) b.className = 'px-3 py-1 text-xs font-bold border-2 border-[#1e242b] ' + (c === state.categoryFilter ? 'bg-[#1e242b] text-white' : 'bg-white hover:bg-[#f4d35e]');
   });
 }
-
 function switchSection(sec, ev) {
   if (ev) movePetToClick(0, 0);
-  ['week','month','avatar'].forEach(s => {
+  ['week', 'month', 'avatar'].forEach(s => {
     document.getElementById('section-' + s).classList.toggle('hidden', s !== sec);
     const nb = document.getElementById('nav-' + s);
     if (nb) nb.className = s === sec
       ? 'px-3 py-1.5 bg-[#65b878] text-white border-2 border-[#1e242b] shadow-[2px_2px_0px_#1e242b]'
       : 'px-3 py-1.5 bg-white hover:bg-[#f4d35e] border-2 border-[#1e242b] transition';
   });
-  if (sec === 'month') renderMonthlyView();
+  if (sec === 'month') renderSummary();
 }
-
 function renderWeekTable() {
+  const t = todayStr(), wd = weekDates(t);
+  document.getElementById('weekHeadRow').innerHTML =
+    `<th class="py-3.5 px-4 border-r-2 border-[#1e242b] min-w-[210px]">Mục tiêu / Thói quen</th>` +
+    wd.map((d, i) => `<th class="py-2 px-1 text-center border-r-2 border-[#1e242b] w-14 ${i === 5 ? 'bg-[#65b878] text-white' : i === 6 ? 'bg-[#f26457] text-white' : ''} ${d === t ? 'underline' : ''}">${DAYS[i]}<span class="block text-[10px] font-bold opacity-80">${ddmm(d)}</span></th>`).join('') +
+    `<th class="py-3.5 px-3 text-center border-r-2 border-[#1e242b] w-28">Chuỗi</th><th class="py-3.5 px-2 text-center w-12">Xóa</th>`;
   const tbody = document.getElementById('habitTableBody');
   const list = state.categoryFilter === 'all' ? state.habits : state.habits.filter(h => h.category === state.categoryFilter);
   if (!list.length) { tbody.innerHTML = `<tr><td colspan="10" class="py-8 text-center text-xs font-bold text-slate-400">Chưa có thói quen nào trong mục này!</td></tr>`; return; }
   tbody.innerHTML = list.map(h => {
-    const streak = calcStreak(h);
-    const cells = h.days.map((done, d) => `<td class="py-3 px-2 text-center border-r-2 border-[#1e242b]"><button aria-label="${DAYS[d]}" aria-pressed="${done}" onclick="toggleHabitDay(${h.id},${d},event)" class="w-8 h-8 border-2 border-[#1e242b] inline-flex items-center justify-center font-black text-sm transition ${done ? 'bg-[#65b878] text-white shadow-[2px_2px_0px_#1e242b]' : 'bg-[#f7f6f2] text-transparent hover:bg-[#f4d35e]/40'}">✓</button></td>`).join('');
+    const streak = currentStreak(h);
+    const cells = wd.map((d, i) => {
+      const done = isDone(h.id, d), future = d > t;
+      return `<td class="py-3 px-2 text-center border-r-2 border-[#1e242b] ${d === t ? 'bg-[#f4d35e]/25' : ''}"><button ${future ? 'disabled' : ''} aria-label="${DAYS[i]} ${ddmm(d)}" aria-pressed="${done}" onclick="toggleHabitDay(${h.id},'${d}',event)" class="w-8 h-8 border-2 border-[#1e242b] inline-flex items-center justify-center font-black text-sm transition ${done ? 'bg-[#65b878] text-white shadow-[2px_2px_0px_#1e242b]' : future ? 'bg-slate-100 text-transparent opacity-50 cursor-not-allowed' : 'bg-[#f7f6f2] text-transparent hover:bg-[#f4d35e]/40'}">✓</button></td>`;
+    }).join('');
     return `<tr class="hover:bg-[#f7f6f2] transition">
       <td class="py-3 px-4 border-r-2 border-[#1e242b]"><div class="flex items-center gap-2.5">
         <span class="w-8 h-8 border-2 border-[#1e242b] bg-[#f4d35e] flex items-center justify-center text-base">${escapeHtml(h.icon)}</span>
@@ -578,40 +697,33 @@ function renderWeekTable() {
       <td class="py-3 px-2 text-center"><button aria-label="Xóa" onclick="removeHabit(${h.id},event)" class="text-xs font-black text-slate-400 hover:text-[#f26457]">✕</button></td></tr>`;
   }).join('');
 }
-
 function renderStatsAndCharts() {
-  document.getElementById('headerWeekBadge').textContent = `TUẦN ${state.currentWeek}`;
-  document.getElementById('weekBadgePill').textContent = `TUẦN ${state.currentWeek} / THÁNG NÀY`;
-  const total = state.habits.length;
-  let weekDone = 0, monthDone = 0, best = 0;
-  state.habits.forEach(h => {
-    const wd = h.days.filter(Boolean).length;
-    weekDone += wd; monthDone += wd + (h.historyDays || []).filter(Boolean).length;
-    best = Math.max(best, calcStreak(h));
-  });
-  const pct = total ? Math.round(weekDone / (total * 7) * 100) : 0;
-  document.getElementById('statWeekRate').textContent = pct + '%';
-  document.getElementById('cardChartPercent').textContent = pct + '%';
+  const t = todayStr(), wk = weekDates(t), y = +t.slice(0, 4), m = +t.slice(5, 7);
+  document.getElementById('headerWeekBadge').textContent = `${ddmm(wk[0])} – ${ddmm(wk[6])}`;
+  document.getElementById('weekBadgePill').textContent = `TUẦN ${ddmm(wk[0])} – ${ddmm(wk[6])} • THÁNG ${m}/${y}`;
+  const r = rateFor(state.habits, wk), mr = rateFor(state.habits, monthDates(y, m));
+  const best = Math.max(0, ...state.habits.map(currentStreak));
+  document.getElementById('statWeekRate').textContent = r.pct + '%';
+  document.getElementById('cardChartPercent').textContent = r.pct + '%';
   document.getElementById('statBestStreak').textContent = best + ' ngày';
   document.getElementById('cardBestStreakText').textContent = best + ' NGÀY';
-  document.getElementById('statMonthCount').textContent = monthDone + ' lần';
-
-  document.getElementById('weeklyBarChart').innerHTML = DAYS.map((d, i) => {
-    const cnt = state.habits.filter(h => h.days[i]).length;
-    const p = total ? Math.round(cnt / total * 100) : 0;
+  document.getElementById('statMonthCount').textContent = mr.done + ' lần';
+  document.getElementById('weeklyBarChart').innerHTML = wk.map((d, i) => {
+    const el = state.habits.filter(h => eligible(h, d)).length;
+    const cnt = state.habits.filter(h => eligible(h, d) && isDone(h.id, d)).length;
+    const future = d > t, p = el && !future ? Math.round(cnt / el * 100) : 0;
     const col = p === 100 ? 'bg-[#65b878]' : p >= 50 ? 'bg-[#f4d35e]' : 'bg-[#7cc6fe]';
-    return `<div class="flex flex-col items-center h-full justify-end"><span class="text-[10px] font-black mb-1">${cnt}/${total}</span>
-      <div class="w-full h-24 border-2 border-[#1e242b] bg-[#f7f6f2] flex items-end p-0.5"><div class="w-full ${col} border-t border-[#1e242b] transition-all duration-300" style="height:${Math.max(p, 8)}%"></div></div>
-      <span class="text-[10px] font-extrabold mt-1">${d}</span></div>`;
+    return `<div class="flex flex-col items-center h-full justify-end"><span class="text-[10px] font-black mb-1">${future ? '–' : cnt + '/' + el}</span>
+      <div class="w-full h-24 border-2 border-[#1e242b] bg-[#f7f6f2] flex items-end p-0.5"><div class="w-full ${col} border-t border-[#1e242b] transition-all duration-300" style="height:${future ? 0 : Math.max(p, 8)}%"></div></div>
+      <span class="text-[10px] font-extrabold mt-1">${DAYS[i]}</span></div>`;
   }).join('');
-
-  if (total) {
-    const s = state.habits.map(h => ({ name: h.name, c: h.days.filter(Boolean).length })).sort((a, b) => b.c - a.c);
+  const s = habitStats(wk).filter(x => x.n > 0).sort((a, b) => b.pct - a.pct || b.c - a.c);
+  if (s.length) {
     const top = s[0], low = s[s.length - 1];
-    document.getElementById('highlightBestHabit').textContent = `${top.name} (${top.c}/7)`;
-    document.getElementById('highlightWeakHabit').textContent = `${low.name} (${low.c}/7)`;
-    document.getElementById('quickAISuggestion').textContent = pct >= 75
-      ? `Phong độ tuần này đạt ${pct}% cực kỳ ấn tượng! Hãy giữ vững "${top.name}" và kéo "${low.name}" lên cùng nhé!`
+    document.getElementById('highlightBestHabit').textContent = `${top.name} (${top.c}/${top.n})`;
+    document.getElementById('highlightWeakHabit').textContent = `${low.name} (${low.c}/${low.n})`;
+    document.getElementById('quickAISuggestion').textContent = r.pct >= 75
+      ? `Phong độ tuần này đạt ${r.pct}% cực kỳ ấn tượng! Hãy giữ vững "${top.name}" và kéo "${low.name}" lên cùng nhé!`
       : `Mẹo nhỏ từ ${state.character.name}: Hãy làm "${low.name}" chỉ trong 2 phút ngay sau khi làm "${top.name}" để tạo phản xạ tự nhiên!`;
   } else {
     document.getElementById('highlightBestHabit').textContent = '-';
@@ -619,34 +731,13 @@ function renderStatsAndCharts() {
   }
 }
 
-// ==================== TỔNG KẾT TUẦN ====================
-function getWeeklyAnalysisData() {
-  const total = state.habits.length;
-  if (!total) return { pct: 0, rank: 'Chưa có mục tiêu', best: '-', weak: '-', solutions: ['Hãy thêm thói quen mới!'] };
-  const s = state.habits.map(h => ({ name: escapeHtml(h.name), raw: h.name, c: h.days.filter(Boolean).length })).sort((a, b) => b.c - a.c);
-  const pct = Math.round(s.reduce((a, i) => a + i.c, 0) / (total * 7) * 100);
-  const top = s[0], low = s[s.length - 1];
-  let rank, solutions;
-  if (pct >= 80) {
-    rank = '🏆 HẠNG KIM CƯƠNG - KỶ LUẬT ĐỈNH CAO';
-    solutions = [`<strong>Khen ngợi:</strong> Cậu duy trì <em>"${top.name}"</em> quá xuất sắc!`, `<strong>Chiến lược tuần mới:</strong> Ghép <em>"${low.name}"</em> ngay sau khung giờ của <em>"${top.name}"</em> để đạt trọn vẹn 100%.`];
-  } else if (pct >= 50) {
-    rank = '⚡ HẠNG VÀNG - DUY TRÌ ỔN ĐỊNH';
-    solutions = [`<strong>Điểm mạnh:</strong> <em>"${top.name}"</em> là thói quen mỏ neo rất tốt của cậu.`, `<strong>Hướng giải quyết cho "${low.name}":</strong> Đừng đợi tới tối muộn mới làm. Hãy đẩy lên đầu buổi sáng hoặc giờ nghỉ trưa.`];
-  } else {
-    rank = '🌱 HẠNG KHỞI ĐỘNG - ÁP DỤNG QUY TẮC 2 PHÚT';
-    solutions = [`<strong>Đừng áp lực:</strong> Tuần qua đạt ${pct}%, nhưng cậu vẫn giữ được <em>"${top.name}"</em>.`, `<strong>Giải pháp tuần tới:</strong> Thu nhỏ mục tiêu <em>"${low.name}"</em> xuống chỉ còn 2 phút mỗi ngày để lấy lại đà liên tiếp.`];
-  }
-  return { pct, rank, best: `${top.raw} (${top.c}/7)`, weak: `${low.raw} (${low.c}/7)`, solutions };
-}
-
-// FIX: gộp luôn phần tổng kết nhật ký vào hàm gốc, không ghi đè hàm nữa
+// ==================== TỔNG KẾT TUẦN (modal) ====================
 function openWeeklyReviewModal(ev) {
   if (ev) ev.stopPropagation();
-  const d = getWeeklyAnalysisData();
-  const written = state.diary.filter(x => x.note.trim()).length;
-  const moods = state.diary.map((x, i) => `${DAYS[i]}:${x.emoji}`).join(' • ');
-  document.getElementById('modalReviewTitle').textContent = `TỔNG KẾT TUẦN ${state.currentWeek} & HƯỚNG GIẢI QUYẾT`;
+  const wk = weekDates(todayStr()), d = getWeeklyAnalysisData();
+  const written = wk.filter(x => diaryEntry(x).note.trim()).length;
+  const moods = wk.map((x, i) => `${DAYS[i]}:${state.diary[x] ? state.diary[x].emoji : '·'}`).join(' • ');
+  document.getElementById('modalReviewTitle').textContent = `TỔNG KẾT TUẦN ${ddmm(wk[0])} – ${ddmm(wk[6])}`;
   document.getElementById('modalScorePct').textContent = d.pct + '%';
   document.getElementById('modalRankName').textContent = d.rank;
   document.getElementById('modalBestHabit').textContent = d.best;
@@ -656,57 +747,121 @@ function openWeeklyReviewModal(ev) {
   document.getElementById('weeklyReviewModal').classList.remove('hidden');
 }
 function closeWeeklyReviewModal() { document.getElementById('weeklyReviewModal').classList.add('hidden'); }
+function goToSummary() { closeWeeklyReviewModal(); switchSection('month'); }
 
-function resetDiaryState() {
-  state.diary = NEUTRAL_DIARY();
-  const ni = document.getElementById('diaryNoteInput');
-  if (ni) ni.dataset.day = '';
+// ==================== TAB 02: TỔNG KẾT THÁNG / NĂM ====================
+let sumYear = +todayStr().slice(0, 4), sumMonth = +todayStr().slice(5, 7), yearView = sumYear;
+function shiftMonth(d) {
+  if (d === 0) { const t = todayStr(); sumYear = +t.slice(0, 4); sumMonth = +t.slice(5, 7); }
+  else { sumMonth += d; if (sumMonth < 1) { sumMonth = 12; sumYear--; } if (sumMonth > 12) { sumMonth = 1; sumYear++; } }
+  renderSummary();
 }
-function archiveCurrentWeek(dateLabel, extraAdvice) {
-  const d = getWeeklyAnalysisData();
-  state.pastWeeks.unshift({ week: state.currentWeek, date: dateLabel, pct: d.pct, rank: d.rank, best: d.best, weak: d.weak, advice: extraAdvice || d.solutions[1] || d.solutions[0] });
-  state.habits.forEach(h => {
-    h.historyDays = [...(h.historyDays || []), ...h.days].slice(-21);
-    h.days = [false, false, false, false, false, false, false];
-  });
-  resetDiaryState();
-  state.currentWeek += 1;
-}
-function confirmArchiveAndNewWeek() {
-  const t = new Date();
-  archiveCurrentWeek(`${t.getDate()}/${t.getMonth() + 1}/${t.getFullYear()}`);
-  state.lastMondayKey = getMondayKey(t);
-  saveState(); closeWeeklyReviewModal(); renderAll(); switchSection('month');
-  if (typeof confetti === 'function') confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-  makePetReact('Đã lưu thành tích vào Bảng Tháng và mở sang tuần mới tinh khôi! AAA!! 🎉', 'aaa');
-}
+function shiftYear(d) { yearView = d === 0 ? +todayStr().slice(0, 4) : yearView + d; renderSummary(); }
 
-function renderMonthlyView() {
-  document.getElementById('monthlyMatrixContainer').innerHTML = state.habits.map(h => {
-    const combined = [...(h.historyDays || []), ...h.days];
-    let boxes = '';
-    for (let i = 0; i < 28; i++) boxes += `<div class="w-7 h-7 border-2 border-[#1e242b] flex items-center justify-center text-[10px] font-black ${combined[i] === true ? 'bg-[#65b878] text-white' : 'bg-white text-slate-400'}">${i + 1}</div>`;
-    return `<div class="brutal-box p-4 flex flex-col md:flex-row md:items-center justify-between gap-4"><div>
-      <div class="flex items-center gap-2"><span class="text-lg">${escapeHtml(h.icon)}</span><h4 class="font-extrabold text-sm uppercase">${escapeHtml(h.name)}</h4></div>
-      <p class="text-xs font-bold text-slate-600 mt-1">Tổng tích lũy tháng: <span class="text-[#65b878] font-black">${combined.filter(Boolean).length} / 28 ngày</span></p></div>
+const statCard = (label, value, sub, bg) => `<div class="border-2 border-[#1e242b] ${bg} p-3"><p class="text-[10px] font-bold uppercase text-slate-700">${label}</p><p class="text-xl font-black mt-0.5">${value}</p><p class="text-[11px] font-semibold text-slate-700 mt-0.5">${sub}</p></div>`;
+const pctClass = (n, pct) => n === 0 ? 'bg-white text-slate-300' : pct >= 70 ? 'bg-[#65b878] text-white' : pct >= 40 ? 'bg-[#f4d35e]' : pct > 0 ? 'bg-[#7cc6fe]/60' : 'bg-white text-slate-500';
+
+function renderMonthSummary() {
+  const y = sumMonth && sumYear, m = sumMonth, t = todayStr();
+  const dates = monthDates(sumYear, m), hs = state.habits;
+  const a = analyze(dates, 'tháng');
+  const isNow = t.startsWith(`${sumYear}-${pad(m)}`);
+  document.getElementById('sumMonthTitle').textContent = `THÁNG ${m}/${sumYear}${isNow ? ' (ĐANG DIỄN RA)' : ''}`;
+  const longest = Math.max(0, ...hs.map(h => longestStreak(h, dates)));
+  const entries = dates.map(d => state.diary[d]).filter(Boolean);
+  const diaryDays = entries.filter(e => e.note && e.note.trim()).length;
+  const cnt = {}; entries.forEach(e => { cnt[e.emoji] = (cnt[e.emoji] || 0) + 1; });
+  const topMood = Object.entries(cnt).sort((x, z) => z[1] - x[1])[0];
+  document.getElementById('sumMonthStats').innerHTML =
+    statCard('Tỷ lệ hoàn thành', a.pct + '%', escapeHtml(a.rank.replace(/^\S+\s/, '')), 'bg-[#65b878]/30') +
+    statCard('Tổng lượt hoàn thành', `${a.done}/${a.total}`, `${dates.filter(d => d <= t).length}/${dates.length} ngày đã qua`, 'bg-[#f4d35e]/50') +
+    statCard('Chuỗi dài nhất', longest + ' ngày', 'trong tháng này', 'bg-[#7cc6fe]/40') +
+    statCard('Nhật ký', diaryDays + ' ngày', topMood ? `Cảm xúc nhiều nhất: ${topMood[0]}` : 'Chưa có cảm xúc nào', 'bg-[#f7f6f2]');
+
+  document.getElementById('sumMonthMatrix').innerHTML = !hs.length ? '<p class="text-xs font-bold text-slate-500">Chưa có thói quen nào.</p>' : hs.map(h => {
+    const r = habitRate(h, dates);
+    const boxes = dates.map(d => {
+      const done = isDone(h.id, d), fut = d > t, hol = HOLIDAYS[d.slice(5)], dow = dowIdx(d);
+      return `<div title="${ddmm(d)} • ${DAYS[dow]}${hol ? ' • ' + hol : ''}" class="w-7 h-7 border-2 border-[#1e242b] flex items-center justify-center text-[10px] font-black ${done ? 'bg-[#65b878] text-white' : fut ? 'bg-slate-100 text-slate-300' : dow === 6 ? 'bg-[#f26457]/15 text-[#f26457]' : 'bg-white text-slate-500'} ${hol ? 'ring-2 ring-[#f26457] ring-offset-1' : ''} ${d === t ? 'outline outline-2 outline-[#1e242b]' : ''}">${+d.slice(8)}</div>`;
+    }).join('');
+    return `<div class="border-2 border-[#1e242b] p-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div><div class="flex items-center gap-2"><span class="text-lg">${escapeHtml(h.icon)}</span><h4 class="font-extrabold text-sm uppercase">${escapeHtml(h.name)}</h4></div>
+      <p class="text-xs font-bold text-slate-600 mt-1">Hoàn thành: <span class="text-[#65b878] font-black">${r.c} / ${r.n} ngày</span></p></div>
       <div class="flex flex-wrap gap-1.5">${boxes}</div></div>`;
   }).join('');
-  const grid = document.getElementById('pastWeeksArchiveGrid');
-  grid.innerHTML = !state.pastWeeks.length
-    ? `<div class="col-span-2 p-6 text-center text-xs font-bold text-slate-500 border-2 border-dashed border-[#1e242b]">Chưa có tuần nào được chốt. Cuối tuần hãy bấm "Chốt Tuần ★" để lưu vào đây nhé!</div>`
-    : state.pastWeeks.map(w => `<div class="p-4 border-2 border-[#1e242b] bg-[#f7f6f2] space-y-2 text-xs">
-        <div class="flex justify-between items-center"><span class="px-2 py-0.5 bg-[#f4d35e] border border-[#1e242b] font-black">TUẦN ${w.week}</span><span class="font-bold text-slate-500">${escapeHtml(w.date)}</span></div>
-        <p class="font-extrabold text-sm">${w.rank} — <span class="text-[#65b878]">${w.pct}%</span></p>
-        <p>🌟 Tốt nhất: <strong>${escapeHtml(w.best)}</strong> | ⚠️ Cần chú ý: <strong>${escapeHtml(w.weak)}</strong></p>
-        <p class="text-slate-600">${w.advice}</p></div>`).join('');
+  const hol = Object.entries(HOLIDAYS).filter(([k]) => k.startsWith(pad(m) + '-')).map(([k, v]) => `${k.slice(3)}/${k.slice(0, 2)}: ${v}`);
+  document.getElementById('sumHolidays').textContent = `Viền đỏ = ngày lễ/kỷ niệm dương lịch${hol.length ? ' (' + hol.join('; ') + ')' : ' (tháng này không có)'} • Ô hồng nhạt = Chủ nhật • Viền đen = hôm nay.`;
+
+  // Các tuần (Thứ 2 → Chủ nhật) giao với tháng này
+  const weeks = []; let mon = mondayOf(dates[0]);
+  while (mon <= dates[dates.length - 1]) { weeks.push(weekDates(mon).filter(d => d.startsWith(`${sumYear}-${pad(m)}`))); mon = addDays(mon, 7); }
+  document.getElementById('sumMonthWeeks').innerHTML = weeks.map(days => {
+    const r = rateFor(hs, days), s = habitStats(days).filter(x => x.n > 0).sort((p, q) => q.pct - p.pct || q.c - p.c);
+    return `<div class="p-3 border-2 border-[#1e242b] bg-[#f7f6f2] text-xs space-y-1.5">
+      <div class="flex justify-between items-center"><span class="px-2 py-0.5 bg-[#f4d35e] border border-[#1e242b] font-black">${ddmm(days[0])} – ${ddmm(days[days.length - 1])}</span><span class="font-black">${r.total ? r.pct + '%' : 'Chưa tới'}</span></div>
+      <div class="h-2 border border-[#1e242b] bg-white"><div class="h-full bg-[#65b878]" style="width:${r.pct}%"></div></div>
+      <p class="text-slate-600">${s.length ? `🌟 ${escapeHtml(s[0].name)} • ⚠️ ${escapeHtml(s[s.length - 1].name)}` : 'Chưa có dữ liệu'}</p></div>`;
+  }).join('');
+  document.getElementById('sumMonthAdvice').innerHTML = a.solutions.map(s => `<p>• ${s}</p>`).join('');
 }
 
-function resetMonthlyHistory(ev) {
-  if (ev) ev.stopPropagation();
-  if (!confirm('Xóa lịch sử các tuần cũ và đặt lại về Tuần 1?')) return;
-  state.pastWeeks = []; state.currentWeek = 1;
-  state.habits.forEach(h => h.historyDays = []);
-  saveState(); renderAll(); renderMonthlyView();
+function renderYearSummary() {
+  const y = yearView, t = todayStr(), hs = state.habits;
+  document.getElementById('sumYearTitle').textContent = `NĂM ${y}`;
+  const months = Array.from({ length: 12 }, (_, i) => monthDates(y, i + 1)), all = months.flat();
+  const yr = rateFor(hs, all);
+  const perMonth = months.map((ds, i) => ({ i: i + 1, r: rateFor(hs, ds) })).filter(x => x.r.total > 0).sort((a, b) => b.r.pct - a.r.pct);
+  const longest = Math.max(0, ...hs.map(h => longestStreak(h, all)));
+  const diaryDays = all.filter(d => state.diary[d] && state.diary[d].note && state.diary[d].note.trim()).length;
+  document.getElementById('yearStats').innerHTML =
+    statCard('Tỷ lệ cả năm', yr.pct + '%', `${yr.done}/${yr.total} lượt`, 'bg-[#65b878]/30') +
+    statCard('Tháng tốt nhất', perMonth.length ? `Tháng ${perMonth[0].i}` : '–', perMonth.length ? perMonth[0].r.pct + '% hoàn thành' : 'Chưa có dữ liệu', 'bg-[#f4d35e]/50') +
+    statCard('Chuỗi dài nhất năm', longest + ' ngày', 'liên tiếp', 'bg-[#7cc6fe]/40') +
+    statCard('Ngày có nhật ký', diaryDays, `trong năm ${y}`, 'bg-[#f7f6f2]');
+  const head = `<tr class="bg-[#f4d35e] text-xs font-black uppercase border-b-2 border-[#1e242b]"><th class="py-2.5 px-3 border-r-2 border-[#1e242b] text-left min-w-[180px]">Thói quen</th>${months.map((_, i) => `<th class="py-2.5 px-1 border-r-2 border-[#1e242b] w-12 text-center">T${i + 1}</th>`).join('')}<th class="py-2.5 px-2 text-center">Cả năm</th></tr>`;
+  const rows = hs.map(h => {
+    const cells = months.map(ds => { const r = habitRate(h, ds), p = r.n ? Math.round(r.c / r.n * 100) : 0;
+      return `<td class="p-1 border-r-2 border-[#1e242b]"><div title="${r.c}/${r.n} ngày" class="h-9 flex items-center justify-center text-[10px] font-black border border-[#1e242b] ${pctClass(r.n, p)}">${r.n ? p + '%' : '–'}</div></td>`; }).join('');
+    const r = habitRate(h, all);
+    return `<tr class="border-b-2 border-[#1e242b]"><td class="py-2 px-3 border-r-2 border-[#1e242b] text-xs font-extrabold">${escapeHtml(h.icon)} ${escapeHtml(h.name)}</td>${cells}<td class="py-2 px-2 text-center text-xs font-black">${r.c}/${r.n}</td></tr>`;
+  }).join('');
+  document.getElementById('yearTable').innerHTML = `<thead>${head}</thead><tbody>${rows || '<tr><td colspan="14" class="p-4 text-xs font-bold text-slate-500">Chưa có thói quen nào.</td></tr>'}</tbody>`;
+}
+
+function renderLegacy() {
+  const box = document.getElementById('legacyBox');
+  box.classList.toggle('hidden', !state.legacyWeeks.length);
+  document.getElementById('legacyGrid').innerHTML = state.legacyWeeks.map(w => `<div class="p-3 border-2 border-[#1e242b] bg-[#f7f6f2] text-xs space-y-1.5">
+    <div class="flex justify-between"><span class="px-2 py-0.5 bg-[#f4d35e] border border-[#1e242b] font-black">TUẦN ${escapeHtml(w.week)}</span><span class="font-bold text-slate-500">${escapeHtml(w.date)}</span></div>
+    <p class="font-extrabold">${w.rank} — ${escapeHtml(w.pct)}%</p><p>🌟 ${escapeHtml(w.best)} • ⚠️ ${escapeHtml(w.weak)}</p></div>`).join('');
+}
+function renderSummary() { renderMonthSummary(); renderYearSummary(); renderLegacy(); }
+
+// ==================== SAO LƯU / KHÔI PHỤC ====================
+function exportData() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = `fumayo-habit-backup-${todayStr()}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+}
+function importData(ev) {
+  const inp = ev.target, f = inp.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const p = JSON.parse(r.result);
+      if (!p || !Array.isArray(p.habits)) throw new Error('bad');
+      if (!confirm('Thay toàn bộ dữ liệu hiện tại bằng file sao lưu này?')) return;
+      state = (p.habits[0] && p.habits[0].days && !p.log) ? migrateV3(p) : normalize(p);
+      const ni = document.getElementById('diaryNoteInput'); if (ni) ni.dataset.day = '';
+      saveState(); renderAll(); renderSummary();
+      alert('Đã nhập dữ liệu thành công!');
+    } catch (e) { alert('File sao lưu không hợp lệ.'); }
+  };
+  r.readAsText(f);
+  inp.value = '';
 }
 
 // ==================== THÊM / XÓA THÓI QUEN ====================
@@ -716,14 +871,15 @@ function createNewHabit() {
   const nameEl = document.getElementById('inputHabitName');
   const name = nameEl.value.trim();
   if (!name) return alert('Hãy nhập tên mục tiêu!');
-  state.habits.push({ id: Date.now(), name, category: document.getElementById('inputHabitCat').value, icon: document.getElementById('inputHabitIcon').value.trim() || '⭐', days: [false,false,false,false,false,false,false], historyDays: [] });
+  state.habits.push({ id: Date.now(), name, category: document.getElementById('inputHabitCat').value, icon: document.getElementById('inputHabitIcon').value.trim() || '⭐', start: todayStr() });
   nameEl.value = '';
   saveState(); closeAddHabitModal(); renderAll();
   makePetReact(`Đã thêm mục tiêu "${name}"! Mình cùng chinh phục nhé! ✨`);
 }
 function removeHabit(id, ev) {
   if (ev) ev.stopPropagation();
-  if (!confirm('Xóa mục tiêu này?')) return;
+  if (!confirm('Xóa mục tiêu này cùng toàn bộ lịch sử của nó?')) return;
+  Object.keys(state.log).forEach(d => markLog(state, d, id, false));
   state.habits = state.habits.filter(h => h.id !== id);
   saveState(); renderAll();
 }
@@ -769,7 +925,7 @@ async function handleSendChat() {
 
   if (state.geminiApiKey) {
     try {
-      const sum = state.habits.map(h => `${h.name} (${h.days.filter(Boolean).length}/7 ngày)`).join(', ');
+      const sum = habitStats(weekDates(todayStr())).map(x => `${x.name} (${x.c}/${x.n} ngày)`).join(', ');
       const prompt = `Bạn là nhân vật ảo dễ thương tên ${state.character.name} trong sổ tay Fumayo Habit. Hãy xưng "mình" và gọi người dùng là "cậu", giọng văn ấm áp, thông minh, hay dùng biểu cảm "AAA!", "XE-XE~". Dữ liệu thói quen hiện tại của người dùng: ${sum}. Hãy trả lời ngắn gọn, chia gạch đầu dòng rõ ràng để giúp người dùng lên kế hoạch phát triển bản thân. Câu hỏi: ${q}`;
       const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(state.geminiApiKey)}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -788,15 +944,15 @@ async function handleSendChat() {
 
 function generateSmartLocalPlan(q) {
   const l = q.toLowerCase();
-  const s = state.habits.map(h => ({ name: escapeHtml(h.name), c: h.days.filter(Boolean).length })).sort((a, b) => b.c - a.c);
+  const s = habitStats(weekDates(todayStr())).filter(x => x.n > 0).map(x => ({ name: escapeHtml(x.name), c: x.c })).sort((a, b) => b.c - a.c);
   const best = s[0] ? s[0].name : 'mục tiêu chính';
   const weak = s.length ? s[s.length - 1].name : 'mục tiêu mới';
   const me = escapeHtml(state.character.name);
   if (/plan|kế hoạch|lịch|tuần/.test(l) && !/phân tích|tiến độ/.test(l)) return `<strong>📅 PLAN PHÁT TRIỂN BẢN THÂN (gợi ý từ ${me}):</strong><br>• <strong>Buổi sáng (15p):</strong> Làm <em>"${weak}"</em> khi đầu óc còn tỉnh táo nhất (5-10 phút là đủ giữ chuỗi!).<br>• <strong>Buổi chiều:</strong> Dành 15-20p cho nhóm <em>Thể chất / Kỹ năng</em> để giải phóng căng thẳng.<br>• <strong>Buổi tối:</strong> Duy trì thế mạnh <em>"${best}"</em> và đánh dấu vào sổ tay trước 22h00.<br>✨ <em>Bí quyết: chỉ cần không bỏ trống 2 ngày liên tiếp là cậu đã thắng rồi! AAA!</em>`;
   if (/trì hoãn|lười|nản/.test(l)) return `<strong>⚡ CÔNG THỨC PHÁ BĂNG TRÌ HOÃN "XE-XE":</strong><br>1. <strong>Quy tắc 2 phút:</strong> Với <em>"${weak}"</em>, hãy tự nhủ "chỉ làm 2 phút thôi". Bắt đầu rồi, não sẽ muốn làm tiếp!<br>2. <strong>Bắt cặp thói quen:</strong> Làm <em>"${weak}"</em> ngay sau khi hoàn thành <em>"${best}"</em>.<br>3. <strong>Thưởng ngay:</strong> Mỗi lần tích xanh, mình sẽ nhảy ăn mừng cùng cậu!`;
-  if (/phân tích|tiến độ|đánh giá/.test(l)) { const a = getWeeklyAnalysisData(); return `<strong>📊 PHÂN TÍCH NHANH TUẦN ${state.currentWeek}:</strong><br>• <strong>Tỷ lệ hiện tại:</strong> ${a.pct}% (${a.rank})<br>• <strong>Trụ cột:</strong> ${escapeHtml(a.best)}<br>• <strong>Cần bứt phá:</strong> ${escapeHtml(a.weak)}<br>👉 <em>Hôm nay chỉ cần thêm 1 ô của "${weak}" là biểu đồ tuần tăng vọt!</em>`; }
+  if (/phân tích|tiến độ|đánh giá/.test(l)) { const a = getWeeklyAnalysisData(); return `<strong>📊 PHÂN TÍCH NHANH TUẦN NÀY:</strong><br>• <strong>Tỷ lệ hiện tại:</strong> ${a.pct}% (${a.rank})<br>• <strong>Trụ cột:</strong> ${escapeHtml(a.best)}<br>• <strong>Cần bứt phá:</strong> ${escapeHtml(a.weak)}<br>👉 <em>Hôm nay chỉ cần thêm 1 ô của "${weak}" là biểu đồ tuần tăng vọt!</em>`; }
   if (/sáng|routine/.test(l)) return `<strong>☀️ ROUTINE BUỔI SÁNG:</strong><br>• 6:30 – Uống 1 cốc nước, vươn vai 2 phút.<br>• 6:40 – Làm <em>"${weak}"</em> trước khi cầm điện thoại.<br>• 7:00 – Tích vào sổ tay để nhận cổ vũ từ ${me}!`;
-  return `<strong>🌟 ${me} gợi ý cho cậu nè:</strong><br>Với <strong>${state.habits.length} thói quen</strong> hiện tại, hãy chia 3 tầng ưu tiên:<br>• <strong>Số 1 (giữ lửa):</strong> Giữ chuỗi cho <em>"${best}"</em>.<br>• <strong>Số 2 (bù đắp):</strong> 5 phút mỗi ngày cho <em>"${weak}"</em>.<br>• <strong>Số 3 (tự thưởng):</strong> Cuối tuần bấm <strong>"Chốt Tuần ★"</strong> để lưu vào Bảng Tháng. Cậu cần mình chia khung giờ cụ thể không?`;
+  return `<strong>🌟 ${me} gợi ý cho cậu nè:</strong><br>Với <strong>${state.habits.length} thói quen</strong> hiện tại, hãy chia 3 tầng ưu tiên:<br>• <strong>Số 1 (giữ lửa):</strong> Giữ chuỗi cho <em>"${best}"</em>.<br>• <strong>Số 2 (bù đắp):</strong> 5 phút mỗi ngày cho <em>"${weak}"</em>.<br>• <strong>Số 3 (tự thưởng):</strong> Cuối tuần/cuối tháng hãy vào mục <strong>Tổng Kết</strong> để xem báo cáo. Cậu cần mình chia khung giờ cụ thể không?`;
 }
 
 // ==================== DANH NGÔN ====================
@@ -810,64 +966,50 @@ const FAMOUS_QUOTES = [
   { quote: 'Thành công là tổng hợp của những nỗ lực nhỏ bé được lặp đi lặp lại ngày này qua ngày khác.', author: 'Robert Collier — Tác giả sách phát triển bản thân' }
 ];
 function renderDailyFamousQuote() {
-  const now = new Date();
-  const doy = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
+  const td = todayStr(), d = parseD(td);
+  const doy = Math.floor((d - Date.UTC(d.getUTCFullYear(), 0, 0)) / 86400000);
   const it = FAMOUS_QUOTES[doy % FAMOUS_QUOTES.length];
   document.getElementById('dailyFamousQuote').textContent = `"${it.quote}"`;
   document.getElementById('dailyFamousAuthor').textContent = `— ${it.author}`;
-  document.getElementById('dailyQuoteDateBadge').textContent = `• NGÀY ${now.getDate()}/${now.getMonth() + 1}`;
+  document.getElementById('dailyQuoteDateBadge').textContent = `• NGÀY ${ddmm(td)}`;
 }
 
-// ==================== NHẬT KÝ ====================
+// ==================== NHẬT KÝ THEO NGÀY THẬT ====================
 const DIARY_EMOJIS = [
   { icon: '🥰', label: 'Hạnh phúc' }, { icon: '✨', label: 'Năng lượng' }, { icon: '😊', label: 'Bình yên' },
   { icon: '🤔', label: 'Suy tư' }, { icon: '😮‍💨', label: 'Hơi mệt' }, { icon: '🌧️', label: 'Tụt mood' }
 ];
+let activeDiaryDate = todayStr();
+const diaryEntry = d => state.diary[d] || { emoji: '😊', label: 'Bình yên', note: '' };
 function stashDiaryDraft() {
   const ni = document.getElementById('diaryNoteInput');
-  if (ni && ni.dataset.day === String(activeDiaryDay)) state.diary[activeDiaryDay].note = ni.value.trim();
+  if (!ni || ni.dataset.day !== activeDiaryDate) return;
+  const note = ni.value.trim();
+  if (state.diary[activeDiaryDate] || note) state.diary[activeDiaryDate] = Object.assign({}, diaryEntry(activeDiaryDate), { note });
 }
-function selectDiaryDay(i) { stashDiaryDraft(); activeDiaryDay = i; saveState(); renderDiarySection(); }
+function selectDiaryDay(d) { if (d > todayStr()) return; stashDiaryDraft(); activeDiaryDate = d; saveState(); renderDiarySection(); }
 function selectDiaryEmoji(emoji, label) {
   stashDiaryDraft();
-  state.diary[activeDiaryDay].emoji = emoji; state.diary[activeDiaryDay].label = label;
+  state.diary[activeDiaryDate] = Object.assign({}, diaryEntry(activeDiaryDate), { emoji, label });
   saveState(); renderDiarySection();
 }
 function saveDailyDiary() {
-  state.diary[activeDiaryDay].note = document.getElementById('diaryNoteInput').value.trim();
+  const note = document.getElementById('diaryNoteInput').value.trim();
+  state.diary[activeDiaryDate] = Object.assign({}, diaryEntry(activeDiaryDate), { note });
   saveState(); renderDiarySection();
-  makePetReact(`Đã lưu nhật ký ngày ${DAYS[activeDiaryDay]} (${state.diary[activeDiaryDay].emoji})! Cậu làm tốt lắm! ✨`);
+  makePetReact(`Đã lưu nhật ký ngày ${ddmm(activeDiaryDate)} (${diaryEntry(activeDiaryDate).emoji})! Cậu làm tốt lắm! ✨`);
 }
 function renderDiarySection() {
-  const noteInput = document.getElementById('diaryNoteInput');
-  const cur = state.diary[activeDiaryDay];
-  document.getElementById('diaryDayTabs').innerHTML = DAYS.map((d, i) => `<button onclick="selectDiaryDay(${i})" class="px-3 py-1 border-2 border-[#1e242b] text-xs font-black ${i === activeDiaryDay ? 'bg-[#f26457] text-white shadow-[2px_2px_0px_#1e242b]' : 'bg-white hover:bg-[#f4d35e]'}">${d} ${state.diary[i].note ? '✓' : ''}</button>`).join('');
+  const t = todayStr(), wk = weekDates(t);
+  if (!wk.includes(activeDiaryDate)) activeDiaryDate = t;
+  const noteInput = document.getElementById('diaryNoteInput'), cur = diaryEntry(activeDiaryDate);
+  document.getElementById('diaryDayTabs').innerHTML = wk.map((d, i) => `<button ${d > t ? 'disabled' : ''} onclick="selectDiaryDay('${d}')" class="px-3 py-1 border-2 border-[#1e242b] text-xs font-black ${d === activeDiaryDate ? 'bg-[#f26457] text-white shadow-[2px_2px_0px_#1e242b]' : d > t ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-white hover:bg-[#f4d35e]'}">${DAYS[i]} ${ddmm(d)} ${diaryEntry(d).note ? '✓' : ''}</button>`).join('');
   document.getElementById('diaryEmojiSelector').innerHTML = DIARY_EMOJIS.map(e => `<button onclick="selectDiaryEmoji('${e.icon}','${e.label}')" class="px-2.5 py-1.5 border-2 border-[#1e242b] text-xs font-bold flex items-center gap-1 ${cur.emoji === e.icon ? 'bg-[#f4d35e] shadow-[2px_2px_0px_#1e242b]' : 'bg-white'}"><span class="text-base">${e.icon}</span> <span>${e.label}</span></button>`).join('');
-  // FIX: chỉ nạp lại textarea khi đổi ngày, không xóa chữ đang gõ khi tick thói quen
-  if (noteInput.dataset.day !== String(activeDiaryDay)) { noteInput.value = cur.note || ''; noteInput.dataset.day = String(activeDiaryDay); }
-  document.getElementById('diaryWeekStrip').innerHTML = DAYS.map((d, i) => {
-    const e = state.diary[i];
-    return `<div onclick="selectDiaryDay(${i})" class="cursor-pointer p-2 border-2 border-[#1e242b] bg-[#f7f6f2] hover:bg-[#f4d35e]/30 text-[11px]"><div class="flex justify-between items-center font-black"><span>${d}</span><span class="text-base">${e.emoji}</span></div><p class="text-[10px] text-slate-600 truncate mt-1">${escapeHtml(e.note) || 'Chưa ghi chú...'}</p></div>`;
+  if (noteInput.dataset.day !== activeDiaryDate) { noteInput.value = cur.note || ''; noteInput.dataset.day = activeDiaryDate; }
+  document.getElementById('diaryWeekStrip').innerHTML = wk.map((d, i) => {
+    const e = diaryEntry(d);
+    return `<div onclick="selectDiaryDay('${d}')" class="cursor-pointer p-2 border-2 border-[#1e242b] bg-[#f7f6f2] hover:bg-[#f4d35e]/30 text-[11px] ${d > t ? 'opacity-50' : ''}"><div class="flex justify-between items-center font-black"><span>${DAYS[i]} ${ddmm(d)}</span><span class="text-base">${e.emoji}</span></div><p class="text-[10px] text-slate-600 truncate mt-1">${escapeHtml(e.note) || 'Chưa ghi chú...'}</p></div>`;
   }).join('');
-}
-
-// ==================== TỰ ĐỘNG CHỐT TUẦN VÀO THỨ 2 ====================
-function getMondayKey(d) {
-  const date = new Date(d), day = date.getDay();
-  date.setDate(date.getDate() - day + (day === 0 ? -6 : 1));
-  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-}
-function checkAutoMondayReset() {
-  const cur = getMondayKey(new Date());
-  if (!state.lastMondayKey) { state.lastMondayKey = cur; saveState(); return; }
-  if (state.lastMondayKey === cur) return;
-  if (state.habits.some(h => h.days.some(Boolean))) {
-    const moods = state.diary.map(d => d.emoji).join(' ');
-    const n = state.diary.filter(d => d.note).length;
-    const d = getWeeklyAnalysisData();
-    archiveCurrentWeek(`Tự động chốt Thứ 2 (${cur})`, `${d.solutions[0]} | 📔 Cảm xúc tuần: ${moods} (${n}/7 ngày nhật ký)`);
-  }
-  state.lastMondayKey = cur; saveState();
 }
 
 // ==================== NHẠC TICK-TACK ====================
@@ -903,14 +1045,26 @@ window.addEventListener('pointerdown', () => playTickTackTheme(), { once: true }
 
 // ==================== KHỞI TẠO ====================
 function renderAll() {
-  checkAutoMondayReset();
   renderCharacterEverywhere();
   renderFilterButtons();
   renderWeekTable();
   renderStatsAndCharts();
   renderDiarySection();
   renderDailyFamousQuote();
+  if (!document.getElementById('section-month').classList.contains('hidden')) renderSummary();
 }
+// Để trang mở qua nửa đêm: tự chuyển sang ngày / tuần / tháng mới
+let lastDay = todayStr();
+function rollIfNewDay() {
+  const t = todayStr();
+  if (t === lastDay) return;
+  lastDay = t; activeDiaryDate = t;
+  sumYear = +t.slice(0, 4); sumMonth = +t.slice(5, 7); yearView = sumYear;
+  renderAll();
+}
+setInterval(rollIfNewDay, 60000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) rollIfNewDay(); });
+saveState();
 renderAll();
 </script>
 </body>
