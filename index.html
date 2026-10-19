@@ -1,1874 +1,917 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FUMAYO HABIT - Sổ Tay Thói Quen & Bạn Đồng Hành AI</title>
-    <link rel="icon" type="image/png" href="icon.png">
-    <link rel="apple-touch-icon" href="icon.png">
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Phong cách Retro Sổ Tay & Chữ Viết Tay -->
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Canvas Confetti -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <style>
-        :root {
-            --paper-bg: #f7f6f2;
-            --grid-line: #e2e0d8;
-            --margin-red: #ef6461;
-            --ink-black: #1e242b;
-            --fumayo-green: #65b878;
-            --fumayo-yellow: #f4d35e;
-            --fumayo-blue: #7cc6fe;
-            --fumayo-coral: #f26457;
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--paper-bg);
-            /* Hiệu ứng giấy ô ly (Grid Notebook) giống Hình 1 */
-            background-image: 
-                linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
-                linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-            background-size: 24px 24px;
-            color: var(--ink-black);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        h1, h2, h3, .font-retro {
-            font-family: 'Space Grotesk', sans-serif;
-        }
-
-        /* Khung viền sổ tay Fumayo (Hình 1) */
-        .notebook-wrapper {
-            max-width: 1180px;
-            margin: 16px auto;
-            border: 2.5px solid var(--ink-black);
-            border-radius: 18px;
-            background-color: rgba(247, 246, 242, 0.88);
-            position: relative;
-            box-shadow: 8px 8px 0px var(--ink-black);
-            overflow: hidden;
-        }
-
-
-        /* Hộp viền đen Neo-Brutalism giống Hình 1 */
-        .brutal-box {
-            border: 2px solid var(--ink-black);
-            background-color: #ffffff;
-            box-shadow: 4px 4px 0px var(--ink-black);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-        }
-        .brutal-box-sm {
-            border: 1.8px solid var(--ink-black);
-            box-shadow: 2.5px 2.5px 0px var(--ink-black);
-        }
-        .brutal-btn {
-            border: 2px solid var(--ink-black);
-            box-shadow: 3px 3px 0px var(--ink-black);
-            transition: all 0.12s ease;
-        }
-        .brutal-btn:hover {
-            transform: translate(-1px, -1px);
-            box-shadow: 4px 4px 0px var(--ink-black);
-        }
-        .brutal-btn:active {
-            transform: translate(2px, 2px);
-            box-shadow: 1px 1px 0px var(--ink-black);
-        }
-
-        /* Hiệu ứng phông nền cho khung nhân vật (Hình 2 & 3) */
-        .bg-polka {
-            background-color: #ffffff;
-            background-image: 
-                radial-gradient(#f472b6 14%, transparent 15%),
-                radial-gradient(#60a5fa 14%, transparent 15%),
-                radial-gradient(#facc15 14%, transparent 15%),
-                radial-gradient(#a3e635 14%, transparent 15%);
-            background-size: 90px 90px;
-            background-position: 0 0, 30px 45px, 60px 15px, 15px 70px;
-        }
-        .bg-sketch {
-            background-color: #fcf5eb;
-            background-image: radial-gradient(#e6ccb2 1px, transparent 1px);
-            background-size: 16px 16px;
-        }
-        .bg-doodle-grid {
-            background-color: #f0fdf4;
-            background-image: 
-                linear-gradient(to right, #bbf7d0 1px, transparent 1px),
-                linear-gradient(to bottom, #bbf7d0 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
-        .bg-starry {
-            background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%);
-            color: white;
-        }
-
-        /* Hoạt ảnh nhân vật ảo chạy nhảy trên màn hình */
-       #roamingCompanion {
-         position: absolute;
-         top: 68px;
-         right: 24px;
-         z-index: 30;
-         transform: scale(0.75);
-         transform-origin: top right;
-         user-select: none;
-         cursor: pointer;
-     }
-        @keyframes cuteBounce {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-9px) rotate(2deg); }
-        }
-        @keyframes cuteRun {
-            0% { transform: translateY(0px) rotate(-6deg) scale(1.03); }
-            25% { transform: translateY(-14px) rotate(6deg) scale(1.05); }
-            50% { transform: translateY(0px) rotate(-6deg) scale(1.03); }
-            75% { transform: translateY(-12px) rotate(6deg) scale(1.05); }
-            100% { transform: translateY(0px) rotate(0deg) scale(1); }
-        }
-        @keyframes happyJump {
-            0%, 100% { transform: translateY(0) scale(1); }
-            40% { transform: translateY(-22px) scale(1.08) rotate(-4deg); }
-            70% { transform: translateY(-8px) scale(1.04) rotate(4deg); }
-        }
-
-        .anim-idle { animation: cuteBounce 2.6s ease-in-out infinite; }
-        .anim-run { animation: cuteRun 0.45s ease-in-out infinite; }
-        .anim-jump { animation: happyJump 0.65s ease-out; }
-
-        /* Hoa Doodle xoay nhẹ */
-        .flower-spin {
-            animation: spinSlow 14s linear infinite;
-        }
-        @keyframes spinSlow {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FUMAYO HABIT - Sổ Tay Thói Quen & Bạn Đồng Hành AI</title>
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<style>
+:root{--paper-bg:#f7f6f2;--grid-line:#e2e0d8;--ink-black:#1e242b}
+body{font-family:'Plus Jakarta Sans',sans-serif;background-color:var(--paper-bg);background-image:linear-gradient(to right,var(--grid-line) 1px,transparent 1px),linear-gradient(to bottom,var(--grid-line) 1px,transparent 1px);background-size:24px 24px;color:var(--ink-black);min-height:100vh;overflow-x:hidden}
+h1,h2,h3,.font-retro{font-family:'Space Grotesk',sans-serif}
+.notebook-wrapper{max-width:1180px;margin:16px auto;border:2.5px solid var(--ink-black);border-radius:18px;background-color:rgba(247,246,242,.88);position:relative;box-shadow:8px 8px 0 var(--ink-black);overflow:hidden}
+.brutal-box{border:2px solid var(--ink-black);background-color:#fff;box-shadow:4px 4px 0 var(--ink-black)}
+.brutal-btn{border:2px solid var(--ink-black);box-shadow:3px 3px 0 var(--ink-black);transition:all .12s ease}
+.brutal-btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink-black)}
+.brutal-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink-black)}
+.bg-polka{background-color:#fff;background-image:radial-gradient(#f472b6 14%,transparent 15%),radial-gradient(#60a5fa 14%,transparent 15%),radial-gradient(#facc15 14%,transparent 15%),radial-gradient(#a3e635 14%,transparent 15%);background-size:90px 90px;background-position:0 0,30px 45px,60px 15px,15px 70px}
+.bg-sketch{background-color:#fcf5eb;background-image:radial-gradient(#e6ccb2 1px,transparent 1px);background-size:16px 16px}
+.bg-doodle-grid{background-color:#f0fdf4;background-image:linear-gradient(to right,#bbf7d0 1px,transparent 1px),linear-gradient(to bottom,#bbf7d0 1px,transparent 1px);background-size:20px 20px}
+.bg-starry{background:linear-gradient(180deg,#1e1b4b 0%,#312e81 100%);color:#fff}
+/* FIX: nhân vật cố định góc dưới trái, không đè lên header / khung chat */
+#roamingCompanion{position:fixed;bottom:12px;left:12px;z-index:30;transform:scale(.7);transform-origin:bottom left;user-select:none;cursor:pointer}
+@keyframes cuteBounce{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-9px) rotate(2deg)}}
+@keyframes happyJump{0%,100%{transform:translateY(0) scale(1)}40%{transform:translateY(-22px) scale(1.08) rotate(-4deg)}70%{transform:translateY(-8px) scale(1.04) rotate(4deg)}}
+.anim-idle{animation:cuteBounce 2.6s ease-in-out infinite}
+.anim-jump{animation:happyJump .65s ease-out}
+.flower-spin{animation:spinSlow 14s linear infinite}
+@keyframes spinSlow{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.anim-idle,.flower-spin{animation:none}}
+</style>
 </head>
 <body class="p-2 sm:p-4">
 
-    <!-- KHUNG SỔ TAY CHÍNH (CONCEPT HÌNH 1 - FUMAYO) -->
-    <div class="notebook-wrapper pb-14">
-        <div class="margin-line-left"></div>
-        <div class="margin-line-right"></div>
+<div class="notebook-wrapper pb-14">
 
-        <!-- THANH HEADER TRÊN CÙNG GIỐNG HÌNH 1 -->
-        <header class="border-b-2 border-[#1e242b] bg-white px-6 sm:px-10 py-3.5 flex flex-wrap items-center justify-between gap-4 relative z-10">
-            <div class="flex items-center gap-3">
-                <!-- Logo ô vàng giống góc trái trên Hình 1 -->
-                <div class="w-12 h-12 bg-[#f4d35e] border-2 border-[#1e242b] flex items-center justify-center rounded-lg shadow-[2px_2px_0px_#1e242b]">
-                    <span class="text-2xl">📓</span>
-                </div>
-                <div class="leading-none">
-                    <span class="block text-xl font-black tracking-tight text-[#f26457]">Fu<span class="text-[#1e242b]">ma</span>yo</span>
-                    <span class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Habit & AI Studio</span>
-                </div>
-            </div>
+  <header class="border-b-2 border-[#1e242b] bg-white px-6 sm:px-10 py-3.5 flex flex-wrap items-center justify-between gap-4 relative z-10">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 bg-[#f4d35e] border-2 border-[#1e242b] flex items-center justify-center rounded-lg shadow-[2px_2px_0px_#1e242b]"><span class="text-2xl">📓</span></div>
+      <div class="leading-none">
+        <span class="block text-xl font-black tracking-tight text-[#f26457]">Fu<span class="text-[#1e242b]">ma</span>yo</span>
+        <span class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Habit & AI Studio</span>
+      </div>
+    </div>
+    <nav class="flex flex-wrap items-center gap-2 sm:gap-5 text-xs font-extrabold uppercase tracking-wider">
+      <button onclick="switchSection('week',event)" id="nav-week" class="px-3 py-1.5 bg-[#65b878] text-white border-2 border-[#1e242b] shadow-[2px_2px_0px_#1e242b]">01. Bảng Tuần</button>
+      <button onclick="switchSection('month',event)" id="nav-month" class="px-3 py-1.5 bg-white hover:bg-[#f4d35e] border-2 border-[#1e242b] transition">02. Bảng Tháng (28 Ngày)</button>
+      <button onclick="switchSection('avatar',event)" id="nav-avatar" class="px-3 py-1.5 bg-white hover:bg-[#7cc6fe] border-2 border-[#1e242b] transition">03. Tạo Nhân Vật Ảo</button>
+      <button onclick="toggleAIChat(event)" class="px-3 py-1.5 bg-[#f4d35e] hover:bg-[#f26457] hover:text-white border-2 border-[#1e242b] shadow-[2px_2px_0px_#1e242b] transition flex items-center gap-1"><span>💬</span> AI Lên Plan</button>
+    </nav>
+    <div class="hidden lg:flex items-center gap-2">
+      <span id="headerWeekBadge" class="text-xs font-extrabold px-3 py-1 border-2 border-[#1e242b] rounded-full bg-[#f7f6f2]">TUẦN 1</span>
+      <button onclick="openWeeklyReviewModal(event)" class="brutal-btn px-3 py-1.5 bg-[#f26457] text-white text-xs font-bold uppercase">Chốt Tuần ★</button>
+    </div>
+  </header>
 
-            <!-- Menu điều hướng chữ in hoa mảnh giống Hình 1 -->
-            <nav class="flex flex-wrap items-center gap-2 sm:gap-5 text-xs font-extrabold uppercase tracking-wider">
-                <button onclick="switchSection('week', event)" id="nav-week" class="px-3 py-1.5 bg-[#65b878] text-white border-2 border-[#1e242b] shadow-[2px_2px_0px_#1e242b]">
-                    01. Bảng Tuần
-                </button>
-                <button onclick="switchSection('month', event)" id="nav-month" class="px-3 py-1.5 bg-white hover:bg-[#f4d35e] border-2 border-[#1e242b] transition">
-                    02. Bảng Tháng (28 Ngày)
-                </button>
-                <button onclick="switchSection('avatar', event)" id="nav-avatar" class="px-3 py-1.5 bg-white hover:bg-[#7cc6fe] border-2 border-[#1e242b] transition">
-                    03. Tạo Nhân Vật Ảo
-                </button>
-                <button onclick="toggleAIChat(event)" class="px-3 py-1.5 bg-[#f4d35e] hover:bg-[#f26457] hover:text-white border-2 border-[#1e242b] shadow-[2px_2px_0px_#1e242b] transition flex items-center gap-1">
-                    <span>💬</span> AI Lên Plan
-                </button>
-            </nav>
-
-            <!-- Góc phải Header -->
-            <div class="hidden lg:flex items-center gap-2">
-                <span id="headerWeekBadge" class="text-xs font-extrabold px-3 py-1 border-2 border-[#1e242b] rounded-full bg-[#f7f6f2]">
-                    TUẦN 1
-                </span>
-                <button onclick="openWeeklyReviewModal(event)" class="brutal-btn px-3 py-1.5 bg-[#f26457] text-white text-xs font-bold uppercase">
-                    Chốt Tuần ★
-                </button>
-            </div>
-        </header>
-
-        <!-- BANNER TIÊU ĐỀ & HOA DOODLE (GIỐNG PHẦN MỞ ĐẦU HÌNH 1) -->
-        <section class="px-6 sm:px-12 pt-7 pb-5 relative z-10 border-b-2 border-[#1e242b]">
-            <!-- Hoa vẽ tay trang trí giống Hình 1 -->
-            <svg class="w-8 h-8 absolute top-4 right-16 flower-spin hidden sm:block" viewBox="0 0 64 64" fill="none" stroke="#1e242b" stroke-width="2.5">
-                <path d="M32 8 C26 20, 20 20, 32 32 C44 20, 38 20, 32 8 Z" fill="#f26457"/>
-                <path d="M56 32 C44 26, 44 20, 32 32 C44 44, 44 38, 56 32 Z" fill="#f4d35e"/>
-                <path d="M32 56 C38 44, 44 44, 32 32 C20 44, 26 44, 32 56 Z" fill="#65b878"/>
-                <path d="M8 32 C20 38, 20 44, 32 32 C20 20, 20 26, 8 32 Z" fill="#7cc6fe"/>
-                <circle cx="32" cy="32" r="5" fill="#fff"/>
-            </svg>
-
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-                <!-- Cột trái: Khẩu hiệu kiểu tạp chí Fumayo -->
-                <div class="lg:col-span-7 space-y-3">
-                    <div class="inline-block px-3 py-0.5 border-2 border-[#1e242b] bg-[#f4d35e] text-[11px] font-black uppercase tracking-widest">
-                        NHẬT KÝ KIẾN TẠO THÓI QUEN & BẠN ĐỒNG HÀNH ẢO
-                    </div>
-                    <h1 class="text-2xl sm:text-4xl font-bold leading-tight tracking-tight">
-                        Mở ra thế giới <span class="text-[#f26457] underline decoration-wavy">kỷ luật diệu kỳ</span> trên từng trang sổ tay <span class="bg-[#f26457] text-white px-2.5 py-0.5 border-2 border-[#1e242b] inline-block shadow-[3px_3px_0px_#1e242b]">Habit!</span>
-                    </h1>
-                    <p class="text-xs sm:text-sm text-slate-700 max-w-xl leading-relaxed">
-                        💡 <strong>Mẹo tương tác:</strong> Nhấp vào bất kỳ ô mục tiêu hoặc nút nào trên trang, <strong>nhân vật ảo của bạn sẽ lập tức chạy tới chỗ đó</strong> và đổi biểu cảm cổ vũ bạn!
-                    </p>
-                    <div class="flex flex-wrap gap-2.5 pt-1">
-                        <button onclick="openAddHabitModal(event)" class="brutal-btn px-4 py-2 bg-[#65b878] text-white text-xs font-extrabold uppercase tracking-wider">
-                            + Thêm Thói Quen Mới
-                        </button>
-                        <button onclick="openWeeklyReviewModal(event)" class="brutal-btn px-4 py-2 bg-[#f4d35e] text-[#1e242b] text-xs font-extrabold uppercase tracking-wider">
-                            📊 Tổng Kết & Sang Tuần Mới
-                        </button>
-                        <button onclick="switchSection('avatar', event)" class="brutal-btn px-4 py-2 bg-white text-[#1e242b] text-xs font-extrabold uppercase tracking-wider">
-                            🎀 Đổi Đồ & Biểu Cảm Nhân Vật
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Cột phải: Khung Thẻ Nhân Vật Ảo Hiện Tại & Chỉ Số Nhanh (Giống Hộp Màu Hình 1) -->
-                <div class="lg:col-span-5">
-                    <div class="brutal-box grid grid-cols-12 overflow-hidden">
-                        <!-- Nửa trái: Thông tin chỉ số chia ô màu giống Hình 1 -->
-                        <div class="col-span-7 flex flex-col justify-between border-r-2 border-[#1e242b]">
-                            <div class="bg-[#65b878] text-white px-3 py-2 border-b-2 border-[#1e242b] text-xs font-extrabold uppercase flex justify-between">
-                                <span id="cardCompanionName">BINA-CHAN</span>
-                                <span id="statWeekRate">0%</span>
-                            </div>
-                            <div class="grid grid-cols-2 border-b-2 border-[#1e242b] text-center">
-                                <div class="p-2.5 bg-[#e8f5e9] border-r-2 border-[#1e242b]">
-                                    <p class="text-[10px] font-bold uppercase text-slate-600">Chuỗi kỷ lục</p>
-                                    <p id="statBestStreak" class="text-lg font-black">0 ngày</p>
-                                </div>
-                                <div class="p-2.5 bg-[#7cc6fe]/40">
-                                    <p class="text-[10px] font-bold uppercase text-slate-600">Tích lũy tháng</p>
-                                    <p id="statMonthCount" class="text-lg font-black">0 lần</p>
-                                </div>
-                            </div>
-                            <div class="p-2.5 bg-[#f4d35e] border-b-2 border-[#1e242b] text-center">
-                                <button onclick="triggerRandomExpression(event)" class="text-[11px] font-extrabold uppercase tracking-wider underline">
-                                    ✨ Bấm để đổi biểu cảm ngẫu nhiên
-                                </button>
-                            </div>
-                            <div class="p-2.5 bg-[#65b878]/90 text-white text-[11px] leading-snug">
-                                <span id="companionMoodQuote">"Hôm nay mình cùng hoàn thành hết các ô mục tiêu nhé! AAA!"</span>
-                            </div>
-                        </div>
-
-                        <!-- Nửa phải: Khung Chứa Nhân Vật Ảo Tùy Chỉnh (Hình 2 & 3) -->
-                        <div id="miniAvatarPreviewBox" class="col-span-5 bg-polka flex flex-col items-center justify-center p-2 relative min-h-[195px]">
-                            <div id="cardAvatarSVGContainer" class="w-32 h-40 flex items-center justify-center">
-                                <!-- SVG Nhân vật được vẽ tự động tại đây -->
-                            </div>
-                            <span id="currentExprLabel" class="mt-1 px-2 py-0.5 bg-white border border-[#1e242b] text-[10px] font-extrabold uppercase">
-                                Đáng yêu
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==================== PHẦN 1: BẢNG THEO DÕI TUẦN ==================== -->
-        <main id="section-week" class="px-6 sm:px-12 pt-7 space-y-8 relative z-10">
-
-            <!-- Tiêu đề mục + Nút lọc danh mục -->
-            <div class="flex flex-wrap items-center justify-between gap-4">
-                <div class="flex items-center gap-3">
-                    <h2 class="text-xl sm:text-2xl font-extrabold uppercase tracking-tight">
-                        BẢNG MỤC TIÊU HẰNG NGÀY
-                    </h2>
-                    <span id="weekBadgePill" class="px-3 py-0.5 border-2 border-[#1e242b] rounded-full bg-white text-xs font-extrabold">
-                        TUẦN 1 / THÁNG NÀY
-                    </span>
-                </div>
-
-                <!-- Bộ lọc Danh mục -->
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="setCategoryFilter('all', event)" id="filter-all" class="px-3 py-1 text-xs font-bold border-2 border-[#1e242b] bg-[#1e242b] text-white">TẤT CẢ</button>
-                    <button onclick="setCategoryFilter('Kỹ năng', event)" id="filter-Kỹ năng" class="px-3 py-1 text-xs font-bold border-2 border-[#1e242b] bg-white hover:bg-[#f4d35e]">🎯 KỸ NĂNG</button>
-                    <button onclick="setCategoryFilter('Tinh thần', event)" id="filter-Tinh thần" class="px-3 py-1 text-xs font-bold border-2 border-[#1e242b] bg-white hover:bg-[#7cc6fe]">🧠 TINH THẦN</button>
-                    <button onclick="setCategoryFilter('Thể chất', event)" id="filter-Thể chất" class="px-3 py-1 text-xs font-bold border-2 border-[#1e242b] bg-white hover:bg-[#65b878]">💪 THỂ CHẤT</button>
-                </div>
-            </div>
-
-            <!-- Bảng Thói Quen đóng khung viền đen rõ nét giống Hình 1 -->
-            <div class="brutal-box overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b-2 border-[#1e242b] bg-[#f4d35e] text-xs font-black uppercase">
-                                <th class="py-3.5 px-4 border-r-2 border-[#1e242b] min-w-[210px]">Mục tiêu / Thói quen</th>
-                                <th class="py-3.5 px-2 text-center border-r-2 border-[#1e242b] w-14">T2</th>
-                                <th class="py-3.5 px-2 text-center border-r-2 border-[#1e242b] w-14">T3</th>
-                                <th class="py-3.5 px-2 text-center border-r-2 border-[#1e242b] w-14">T4</th>
-                                <th class="py-3.5 px-2 text-center border-r-2 border-[#1e242b] w-14">T5</th>
-                                <th class="py-3.5 px-2 text-center border-r-2 border-[#1e242b] w-14">T6</th>
-                                <th class="py-3.5 px-2 text-center border-r-2 border-[#1e242b] w-14 bg-[#65b878] text-white">T7</th>
-                                <th class="py-3.5 px-2 text-center border-r-2 border-[#1e242b] w-14 bg-[#f26457] text-white">CN</th>
-                                <th class="py-3.5 px-3 text-center border-r-2 border-[#1e242b] w-28">Chuỗi</th>
-                                <th class="py-3.5 px-2 text-center w-12">Xóa</th>
-                            </tr>
-                        </thead>
-                        <tbody id="habitTableBody" class="divide-y-2 divide-[#1e242b] text-sm bg-white">
-                            <!-- Dữ liệu tự động tạo bằng JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- 3 THẺ SỰ KIỆN / BIỂU ĐỒ THEO BỐ CỤC 3 CỘT CỦA HÌNH 1 (БЛИЖАЙШИЕ МЕРОПРИЯТИЯ) -->
-            <div>
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg sm:text-xl font-extrabold uppercase tracking-tight">
-                        THỐNG KÊ CHUỖI NGÀY & GÓC CỐ VẤN TRONG TUẦN
-                    </h3>
-                    <span class="px-3 py-0.5 border-2 border-[#1e242b] rounded-full bg-white text-xs font-bold">
-                        PHÂN TÍCH TRỰC QUAN
-                    </span>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Thẻ 1: Biểu đồ cột 7 ngày -->
-                    <div class="brutal-box flex flex-col justify-between">
-                        <div class="p-3 border-b-2 border-[#1e242b] bg-white text-center font-extrabold text-sm uppercase">
-                            BIỂU ĐỒ TIẾN ĐỘ 7 NGÀY
-                        </div>
-                        <div class="p-2 border-b-2 border-[#1e242b] bg-[#f7f6f2] text-center text-[11px] font-bold uppercase tracking-wider">
-                            MỨC ĐỘ DUY TRÌ HẰNG NGÀY
-                        </div>
-                        <div id="weeklyBarChart" class="grid grid-cols-7 gap-2 items-end h-40 p-4 border-b-2 border-[#1e242b] bg-white">
-                            <!-- Render cột bằng JS -->
-                        </div>
-                        <div class="p-3 bg-[#f4d35e] flex justify-between items-center text-xs font-black uppercase">
-                            <span>TỶ LỆ HOÀN THÀNH</span>
-                            <span id="cardChartPercent">0%</span>
-                        </div>
-                    </div>
-
-                    <!-- Thẻ 2: Thói quen nổi bật & Cần lưu ý (Chia ô giống hệt Hình 1) -->
-                    <div class="brutal-box flex flex-col justify-between">
-                        <div class="p-3 border-b-2 border-[#1e242b] bg-white text-center font-extrabold text-sm uppercase">
-                            ĐIỂM SÁNG TRONG TUẦN
-                        </div>
-                        <div class="p-2 border-b-2 border-[#1e242b] bg-[#f7f6f2] text-center text-[11px] font-bold uppercase tracking-wider">
-                            SO SÁNH HIỆU SUẤT THÓI QUEN
-                        </div>
-                        <div class="grid grid-cols-2 border-b-2 border-[#1e242b] flex-1">
-                            <div class="p-3.5 border-r-2 border-[#1e242b] bg-[#65b878]/20 flex flex-col justify-center">
-                                <span class="text-[10px] font-black uppercase text-[#1e242b]/70">★ XUẤT SẮC NHẤT</span>
-                                <p id="highlightBestHabit" class="font-extrabold text-sm mt-1">Đang tính...</p>
-                            </div>
-                            <div class="p-3.5 bg-[#7cc6fe]/35 flex flex-col justify-center">
-                                <span class="text-[10px] font-black uppercase text-[#1e242b]/70">⚡ CẦN CHÚ Ý HƠN</span>
-                                <p id="highlightWeakHabit" class="font-extrabold text-sm mt-1">Đang tính...</p>
-                            </div>
-                        </div>
-                        <div class="p-3 bg-white flex justify-between items-center text-xs font-black uppercase">
-                            <span>CHUỖI TỐT NHẤT:</span>
-                            <span id="cardBestStreakText">0 NGÀY</span>
-                        </div>
-                    </div>
-
-                    <!-- Thẻ 3: Lời khuyên nhanh & Nút gọi AI Lên Plan -->
-                    <div class="brutal-box flex flex-col justify-between">
-                        <div class="p-3 border-b-2 border-[#1e242b] bg-white text-center font-extrabold text-sm uppercase">
-                            GỢI Ý TỪ NHÂN VẬT AI
-                        </div>
-                        <div class="p-2 border-b-2 border-[#1e242b] bg-[#f7f6f2] text-center text-[11px] font-bold uppercase tracking-wider">
-                            CHIẾN LƯỢC PHÁT TRIỂN BẢN THÂN
-                        </div>
-                        <div class="grid grid-cols-12 border-b-2 border-[#1e242b] flex-1">
-                            <div class="col-span-7 p-3.5 border-r-2 border-[#1e242b] bg-white flex items-center">
-                                <p id="quickAISuggestion" class="text-xs leading-relaxed font-medium">
-                                    Hãy tích chọn các thói quen hôm nay để mình phân tích kế hoạch cho bạn nhé!
-                                </p>
-                            </div>
-                            <div class="col-span-5 p-3 bg-[#f26457] text-white flex flex-col items-center justify-center text-center">
-                                <span class="text-2xl mb-1">🤖</span>
-                                <span class="text-[11px] font-black uppercase">CỐ VẤN 24/7</span>
-                            </div>
-                        </div>
-                        <button onclick="toggleAIChat(event)" class="p-3 bg-[#65b878] hover:bg-[#52a364] text-white text-xs font-black uppercase text-center transition">
-                            TRÒ CHUYỆN & XIN PLAN NGAY →
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <!-- MỤC NHẬT KÝ NGẮN MỖI NGÀY & EMOJI CẢM XÚC -->
-            <div class="brutal-box bg-white overflow-hidden mt-8">
-                <div class="bg-[#7cc6fe] p-3.5 border-b-2 border-[#1e242b] flex flex-wrap items-center justify-between gap-2">
-                    <h3 class="font-extrabold text-sm sm:text-base uppercase flex items-center gap-2">
-                        <span>📔</span> GÓC NHẬT KÝ NGẮN MỖI NGÀY & CẢM XÚC TRONG TUẦN
-                    </h3>
-                    <span class="px-2.5 py-0.5 bg-white border-2 border-[#1e242b] text-[11px] font-black uppercase">
-                        TỰ ĐỘNG TỔNG HỢP CUỐI TUẦN
-                    </span>
-                </div>
-                <div class="p-5 space-y-4">
-                    <!-- Chọn Thứ trong tuần để ghi nhật ký -->
-                    <div class="flex flex-wrap items-center gap-2">
-                        <span class="text-xs font-black uppercase mr-1">Chọn ngày:</span>
-                        <div id="diaryDayTabs" class="flex flex-wrap gap-1.5"></div>
-                    </div>
-
-                    <!-- Câu hỏi gợi mở & Chọn Emoji tâm trạng -->
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
-                        <div class="md:col-span-5 p-3.5 bg-[#f7f6f2] border-2 border-[#1e242b] space-y-2.5">
-                            <p class="text-xs font-extrabold uppercase text-[#f26457]">
-                                1. Hôm nay bạn có ổn không? Chọn biểu cảm của ngày hôm nay nhé:
-                            </p>
-                            <div id="diaryEmojiSelector" class="flex flex-wrap gap-2 pt-1"></div>
-                        </div>
-                        <div class="md:col-span-7 space-y-2">
-                            <label class="text-xs font-extrabold uppercase block">
-                                2. Bạn hãy kể về ngày hôm nay của bạn được không?
-                            </label>
-                            <textarea id="diaryNoteInput" rows="3" placeholder="Viết vài dòng về điều làm bạn vui, chuyện bạn đã cố gắng hoặc cảm xúc hôm nay..." class="w-full p-3 border-2 border-[#1e242b] text-xs font-medium bg-[#f7f6f2] focus:bg-white focus:outline-none"></textarea>
-                            <div class="flex justify-end">
-                                <button onclick="saveDailyDiary()" class="brutal-btn px-4 py-2 bg-[#65b878] text-white text-xs font-black uppercase">
-                                    💾 Lưu Nhật Ký Ngày Này
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Dải xem nhanh 7 ngày nhật ký trong tuần -->
-                    <div id="diaryWeekStrip" class="grid grid-cols-2 sm:grid-cols-7 gap-2 pt-2 border-t-2 border-dashed border-[#1e242b]"></div>
-                </div>
-            </div>
-
-        <!-- ==================== PHẦN 2: BẢNG THÁNG (28 NGÀY) & LỊCH SỬ ==================== -->
-        <section id="section-month" class="hidden px-6 sm:px-12 pt-7 space-y-8 relative z-10">
-            <div class="flex flex-wrap items-center justify-between gap-4">
-                <div>
-                    <h2 class="text-2xl font-extrabold uppercase">BẢNG THEO DÕI THÁNG (HÀNH TRÌNH 4 TUẦN)</h2>
-                    <p class="text-xs text-slate-600 mt-0.5">Toàn bộ các tuần bạn đã chốt sổ và tuần hiện tại được ghép thành ma trận 28 ngày</p>
-                </div>
-                <button onclick="openWeeklyReviewModal(event)" class="brutal-btn px-4 py-2 bg-[#f26457] text-white text-xs font-extrabold uppercase">
-                    + Chốt Tuần Hiện Tại Vào Bảng Tháng
-                </button>
-            </div>
-
-            <!-- Ma trận 28 ngày -->
-            <div id="monthlyMatrixContainer" class="space-y-4">
-                <!-- Render bằng JS -->
-            </div>
-
-            <!-- Lịch sử các bản Tổng Kết Tuần -->
-            <div class="brutal-box p-5 bg-white space-y-4">
-                <div class="flex items-center justify-between border-b-2 border-[#1e242b] pb-3">
-                    <h3 class="font-extrabold text-base uppercase">NHẬT KÝ TỔNG KẾT CÁC TUẦN ĐÃ QUA</h3>
-                    <button onclick="resetMonthlyHistory(event)" class="text-xs font-bold text-[#f26457] underline">Làm mới lịch sử tháng</button>
-                </div>
-                <div id="pastWeeksArchiveGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Render bằng JS -->
-                </div>
-            </div>
-        </section>
-
-        <!-- ==================== PHẦN 3: PHÒNG TẠO NHÂN VẬT ẢO (THEO HÌNH 2 & 3) ==================== -->
-        <section id="section-avatar" class="hidden px-6 sm:px-12 pt-7 space-y-6 relative z-10">
-            <div class="flex flex-wrap items-center justify-between gap-4">
-                <div>
-                    <h2 class="text-2xl font-extrabold uppercase">XƯỞNG THIẾT KẾ NHÂN VẬT ẢO (@BINA & SKETCH STYLE)</h2>
-                    <p class="text-xs text-slate-600">Tùy chỉnh Tóc, Quần áo, Biểu cảm và Background. Nhân vật sau khi lưu sẽ chạy nhảy trực tiếp trên màn hình của bạn!</p>
-                </div>
-                <button onclick="randomizeCharacter(event)" class="brutal-btn px-4 py-2 bg-[#f4d35e] text-xs font-extrabold uppercase">
-                    🎲 Phối Đồ Ngẫu Nhiên
-                </button>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Khung Xem Trước Nhân Vật Lớn -->
-                <div class="lg:col-span-5 brutal-box overflow-hidden flex flex-col">
-                    <div class="p-3 bg-[#1e242b] text-white text-xs font-extrabold uppercase flex justify-between items-center">
-                        <span>XEM TRƯỚC NHÂN VẬT</span>
-                        <span id="studioPreviewTag" class="bg-[#f4d35e] text-[#1e242b] px-2 py-0.5 text-[10px]">SỐNG ĐỘNG</span>
-                    </div>
-                    <div id="studioStageBg" class="bg-polka flex-1 min-h-[340px] flex flex-col items-center justify-center p-6 relative border-b-2 border-[#1e242b]">
-                        <div id="studioAvatarSVG" class="w-52 h-64 flex items-center justify-center transition-transform duration-300">
-                            <!-- Nhân vật SVG lớn -->
-                        </div>
-                        <div id="studioSpeechPreview" class="mt-3 px-4 py-1.5 bg-white border-2 border-[#1e242b] shadow-[3px_3px_0px_#1e242b] text-xs font-extrabold">
-                            "Bấm vào mục bất kỳ, mình sẽ chạy lại đó ngay! XE-XE~"
-                        </div>
-                    </div>
-                    <div class="p-3.5 bg-white flex items-center gap-2">
-                        <span class="text-xs font-extrabold uppercase">Tên nhân vật:</span>
-                        <input id="companionNameInput" type="text" value="Bina-chan" oninput="updateCompanionName(this.value)" class="flex-1 px-3 py-1 border-2 border-[#1e242b] text-xs font-bold">
-                    </div>
-                </div>
-
-                <!-- Bảng Chọn Tóc, Quần Áo, Biểu Cảm, Background -->
-                <div class="lg:col-span-7 brutal-box p-5 bg-white space-y-5">
-                    <!-- 1. Chọn Kiểu Tóc (Hình 2 & 3) -->
-                    <div>
-                        <label class="text-xs font-black uppercase tracking-wider block mb-2 bg-[#f4d35e] inline-block px-2 py-0.5 border border-[#1e242b]">
-                            1. CHỌN KIỂU TÓC (HAIRSTYLE)
-                        </label>
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5" id="hairSelectorGrid">
-                            <button onclick="setAvatarPart('hair', 'buns', event)" data-hair="buns" class="avatar-opt brutal-btn p-2.5 text-xs font-bold bg-[#65b878] text-white">
-                                ⭐ Búi 2 Chùm Kẹp Sao (Ảnh 3)
-                            </button>
-                            <button onclick="setAvatarPart('hair', 'bob', event)" data-hair="bob" class="avatar-opt brutal-btn p-2.5 text-xs font-bold bg-white">
-                                🎀 Tóc Bob Ngắn Kẹp Đỏ (Ảnh 3)
-                            </button>
-                            <button onclick="setAvatarPart('hair', 'ponytail', event)" data-hair="ponytail" class="avatar-opt brutal-btn p-2.5 text-xs font-bold bg-white">
-                                💫 Tóc Đuôi Ngựa Cao (Ảnh 3)
-                            </button>
-                            <button onclick="setAvatarPart('hair', 'lowtwins', event)" data-hair="lowtwins" class="avatar-opt brutal-btn p-2.5 text-xs font-bold bg-white">
-                                👧 Buộc Thấp 2 Bên (Ảnh 2)
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- 2. Chọn Trang Phục (Hình 2 & 3) -->
-                    <div>
-                        <label class="text-xs font-black uppercase tracking-wider block mb-2 bg-[#7cc6fe] inline-block px-2 py-0.5 border border-[#1e242b]">
-                            2. CHỌN QUẦN ÁO & PHỤ KIỆN (OUTFIT)
-                        </label>
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                            <button onclick="setAvatarPart('outfit', 'starSweater', event)" data-outfit="starSweater" class="avatar-opt brutal-btn p-2.5 text-xs font-bold bg-[#65b878] text-white">
-                                🌟 Áo Đen Ngôi Sao + Jeans & Túi Đỏ
-                            </button>
-                            <button onclick="setAvatarPart('outfit', 'heartTee', event)" data-outfit="heartTee" class="avatar-opt brutal-btn p-2.5 text-xs font-bold bg-white">
-                                🖤 Áo Trắng Trái Tim Đen (Ảnh 2)
-                            </button>
-                            <button onclick="setAvatarPart('outfit', 'preppy', event)" data-outfit="preppy" class="avatar-opt brutal-btn p-2.5 text-xs font-bold bg-white">
-                                👔 Sơ Mi Preppy + Cà Vạt
-                            </button>
-                            <button onclick="setAvatarPart('outfit', 'denim', event)" data-outfit="denim" class="avatar-opt brutal-btn p-2.5 text-xs font-bold bg-white">
-                                🧥 Áo Khoác Denim + Cargo
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- 3. Chọn Biểu Cảm Khuôn Mặt (6 biểu cảm đặc trưng từ Hình 2 & 3) -->
-                    <div>
-                        <label class="text-xs font-black uppercase tracking-wider block mb-2 bg-[#f26457] text-white inline-block px-2 py-0.5 border border-[#1e242b]">
-                            3. CHỌN BIỂU CẢM (EXPRESSIONS - HÌNH 2 & 3)
-                        </label>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                            <button onclick="setAvatarPart('expr', 'cute', event)" data-expr="cute" class="avatar-opt brutal-btn p-2 text-xs font-bold bg-[#65b878] text-white">
-                                👀 Mắt To Ngơ Ngác (Ảnh 3)
-                            </button>
-                            <button onclick="setAvatarPart('expr', 'aaa', event)" data-expr="aaa" class="avatar-opt brutal-btn p-2 text-xs font-bold bg-white">
-                                😄 Cười Rạng Rỡ "AAA!" (Ảnh 2)
-                            </button>
-                            <button onclick="setAvatarPart('expr', 'xexe', event)" data-expr="xexe" class="avatar-opt brutal-btn p-2 text-xs font-bold bg-white">
-                                😈 Tinh Quái "XE-XE" (Ảnh 2)
-                            </button>
-                            <button onclick="setAvatarPart('expr', 'cool', event)" data-expr="cool" class="avatar-opt brutal-btn p-2 text-xs font-bold bg-white">
-                                😎 Kính Râm Cực Ngầu (Ảnh 2)
-                            </button>
-                            <button onclick="setAvatarPart('expr', 'pout', event)" data-expr="pout" class="avatar-opt brutal-btn p-2 text-xs font-bold bg-white">
-                                😤 Phụng Phịu Dỗi Hờn (Ảnh 2)
-                            </button>
-                            <button onclick="setAvatarPart('expr', 'blush', event)" data-expr="blush" class="avatar-opt brutal-btn p-2 text-xs font-bold bg-white">
-                                😳 Đỏ Mặt Ngại Ngùng (Ảnh 2)
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- 4. Chọn Background -->
-                    <div>
-                        <label class="text-xs font-black uppercase tracking-wider block mb-2 bg-[#65b878] text-white inline-block px-2 py-0.5 border border-[#1e242b]">
-                            4. CHỌN BACKGROUND KHUNG NHÂN VẬT
-                        </label>
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                            <button onclick="setAvatarPart('bg', 'bg-polka', event)" data-bg="bg-polka" class="avatar-opt brutal-btn p-2 text-xs font-bold bg-[#65b878] text-white">
-                                🔴 Chấm Bi Sắc Màu (Ảnh 3)
-                            </button>
-                            <button onclick="setAvatarPart('bg', 'bg-sketch', event)" data-bg="bg-sketch" class="avatar-opt brutal-btn p-2 text-xs font-bold bg-white">
-                                📜 Giấy Phác Thảo (Ảnh 2)
-                            </button>
-                            <button onclick="setAvatarPart('bg', 'bg-doodle-grid', event)" data-bg="bg-doodle-grid" class="avatar-opt brutal-btn p-2 text-xs font-bold bg-white">
-                                🌼 Ô Ly Xanh (Ảnh 1)
-                            </button>
-                            <button onclick="setAvatarPart('bg', 'bg-starry', event)" data-bg="bg-starry" class="avatar-opt brutal-btn p-2 text-xs font-bold bg-white">
-                                🌌 Đêm Sao Lấp Lánh
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- KHỐI TRÍCH DẪN VÀNG & CHÚ LÙN VUI NHỘN (GIỐNG PHẦN GIỮA/CUỐI HÌNH 1) -->
-        <section class="px-6 sm:px-12 mt-10 relative z-10">
-            <div class="brutal-box p-6 bg-white grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                <div class="md:col-span-8 space-y-3">
-                    <h3 class="text-lg font-extrabold uppercase tracking-tight">
-                        <!-- KHỐI TRÍCH DẪN ĐỘNG LỰC MỖI NGÀY TỪ NGƯỜI NỔI TIẾNG & NHẠC THEME 10S ILLIT TICK-TACK -->
-        <section class="px-6 sm:px-12 mt-10 relative z-10">
-            <div class="brutal-box p-6 bg-white grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                <div class="md:col-span-8 space-y-2.5">
-                    <div class="inline-flex items-center gap-2 px-3 py-0.5 bg-[#f4d35e] border-2 border-[#1e242b] text-[11px] font-black uppercase">
-                        <span>🌟 THÔNG ĐIỆP PHÁT TRIỂN BẢN THÂN HÔM NAY</span>
-                        <span id="dailyQuoteDateBadge" class="text-[#f26457]"></span>
-                    </div>
-                    <blockquote id="dailyFamousQuote" class="text-sm sm:text-base font-extrabold italic leading-relaxed text-[#1e242b] bg-[#f7f6f2] p-4 border-2 border-[#1e242b]">
-                        "Chúng ta là những gì chúng ta lặp đi lặp lại mỗi ngày. Sự xuất sắc không phải là một hành động, mà là một thói quen."
-                    </blockquote>
-                    <p id="dailyFamousAuthor" class="text-xs font-black uppercase tracking-wider text-right text-[#f26457]">
-                        — ARISTOTLE (Triết gia Hy Lạp cổ đại)
-                    </p>
-                </div>
-                <div class="md:col-span-4 flex flex-col items-center justify-center gap-2 text-center border-t-2 md:border-t-0 md:border-l-2 border-[#1e242b] pt-4 md:pt-0 md:pl-4">
-                    <span class="text-[11px] font-black uppercase text-slate-500">🎵 NHẠC CHÀO MỪNG (STYLE TICK-TACK - 10S)</span>
-                    <button onclick="playTickTackTheme()" id="btnPlayTheme" class="brutal-btn w-full py-3 px-4 bg-[#f26457] text-white text-xs font-black uppercase tracking-wider">
-                        🎶 Phát Nhạc Tick-Tack (10s)
-                    </button>
-                    <span class="text-[10px] font-semibold text-slate-500">*Tự động vang lên khi bạn bắt đầu mở sổ tay</span>
-                </div>
-            </div>
-        </section>
-    <!-- ==================== NHÂN VẬT ẢO CHẠY NHẢY TRỰC TIẾP TRÊN MÀN HÌNH ==================== -->
-    <div id="roamingCompanion" onclick="toggleAIChat(event)" title="Bấm vào mình để trò chuyện & lên Plan nhé!">
-        <!-- Bong bóng thoại cảm xúc của nhân vật -->
-        <div id="petSpeechBubble" class="mb-1.5 px-3 py-1.5 bg-white border-2 border-[#1e242b] shadow-[3px_3px_0px_#1e242b] rounded-xl text-[11px] font-extrabold max-w-[210px] text-center transition-all duration-200">
-            "Chào cậu! Bấm vào mục bất kỳ mình chạy tới liền nha! ✨"
+  <section class="px-6 sm:px-12 pt-7 pb-5 relative z-10 border-b-2 border-[#1e242b]">
+    <svg class="w-8 h-8 absolute top-4 right-16 flower-spin hidden sm:block" viewBox="0 0 64 64" fill="none" stroke="#1e242b" stroke-width="2.5">
+      <path d="M32 8C26 20 20 20 32 32 44 20 38 20 32 8Z" fill="#f26457"/><path d="M56 32C44 26 44 20 32 32 44 44 44 38 56 32Z" fill="#f4d35e"/>
+      <path d="M32 56C38 44 44 44 32 32 20 44 26 44 32 56Z" fill="#65b878"/><path d="M8 32C20 38 20 44 32 32 20 20 20 26 8 32Z" fill="#7cc6fe"/><circle cx="32" cy="32" r="5" fill="#fff"/>
+    </svg>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+      <div class="lg:col-span-7 space-y-3">
+        <div class="inline-block px-3 py-0.5 border-2 border-[#1e242b] bg-[#f4d35e] text-[11px] font-black uppercase tracking-widest">NHẬT KÝ KIẾN TẠO THÓI QUEN & BẠN ĐỒNG HÀNH ẢO</div>
+        <h1 class="text-2xl sm:text-4xl font-bold leading-tight tracking-tight">Mở ra thế giới <span class="text-[#f26457] underline decoration-wavy">kỷ luật diệu kỳ</span> trên từng trang sổ tay <span class="bg-[#f26457] text-white px-2.5 py-0.5 border-2 border-[#1e242b] inline-block shadow-[3px_3px_0px_#1e242b]">Habit!</span></h1>
+        <p class="text-xs sm:text-sm text-slate-700 max-w-xl leading-relaxed">💡 <strong>Mẹo:</strong> Mỗi lần bạn tích hoàn thành một mục tiêu, <strong>nhân vật ảo ở góc dưới bên trái</strong> sẽ nhảy lên và đổi biểu cảm cổ vũ bạn. Bấm vào nhân vật để trò chuyện lên plan.</p>
+        <div class="flex flex-wrap gap-2.5 pt-1">
+          <button onclick="openAddHabitModal(event)" class="brutal-btn px-4 py-2 bg-[#65b878] text-white text-xs font-extrabold uppercase tracking-wider">+ Thêm Thói Quen Mới</button>
+          <button onclick="openWeeklyReviewModal(event)" class="brutal-btn px-4 py-2 bg-[#f4d35e] text-xs font-extrabold uppercase tracking-wider">📊 Tổng Kết & Sang Tuần Mới</button>
+          <button onclick="switchSection('avatar',event)" class="brutal-btn px-4 py-2 bg-white text-xs font-extrabold uppercase tracking-wider">🎀 Đổi Đồ & Biểu Cảm Nhân Vật</button>
         </div>
-        <!-- Hình nhân vật chạy nhảy -->
-        <div id="roamingPetBody" class="anim-idle w-28 h-36 mx-auto relative flex items-center justify-center">
-            <div id="roamingAvatarSVGContainer" class="w-full h-full"></div>
+      </div>
+      <div class="lg:col-span-5">
+        <div class="brutal-box grid grid-cols-12 overflow-hidden">
+          <div class="col-span-7 flex flex-col justify-between border-r-2 border-[#1e242b]">
+            <div class="bg-[#65b878] text-white px-3 py-2 border-b-2 border-[#1e242b] text-xs font-extrabold uppercase flex justify-between"><span id="cardCompanionName">BINA-CHAN</span><span id="statWeekRate">0%</span></div>
+            <div class="grid grid-cols-2 border-b-2 border-[#1e242b] text-center">
+              <div class="p-2.5 bg-[#e8f5e9] border-r-2 border-[#1e242b]"><p class="text-[10px] font-bold uppercase text-slate-600">Chuỗi kỷ lục</p><p id="statBestStreak" class="text-lg font-black">0 ngày</p></div>
+              <div class="p-2.5 bg-[#7cc6fe]/40"><p class="text-[10px] font-bold uppercase text-slate-600">Tích lũy tháng</p><p id="statMonthCount" class="text-lg font-black">0 lần</p></div>
+            </div>
+            <div class="p-2.5 bg-[#f4d35e] border-b-2 border-[#1e242b] text-center"><button onclick="triggerRandomExpression(event)" class="text-[11px] font-extrabold uppercase tracking-wider underline">✨ Bấm để đổi biểu cảm ngẫu nhiên</button></div>
+            <div class="p-2.5 bg-[#65b878]/90 text-white text-[11px] leading-snug"><span id="companionMoodQuote">"Hôm nay mình cùng hoàn thành hết các ô mục tiêu nhé! AAA!"</span></div>
+          </div>
+          <div id="miniAvatarPreviewBox" class="col-span-5 bg-polka flex flex-col items-center justify-center p-2 relative min-h-[195px]">
+            <div id="cardAvatarSVGContainer" class="w-32 h-40 flex items-center justify-center"></div>
+            <span id="currentExprLabel" class="mt-1 px-2 py-0.5 bg-white border border-[#1e242b] text-[10px] font-extrabold uppercase">Đáng yêu</span>
+          </div>
         </div>
-        <div class="text-center">
-            <span id="roamingPetNameTag" class="px-2 py-0.5 bg-[#f4d35e] border-2 border-[#1e242b] text-[10px] font-black uppercase shadow-[2px_2px_0px_#1e242b]">
-                BINA-CHAN • AI CHAT
-            </span>
-        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== TAB 1: BẢNG TUẦN (gồm cả nhật ký) ========== -->
+  <main id="section-week" class="px-6 sm:px-12 pt-7 space-y-8 relative z-10">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <h2 class="text-xl sm:text-2xl font-extrabold uppercase tracking-tight">BẢNG MỤC TIÊU HẰNG NGÀY</h2>
+        <span id="weekBadgePill" class="px-3 py-0.5 border-2 border-[#1e242b] rounded-full bg-white text-xs font-extrabold">TUẦN 1 / THÁNG NÀY</span>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button onclick="setCategoryFilter('all',event)" id="filter-all" class="px-3 py-1 text-xs font-bold border-2 border-[#1e242b] bg-[#1e242b] text-white">TẤT CẢ</button>
+        <button onclick="setCategoryFilter('Kỹ năng',event)" id="filter-Kỹ năng" class="px-3 py-1 text-xs font-bold border-2 border-[#1e242b] bg-white hover:bg-[#f4d35e]">🎯 KỸ NĂNG</button>
+        <button onclick="setCategoryFilter('Tinh thần',event)" id="filter-Tinh thần" class="px-3 py-1 text-xs font-bold border-2 border-[#1e242b] bg-white hover:bg-[#f4d35e]">🧠 TINH THẦN</button>
+        <button onclick="setCategoryFilter('Thể chất',event)" id="filter-Thể chất" class="px-3 py-1 text-xs font-bold border-2 border-[#1e242b] bg-white hover:bg-[#f4d35e]">💪 THỂ CHẤT</button>
+      </div>
     </div>
 
-    <!-- ==================== CỬA SỔ CHAT AI & LÊN PLAN PHÁT TRIỂN BẢN THÂN ==================== -->
-    <div id="aiChatDrawer" class="fixed bottom-6 right-6 z-50 hidden w-[92vw] sm:w-[410px] brutal-box bg-white overflow-hidden">
-        <!-- Header Chat -->
-        <div class="bg-[#65b878] text-white p-3.5 border-b-2 border-[#1e242b] flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <span class="text-xl">🌟</span>
-                <div>
-                    <h4 id="chatHeaderTitle" class="font-extrabold text-sm uppercase leading-none">Trò Chuyện Cùng Bina-chan AI</h4>
-                    <span class="text-[10px] opacity-90">Cố vấn lên Plan & Phát triển bản thân</span>
-                </div>
-            </div>
-            <div class="flex items-center gap-1.5">
-                <button onclick="toggleApiKeyBox()" title="Cài đặt Gemini API Key (Tùy chọn)" class="px-2 py-1 bg-white/20 hover:bg-white/30 text-[10px] font-bold rounded border border-white">
-                    🔑 API
-                </button>
-                <button onclick="toggleAIChat(event)" class="w-7 h-7 bg-[#f26457] border-2 border-[#1e242b] text-white font-black text-xs">
-                    ✕
-                </button>
-            </div>
-        </div>
+    <div class="brutal-box overflow-hidden"><div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead><tr class="border-b-2 border-[#1e242b] bg-[#f4d35e] text-xs font-black uppercase">
+          <th class="py-3.5 px-4 border-r-2 border-[#1e242b] min-w-[210px]">Mục tiêu / Thói quen</th>
+          <th class="py-3.5 px-2 text-center border-r-2 border-[#1e242b] w-14">T2</th><th class="py-3.5 px-2 text-center border-r-2 border-[#1e242b] w-14">T3</th>
+          <th class="py-3.5 px-2 text-center border-r-2 border-[#1e242b] w-14">T4</th><th class="py-3.5 px-2 text-center border-r-2 border-[#1e242b] w-14">T5</th>
+          <th class="py-3.5 px-2 text-center border-r-2 border-[#1e242b] w-14">T6</th>
+          <th class="py-3.5 px-2 text-center border-r-2 border-[#1e242b] w-14 bg-[#65b878] text-white">T7</th>
+          <th class="py-3.5 px-2 text-center border-r-2 border-[#1e242b] w-14 bg-[#f26457] text-white">CN</th>
+          <th class="py-3.5 px-3 text-center border-r-2 border-[#1e242b] w-28">Chuỗi</th><th class="py-3.5 px-2 text-center w-12">Xóa</th>
+        </tr></thead>
+        <tbody id="habitTableBody" class="divide-y-2 divide-[#1e242b] text-sm bg-white"></tbody>
+      </table>
+    </div></div>
 
-        <!-- Ô nhập Gemini API Key tùy chọn -->
-        <div id="apiKeyConfigBox" class="hidden p-3 bg-[#f4d35e] border-b-2 border-[#1e242b] text-xs space-y-1.5">
-            <p class="font-bold text-[11px]">Nhập Gemini API Key (Tùy chọn để chat AI không giới hạn):</p>
-            <div class="flex gap-1.5">
-                <input id="geminiApiKeyInput" type="password" placeholder="AIzaSy..." class="flex-1 px-2 py-1 border-2 border-[#1e242b] text-xs bg-white">
-                <button onclick="saveGeminiKey()" class="px-3 py-1 bg-[#1e242b] text-white font-bold text-xs">Lưu</button>
-            </div>
-            <p class="text-[10px] text-slate-700">*Nếu để trống, Trợ lý Lập Kế Hoạch Nội Bộ vẫn hoạt động miễn phí 100%!</p>
+    <div>
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg sm:text-xl font-extrabold uppercase tracking-tight">THỐNG KÊ CHUỖI NGÀY & GÓC CỐ VẤN TRONG TUẦN</h3>
+        <span class="px-3 py-0.5 border-2 border-[#1e242b] rounded-full bg-white text-xs font-bold">PHÂN TÍCH TRỰC QUAN</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="brutal-box flex flex-col justify-between">
+          <div class="p-3 border-b-2 border-[#1e242b] text-center font-extrabold text-sm uppercase">BIỂU ĐỒ TIẾN ĐỘ 7 NGÀY</div>
+          <div class="p-2 border-b-2 border-[#1e242b] bg-[#f7f6f2] text-center text-[11px] font-bold uppercase tracking-wider">MỨC ĐỘ DUY TRÌ HẰNG NGÀY</div>
+          <div id="weeklyBarChart" class="grid grid-cols-7 gap-2 items-end h-40 p-4 border-b-2 border-[#1e242b] bg-white"></div>
+          <div class="p-3 bg-[#f4d35e] flex justify-between items-center text-xs font-black uppercase"><span>TỶ LỆ HOÀN THÀNH</span><span id="cardChartPercent">0%</span></div>
         </div>
-
-        <!-- Lịch sử tin nhắn -->
-        <div id="chatMessagesBox" class="h-72 overflow-y-auto p-3.5 space-y-3 bg-[#f7f6f2] text-xs">
-            <!-- Tin nhắn chào mừng -->
+        <div class="brutal-box flex flex-col justify-between">
+          <div class="p-3 border-b-2 border-[#1e242b] text-center font-extrabold text-sm uppercase">ĐIỂM SÁNG TRONG TUẦN</div>
+          <div class="p-2 border-b-2 border-[#1e242b] bg-[#f7f6f2] text-center text-[11px] font-bold uppercase tracking-wider">SO SÁNH HIỆU SUẤT THÓI QUEN</div>
+          <div class="grid grid-cols-2 border-b-2 border-[#1e242b] flex-1">
+            <div class="p-3.5 border-r-2 border-[#1e242b] bg-[#65b878]/20 flex flex-col justify-center"><span class="text-[10px] font-black uppercase text-[#1e242b]/70">★ XUẤT SẮC NHẤT</span><p id="highlightBestHabit" class="font-extrabold text-sm mt-1">Đang tính...</p></div>
+            <div class="p-3.5 bg-[#7cc6fe]/35 flex flex-col justify-center"><span class="text-[10px] font-black uppercase text-[#1e242b]/70">⚡ CẦN CHÚ Ý HƠN</span><p id="highlightWeakHabit" class="font-extrabold text-sm mt-1">Đang tính...</p></div>
+          </div>
+          <div class="p-3 flex justify-between items-center text-xs font-black uppercase"><span>CHUỖI TỐT NHẤT:</span><span id="cardBestStreakText">0 NGÀY</span></div>
         </div>
-
-        <!-- Gợi ý câu hỏi nhanh về Lên Plan -->
-        <div class="px-3 py-2 bg-white border-t-2 border-[#1e242b] flex gap-1.5 overflow-x-auto text-[11px]">
-            <button onclick="sendQuickPrompt('Lên plan phát triển bản thân tuần này cho mình!')" class="shrink-0 px-2.5 py-1 border border-[#1e242b] bg-[#f4d35e] font-bold">
-                📅 Lên Plan tuần mới
-            </button>
-            <button onclick="sendQuickPrompt('Mình hay bị trì hoãn, làm sao để sửa?')" class="shrink-0 px-2.5 py-1 border border-[#1e242b] bg-[#7cc6fe]/40 font-bold">
-                ⚡ Trị bệnh trì hoãn
-            </button>
-            <button onclick="sendQuickPrompt('Phân tích bảng thói quen hiện tại của mình')" class="shrink-0 px-2.5 py-1 border border-[#1e242b] bg-[#65b878]/30 font-bold">
-                📊 Phân tích tiến độ
-            </button>
-            <button onclick="sendQuickPrompt('Gợi ý lịch sinh hoạt buổi sáng tràn năng lượng')" class="shrink-0 px-2.5 py-1 border border-[#1e242b] bg-pink-100 font-bold">
-                ☀️ Routine buổi sáng
-            </button>
+        <div class="brutal-box flex flex-col justify-between">
+          <div class="p-3 border-b-2 border-[#1e242b] text-center font-extrabold text-sm uppercase">GỢI Ý TỪ NHÂN VẬT AI</div>
+          <div class="p-2 border-b-2 border-[#1e242b] bg-[#f7f6f2] text-center text-[11px] font-bold uppercase tracking-wider">CHIẾN LƯỢC PHÁT TRIỂN BẢN THÂN</div>
+          <div class="grid grid-cols-12 border-b-2 border-[#1e242b] flex-1">
+            <div class="col-span-7 p-3.5 border-r-2 border-[#1e242b] flex items-center"><p id="quickAISuggestion" class="text-xs leading-relaxed font-medium">Hãy tích chọn các thói quen hôm nay để mình phân tích kế hoạch cho bạn nhé!</p></div>
+            <div class="col-span-5 p-3 bg-[#f26457] text-white flex flex-col items-center justify-center text-center"><span class="text-2xl mb-1">🤖</span><span class="text-[11px] font-black uppercase">CỐ VẤN 24/7</span></div>
+          </div>
+          <button onclick="toggleAIChat(event)" class="p-3 bg-[#65b878] hover:bg-[#52a364] text-white text-xs font-black uppercase text-center transition">TRÒ CHUYỆN & XIN PLAN NGAY →</button>
         </div>
-
-        <!-- Ô nhập tin nhắn -->
-        <div class="p-3 bg-white border-t-2 border-[#1e242b] flex gap-2">
-            <input id="chatUserInput" type="text" placeholder="Hỏi cách lên plan, chia thời gian, tâm sự..." onkeydown="if(event.key==='Enter') handleSendChat()" class="flex-1 px-3 py-2 border-2 border-[#1e242b] text-xs font-medium focus:outline-none">
-            <button onclick="handleSendChat()" class="brutal-btn px-4 py-2 bg-[#f26457] text-white text-xs font-extrabold uppercase">
-                Gửi
-            </button>
-        </div>
+      </div>
     </div>
 
-    <!-- ==================== MODAL 1: TỔNG KẾT TUẦN & SANG TUẦN MỚI ==================== -->
-    <div id="weeklyReviewModal" class="fixed inset-0 z-50 hidden bg-black/50 flex items-center justify-center p-4">
-        <div class="brutal-box bg-white max-w-lg w-full overflow-hidden">
-            <div class="bg-[#f4d35e] p-4 border-b-2 border-[#1e242b] flex justify-between items-center">
-                <h3 id="modalReviewTitle" class="font-extrabold text-base uppercase">BẢN TỔNG KẾT TUẦN 1 & GIẢI PHÁP</h3>
-                <button onclick="closeWeeklyReviewModal()" class="w-7 h-7 bg-white border-2 border-[#1e242b] font-black text-xs">✕</button>
-            </div>
-            <div class="p-5 space-y-4 text-xs">
-                <div class="grid grid-cols-2 border-2 border-[#1e242b]">
-                    <div class="p-3 bg-[#65b878] text-white border-r-2 border-[#1e242b]">
-                        <p class="uppercase font-bold text-[10px]">Tỷ lệ đạt mục tiêu</p>
-                        <p id="modalScorePct" class="text-3xl font-black mt-1">0%</p>
-                        <p id="modalRankName" class="font-bold mt-1">Đang đánh giá...</p>
-                    </div>
-                    <div class="p-3 bg-[#f7f6f2] space-y-1.5 flex flex-col justify-center">
-                        <p>🌟 <strong>Tốt nhất:</strong> <span id="modalBestHabit">-</span></p>
-                        <p>⚠️ <strong>Cần chú ý:</strong> <span id="modalWeakHabit">-</span></p>
-                    </div>
-                </div>
-
-                <div class="space-y-2">
-                    <h4 class="font-black uppercase text-xs bg-[#7cc6fe] inline-block px-2 py-0.5 border border-[#1e242b]">
-                        💡 HƯỚNG GIẢI QUYẾT CHO TUẦN TỚI:
-                    </h4>
-                    <div id="modalSolutionsList" class="p-3.5 border-2 border-[#1e242b] bg-[#f7f6f2] space-y-2 leading-relaxed"></div>
-                </div>
-
-                <div class="flex flex-col sm:flex-row gap-2.5 pt-2">
-                    <button onclick="closeWeeklyReviewModal()" class="brutal-btn flex-1 py-2.5 bg-white font-extrabold uppercase">
-                        Để sau
-                    </button>
-                    <button onclick="confirmArchiveAndNewWeek()" class="brutal-btn flex-1 py-2.5 bg-[#65b878] text-white font-extrabold uppercase">
-                        ✓ Lưu Vào Bảng Tháng & Làm Mới Tuần
-                    </button>
-                </div>
-            </div>
+    <!-- FIX: nhật ký nằm trong tab tuần, chỉ hiện ở tab này -->
+    <div class="brutal-box overflow-hidden">
+      <div class="bg-[#7cc6fe] p-3.5 border-b-2 border-[#1e242b] flex flex-wrap items-center justify-between gap-2">
+        <h3 class="font-extrabold text-sm sm:text-base uppercase flex items-center gap-2"><span>📔</span> GÓC NHẬT KÝ NGẮN MỖI NGÀY & CẢM XÚC TRONG TUẦN</h3>
+        <span class="px-2.5 py-0.5 bg-white border-2 border-[#1e242b] text-[11px] font-black uppercase">TỰ ĐỘNG TỔNG HỢP CUỐI TUẦN</span>
+      </div>
+      <div class="p-5 space-y-4">
+        <div class="flex flex-wrap items-center gap-2"><span class="text-xs font-black uppercase mr-1">Chọn ngày:</span><div id="diaryDayTabs" class="flex flex-wrap gap-1.5"></div></div>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+          <div class="md:col-span-5 p-3.5 bg-[#f7f6f2] border-2 border-[#1e242b] space-y-2.5">
+            <p class="text-xs font-extrabold uppercase text-[#f26457]">1. Hôm nay bạn có ổn không? Chọn biểu cảm của ngày hôm nay nhé:</p>
+            <div id="diaryEmojiSelector" class="flex flex-wrap gap-2 pt-1"></div>
+          </div>
+          <div class="md:col-span-7 space-y-2">
+            <label for="diaryNoteInput" class="text-xs font-extrabold uppercase block">2. Bạn hãy kể về ngày hôm nay của bạn được không?</label>
+            <textarea id="diaryNoteInput" rows="3" placeholder="Viết vài dòng về điều làm bạn vui, chuyện bạn đã cố gắng hoặc cảm xúc hôm nay..." class="w-full p-3 border-2 border-[#1e242b] text-xs font-medium bg-[#f7f6f2] focus:bg-white focus:outline-none"></textarea>
+            <div class="flex justify-end"><button onclick="saveDailyDiary()" class="brutal-btn px-4 py-2 bg-[#65b878] text-white text-xs font-black uppercase">💾 Lưu Nhật Ký Ngày Này</button></div>
+          </div>
         </div>
+        <div id="diaryWeekStrip" class="grid grid-cols-2 sm:grid-cols-7 gap-2 pt-2 border-t-2 border-dashed border-[#1e242b]"></div>
+      </div>
     </div>
+  </main>
 
-    <!-- ==================== MODAL 2: THÊM THÓI QUEN MỚI ==================== -->
-    <div id="addHabitModal" class="fixed inset-0 z-50 hidden bg-black/50 flex items-center justify-center p-4">
-        <div class="brutal-box bg-white max-w-md w-full overflow-hidden">
-            <div class="bg-[#65b878] text-white p-4 border-b-2 border-[#1e242b] flex justify-between items-center">
-                <h3 class="font-extrabold text-sm uppercase">THÊM MỤC TIÊU HẰNG NGÀY MỚI</h3>
-                <button onclick="closeAddHabitModal()" class="w-7 h-7 bg-white text-[#1e242b] border-2 border-[#1e242b] font-black text-xs">✕</button>
-            </div>
-            <div class="p-5 space-y-3.5 text-xs">
-                <div>
-                    <label class="font-black uppercase block mb-1">Tên thói quen / Mục tiêu:</label>
-                    <input id="inputHabitName" type="text" placeholder="VD: Luyện thanh 15p, Học tiếng Trung, Đọc sách..." class="w-full px-3 py-2 border-2 border-[#1e242b] font-semibold">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="font-black uppercase block mb-1">Danh mục:</label>
-                        <select id="inputHabitCat" class="w-full px-3 py-2 border-2 border-[#1e242b] font-bold bg-white">
-                            <option value="Kỹ năng">🎯 Kỹ năng</option>
-                            <option value="Tinh thần">🧠 Tinh thần</option>
-                            <option value="Thể chất">💪 Thể chất</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="font-black uppercase block mb-1">Biểu tượng Emoji:</label>
-                        <input id="inputHabitIcon" type="text" value="⭐" maxlength="2" class="w-full px-3 py-1.5 border-2 border-[#1e242b] text-center text-base">
-                    </div>
-                </div>
-                <div class="flex gap-2 pt-2">
-                    <button onclick="closeAddHabitModal()" class="brutal-btn flex-1 py-2.5 bg-white font-extrabold uppercase">Hủy</button>
-                    <button onclick="createNewHabit()" class="brutal-btn flex-1 py-2.5 bg-[#f4d35e] font-extrabold uppercase">Tạo Ngay</button>
-                </div>
-            </div>
+  <!-- ========== TAB 2: BẢNG THÁNG ========== -->
+  <section id="section-month" class="hidden px-6 sm:px-12 pt-7 space-y-8 relative z-10">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <h2 class="text-2xl font-extrabold uppercase">BẢNG THEO DÕI THÁNG (HÀNH TRÌNH 4 TUẦN)</h2>
+        <p class="text-xs text-slate-600 mt-0.5">Các tuần đã chốt và tuần hiện tại được ghép thành ma trận 28 ngày</p>
+      </div>
+      <button onclick="openWeeklyReviewModal(event)" class="brutal-btn px-4 py-2 bg-[#f26457] text-white text-xs font-extrabold uppercase">+ Chốt Tuần Hiện Tại Vào Bảng Tháng</button>
+    </div>
+    <div id="monthlyMatrixContainer" class="space-y-4"></div>
+    <div class="brutal-box p-5 space-y-4">
+      <div class="flex items-center justify-between border-b-2 border-[#1e242b] pb-3">
+        <h3 class="font-extrabold text-base uppercase">NHẬT KÝ TỔNG KẾT CÁC TUẦN ĐÃ QUA</h3>
+        <button onclick="resetMonthlyHistory(event)" class="text-xs font-bold text-[#f26457] underline">Làm mới lịch sử tháng</button>
+      </div>
+      <div id="pastWeeksArchiveGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </div>
+  </section>
+
+  <!-- ========== TAB 3: XƯỞNG NHÂN VẬT ========== -->
+  <section id="section-avatar" class="hidden px-6 sm:px-12 pt-7 space-y-6 relative z-10">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <h2 class="text-2xl font-extrabold uppercase">XƯỞNG THIẾT KẾ NHÂN VẬT ẢO</h2>
+        <p class="text-xs text-slate-600">Tùy chỉnh tóc, quần áo, biểu cảm và background. Nhân vật được lưu sẽ xuất hiện ở góc màn hình.</p>
+      </div>
+      <button onclick="randomizeCharacter(event)" class="brutal-btn px-4 py-2 bg-[#f4d35e] text-xs font-extrabold uppercase">🎲 Phối Đồ Ngẫu Nhiên</button>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div class="lg:col-span-5 brutal-box overflow-hidden flex flex-col">
+        <div class="p-3 bg-[#1e242b] text-white text-xs font-extrabold uppercase flex justify-between items-center"><span>XEM TRƯỚC NHÂN VẬT</span><span class="bg-[#f4d35e] text-[#1e242b] px-2 py-0.5 text-[10px]">SỐNG ĐỘNG</span></div>
+        <div id="studioStageBg" class="bg-polka flex-1 min-h-[340px] flex flex-col items-center justify-center p-6 border-b-2 border-[#1e242b]">
+          <div id="studioAvatarSVG" class="w-52 h-64 flex items-center justify-center"></div>
+          <div class="mt-3 px-4 py-1.5 bg-white border-2 border-[#1e242b] shadow-[3px_3px_0px_#1e242b] text-xs font-extrabold text-[#1e242b]">"Chọn đồ xong là mình ra góc màn hình ngay! XE-XE~"</div>
         </div>
+        <div class="p-3.5 flex items-center gap-2">
+          <label for="companionNameInput" class="text-xs font-extrabold uppercase">Tên nhân vật:</label>
+          <input id="companionNameInput" type="text" value="Bina-chan" oninput="updateCompanionName(this.value)" class="flex-1 px-3 py-1 border-2 border-[#1e242b] text-xs font-bold">
+        </div>
+      </div>
+      <div class="lg:col-span-7 brutal-box p-5 space-y-5">
+        <div>
+          <span class="text-xs font-black uppercase tracking-wider block mb-2 bg-[#f4d35e] inline-block px-2 py-0.5 border border-[#1e242b]">1. CHỌN KIỂU TÓC</span>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <button onclick="setAvatarPart('hair','buns',event)" data-hair="buns" class="avatar-opt brutal-btn p-2.5 text-xs font-bold bg-white">⭐ Búi 2 Chùm Kẹp Sao</button>
+            <button onclick="setAvatarPart('hair','bob',event)" data-hair="bob" class="avatar-opt brutal-btn p-2.5 text-xs font-bold bg-white">🎀 Tóc Bob Ngắn Kẹp Đỏ</button>
+            <button onclick="setAvatarPart('hair','ponytail',event)" data-hair="ponytail" class="avatar-opt brutal-btn p-2.5 text-xs font-bold bg-white">💫 Tóc Đuôi Ngựa Cao</button>
+            <button onclick="setAvatarPart('hair','lowtwins',event)" data-hair="lowtwins" class="avatar-opt brutal-btn p-2.5 text-xs font-bold bg-white">👧 Buộc Thấp 2 Bên</button>
+          </div>
+        </div>
+        <div>
+          <span class="text-xs font-black uppercase tracking-wider block mb-2 bg-[#7cc6fe] inline-block px-2 py-0.5 border border-[#1e242b]">2. CHỌN QUẦN ÁO & PHỤ KIỆN</span>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <button onclick="setAvatarPart('outfit','starSweater',event)" data-outfit="starSweater" class="avatar-opt brutal-btn p-2.5 text-xs font-bold bg-white">🌟 Áo Đen Ngôi Sao + Jeans</button>
+            <button onclick="setAvatarPart('outfit','heartTee',event)" data-outfit="heartTee" class="avatar-opt brutal-btn p-2.5 text-xs font-bold bg-white">🖤 Áo Trắng Trái Tim</button>
+            <button onclick="setAvatarPart('outfit','preppy',event)" data-outfit="preppy" class="avatar-opt brutal-btn p-2.5 text-xs font-bold bg-white">👔 Sơ Mi Preppy + Cà Vạt</button>
+            <button onclick="setAvatarPart('outfit','denim',event)" data-outfit="denim" class="avatar-opt brutal-btn p-2.5 text-xs font-bold bg-white">🧥 Áo Khoác Denim + Cargo</button>
+          </div>
+        </div>
+        <div>
+          <span class="text-xs font-black uppercase tracking-wider block mb-2 bg-[#f26457] text-white inline-block px-2 py-0.5 border border-[#1e242b]">3. CHỌN BIỂU CẢM</span>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+            <button onclick="setAvatarPart('expr','cute',event)" data-expr="cute" class="avatar-opt brutal-btn p-2 text-xs font-bold bg-white">👀 Mắt To Ngơ Ngác</button>
+            <button onclick="setAvatarPart('expr','aaa',event)" data-expr="aaa" class="avatar-opt brutal-btn p-2 text-xs font-bold bg-white">😄 Cười Rạng Rỡ "AAA!"</button>
+            <button onclick="setAvatarPart('expr','xexe',event)" data-expr="xexe" class="avatar-opt brutal-btn p-2 text-xs font-bold bg-white">😈 Tinh Quái "XE-XE"</button>
+            <button onclick="setAvatarPart('expr','cool',event)" data-expr="cool" class="avatar-opt brutal-btn p-2 text-xs font-bold bg-white">😎 Kính Râm Cực Ngầu</button>
+            <button onclick="setAvatarPart('expr','pout',event)" data-expr="pout" class="avatar-opt brutal-btn p-2 text-xs font-bold bg-white">😤 Phụng Phịu Dỗi Hờn</button>
+            <button onclick="setAvatarPart('expr','blush',event)" data-expr="blush" class="avatar-opt brutal-btn p-2 text-xs font-bold bg-white">😳 Đỏ Mặt Ngại Ngùng</button>
+          </div>
+        </div>
+        <div>
+          <span class="text-xs font-black uppercase tracking-wider block mb-2 bg-[#65b878] text-white inline-block px-2 py-0.5 border border-[#1e242b]">4. CHỌN BACKGROUND</span>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <button onclick="setAvatarPart('bg','bg-polka',event)" data-bg="bg-polka" class="avatar-opt brutal-btn p-2 text-xs font-bold bg-white">🔴 Chấm Bi Sắc Màu</button>
+            <button onclick="setAvatarPart('bg','bg-sketch',event)" data-bg="bg-sketch" class="avatar-opt brutal-btn p-2 text-xs font-bold bg-white">📜 Giấy Phác Thảo</button>
+            <button onclick="setAvatarPart('bg','bg-doodle-grid',event)" data-bg="bg-doodle-grid" class="avatar-opt brutal-btn p-2 text-xs font-bold bg-white">🌼 Ô Ly Xanh</button>
+            <button onclick="setAvatarPart('bg','bg-starry',event)" data-bg="bg-starry" class="avatar-opt brutal-btn p-2 text-xs font-bold bg-white">🌌 Đêm Sao Lấp Lánh</button>
+          </div>
+        </div>
+      </div>
     </div>
-
-    <script>
-        const DAYS = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
-        const STORAGE_KEY = 'fumayo_habit_ai_studio_v3';
-
-        const defaultState = {
-            currentWeek: 1,
-            categoryFilter: 'all',
-            geminiApiKey: '',
-            character: {
-                name: 'Bina-chan',
-                hair: 'buns',        // buns | bob | ponytail | lowtwins
-                outfit: 'starSweater', // starSweater | heartTee | preppy | denim
-                expr: 'cute',        // cute | aaa | xexe | cool | pout | blush
-                bg: 'bg-polka'       // bg-polka | bg-sketch | bg-doodle-grid | bg-starry
-            },
-            habits: [
-                { id: 1, name: 'Luyện thanh / Hát 15p', category: 'Kỹ năng', icon: '🎤', days: [true, true, false, true, false, false, false], historyDays: [] },
-                { id: 2, name: 'Học tiếng Trung (20p)', category: 'Kỹ năng', icon: '🇨🇳', days: [true, true, true, false, false, false, false], historyDays: [] },
-                { id: 3, name: 'Đọc sách tâm lý', category: 'Tinh thần', icon: '📖', days: [false, true, true, true, false, false, false], historyDays: [] },
-                { id: 4, name: 'Tập thể dục / Vịnh Xuân', category: 'Thể chất', icon: '🥋', days: [true, false, true, false, false, false, false], historyDays: [] },
-                { id: 5, name: 'Uống đủ 2L nước', category: 'Thể chất', icon: '💧', days: [true, true, true, true, false, false, false], historyDays: [] }
-            ],
-            pastWeeks: []
-        };
-
-        let state = loadState();
-
-        function loadState() {
-            const raw = localStorage.getItem(STORAGE_KEY);
-            if (!raw) return JSON.parse(JSON.stringify(defaultState));
-            try {
-                const parsed = JSON.parse(raw);
-                if (!parsed.character) parsed.character = JSON.parse(JSON.stringify(defaultState.character));
-                if (!parsed.pastWeeks) parsed.pastWeeks = [];
-                return parsed;
-            } catch (e) {
-                return JSON.parse(JSON.stringify(defaultState));
-            }
-        }
-
-        function saveState() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        }
-
-        // ==================== HỆ THỐNG VẼ NHÂN VẬT SVG THEO HÌNH 2 & HÌNH 3 ====================
-        const EXPR_META = {
-            cute:  { label: 'Đáng yêu', quote: '"Hôm nay mình cùng hoàn thành hết các mục tiêu nhé!"' },
-            aaa:   { label: 'Phấn khích AAA!', quote: '"AAA!! Cậu làm đỉnh quá đi mất!! Tiếp tục phát huy nha!"' },
-            xexe:  { label: 'Tinh quái XE-XE', quote: '"XE-XE-XE~ Mình thấy cậu vừa bấm vào đây nha!"' },
-            cool:  { label: 'Ngầu lòi ✨', quote: '"Chuỗi ngày liên tiếp đỉnh thế này phải đeo kính râm thôi! ✨"' },
-            pout:  { label: 'Phụng phịu', quote: '"Hừm... Đừng quên đánh dấu nốt các thói quen còn lại nha!"' },
-            blush: { label: 'Ngại ngùng', quote: '"Cảm ơn cậu đã ghé thăm sổ tay hôm nay nhé... 😳"' }
-        };
-
-        function buildCharacterSVG(charConfig) {
-            const { hair, outfit, expr } = charConfig;
-
-            // 1. Lớp tóc phía sau
-            let backHairSVG = '';
-            if (hair === 'buns') {
-                // Tóc búi 2 chùm vểnh giống Hình 3 (@Bina)
-                backHairSVG = `
-                    <!-- Hai chùm tóc buộc cao hai bên kèm dây buộc đỏ -->
-                    <path d="M46 42 C30 16, 18 28, 38 48 Z" fill="#141414" stroke="#141414" stroke-width="2"/>
-                    <path d="M36 38 C24 26, 22 40, 40 46 Z" fill="#141414"/>
-                    <ellipse cx="43" cy="43" rx="6" ry="3" transform="rotate(-30 43 43)" fill="#b91c1c"/>
-                    <path d="M114 42 C130 16, 142 28, 122 48 Z" fill="#141414" stroke="#141414" stroke-width="2"/>
-                    <path d="M124 38 C136 26, 138 40, 120 46 Z" fill="#141414"/>
-                    <ellipse cx="117" cy="43" rx="6" ry="3" transform="rotate(30 117 43)" fill="#b91c1c"/>
-                    <!-- Đuôi tóc ngang vai hơi vểnh ra -->
-                    <path d="M36 65 Q30 95 24 104 Q38 106 46 98 Z" fill="#141414"/>
-                    <path d="M124 65 Q130 95 136 104 Q122 106 114 98 Z" fill="#141414"/>
-                `;
-            } else if (hair === 'bob') {
-                // Tóc Bob ngắn cụp đuôi vểnh nhẹ giống góc phải trên Hình 3
-                backHairSVG = `
-                    <path d="M34 60 Q28 96 22 102 Q40 106 50 96 Z" fill="#141414"/>
-                    <path d="M126 60 Q132 96 138 102 Q120 106 110 96 Z" fill="#141414"/>
-                `;
-            } else if (hair === 'ponytail') {
-                // Tóc đuôi ngựa buộc cao lệch sang phải giống giữa phải Hình 3
-                backHairSVG = `
-                    <ellipse cx="105" cy="36" rx="9" ry="5" transform="rotate(25 105 36)" fill="#991b1b"/>
-                    <path d="M106 34 C138 28, 148 68, 126 96 C118 82, 118 58, 102 44 Z" fill="#141414"/>
-                `;
-            } else if (hair === 'lowtwins') {
-                // Tóc buộc thấp 2 bên giống Hình 2 (Sketch)
-                backHairSVG = `
-                    <path d="M42 88 C22 86, 18 106, 36 112 C44 112, 48 100, 44 90 Z" fill="#3b2314"/>
-                    <path d="M118 88 C138 86, 142 106, 124 112 C116 112, 112 100, 116 90 Z" fill="#3b2314"/>
-                `;
-            }
-
-            const hairFill = hair === 'lowtwins' ? '#3b2314' : '#141414';
-
-            // 2. Lớp Quần Áo & Thân Người (Hình 2 & 3)
-            let outfitSVG = '';
-            if (outfit === 'starSweater') {
-                // Áo len đen ngôi sao vàng + quần jeans ống rộng + túi đeo vai đỏ giống hệt Hình 3
-                outfitSVG = `
-                    <!-- Quần jeans xanh ống rộng xắn gấu -->
-                    <path d="M56 156 L50 206 L78 206 L80 168 L82 206 L110 206 L104 156 Z" fill="#93b7cc" stroke="#1e242b" stroke-width="2.2"/>
-                    <rect x="48" y="198" width="31" height="9" rx="2" fill="#b6d0e2" stroke="#1e242b" stroke-width="2"/>
-                    <rect x="81" y="198" width="31" height="9" rx="2" fill="#b6d0e2" stroke="#1e242b" stroke-width="2"/>
-                    <!-- Giày sneaker trắng đỏ -->
-                    <path d="M48 207 Q48 216 64 216 L76 216 L76 207 Z" fill="#ffffff" stroke="#1e242b" stroke-width="2"/>
-                    <path d="M52 211 L72 211" stroke="#dc2626" stroke-width="3"/>
-                    <path d="M84 207 L84 216 L96 216 Q112 216 112 207 Z" fill="#ffffff" stroke="#1e242b" stroke-width="2"/>
-                    <path d="M88 211 L108 211" stroke="#dc2626" stroke-width="3"/>
-                    <!-- Túi đeo vai màu đỏ (Hình 3) -->
-                    <path d="M98 112 C126 120, 130 158, 102 164 Z" fill="#b91c1c" stroke="#1e242b" stroke-width="2"/>
-                    <!-- Áo len đen form rộng -->
-                    <path d="M48 110 C34 122, 36 154, 52 160 L108 160 C124 154, 126 122, 112 110 Z" fill="#18181b" stroke="#1e242b" stroke-width="2.2"/>
-                    <!-- Dây túi đỏ vắt qua vai -->
-                    <path d="M94 110 Q102 135 106 158" stroke="#b91c1c" stroke-width="5" fill="none"/>
-                    <!-- Ngôi sao vàng lớn giữa áo -->
-                    <polygon points="80,121 84,130 94,131 86,138 88,148 80,143 72,148 74,138 66,131 76,130" fill="#facc15" stroke="#1e242b" stroke-width="1.2"/>
-                `;
-            } else if (outfit === 'heartTee') {
-                // Áo thun trắng có hình trái tim/túi đen nhỏ ở ngực giống Hình 2
-                outfitSVG = `
-                    <path d="M56 156 L54 206 L78 206 L80 170 L82 206 L106 206 L104 156 Z" fill="#475569" stroke="#1e242b" stroke-width="2"/>
-                    <path d="M46 110 C34 124, 38 152, 54 158 L106 158 C122 152, 126 124, 114 110 Z" fill="#ffffff" stroke="#1e242b" stroke-width="2.2"/>
-                    <path d="M74 128 L86 128 L85 138 L80 143 L75 138 Z" fill="#1e242b"/>
-                `;
-            } else if (outfit === 'preppy') {
-                // Áo sơ mi trắng + Cà vạt đỏ Preppy + Chân váy xếp ly
-                outfitSVG = `
-                    <path d="M52 155 L46 186 L114 186 L108 155 Z" fill="#1e293b" stroke="#1e242b" stroke-width="2"/>
-                    <rect x="60" y="186" width="12" height="24" fill="#fde68a" stroke="#1e242b" stroke-width="2"/>
-                    <rect x="88" y="186" width="12" height="24" fill="#fde68a" stroke="#1e242b" stroke-width="2"/>
-                    <path d="M48 110 C36 122, 40 152, 54 156 L106 156 C120 152, 124 122, 112 110 Z" fill="#ffffff" stroke="#1e242b" stroke-width="2.2"/>
-                    <polygon points="80,114 85,122 82,146 80,150 78,146 75,122" fill="#e11d48" stroke="#1e242b" stroke-width="1.5"/>
-                `;
-            } else {
-                // Áo khoác Denim + Quần Cargo
-                outfitSVG = `
-                    <path d="M56 156 L50 206 L78 206 L80 168 L82 206 L110 206 L104 156 Z" fill="#57534e" stroke="#1e242b" stroke-width="2.2"/>
-                    <path d="M46 110 C34 122, 36 154, 52 160 L108 160 C124 154, 126 122, 114 110 Z" fill="#3b82f6" stroke="#1e242b" stroke-width="2.2"/>
-                    <rect x="66" y="112" width="28" height="46" fill="#ffffff" stroke="#1e242b" stroke-width="1.5"/>
-                `;
-            }
-
-            // 3. Khuôn mặt & Biểu cảm (6 biểu cảm chuẩn Hình 2 & Hình 3)
-            let faceSVG = '';
-            if (expr === 'cute') {
-                // Mắt to tròn đen láy + lông mày chấm tròn + má hồng cam của Hình 3 (@Bina)
-                faceSVG = `
-                    <circle cx="67" cy="60" r="2.2" fill="#141414"/>
-                    <circle cx="93" cy="60" r="2.2" fill="#141414"/>
-                    <ellipse cx="62" cy="76" rx="10" ry="11" fill="#ffffff" stroke="#141414" stroke-width="2"/>
-                    <circle cx="65" cy="76" r="7.5" fill="#141414"/>
-                    <circle cx="62" cy="73" r="2" fill="#ffffff"/>
-                    <ellipse cx="98" cy="76" rx="10" ry="11" fill="#ffffff" stroke="#141414" stroke-width="2"/>
-                    <circle cx="95" cy="76" r="7.5" fill="#141414"/>
-                    <circle cx="92" cy="73" r="2" fill="#ffffff"/>
-                    <ellipse cx="52" cy="88" rx="7" ry="4" fill="#f97316" opacity="0.35"/>
-                    <ellipse cx="108" cy="88" rx="7" ry="4" fill="#f97316" opacity="0.35"/>
-                    <path d="M77 91 Q80 89 83 91" stroke="#141414" stroke-width="2" fill="none" stroke-linecap="round"/>
-                `;
-            } else if (expr === 'aaa') {
-                // Cười tít mắt miệng rộng "AAA!" giống Hình 2 (hàng đầu ở giữa)
-                faceSVG = `
-                    <path d="M52 72 Q62 62 72 72" stroke="#141414" stroke-width="3" fill="none" stroke-linecap="round"/>
-                    <path d="M88 72 Q98 62 108 72" stroke="#141414" stroke-width="3" fill="none" stroke-linecap="round"/>
-                    <path d="M58 80 Q80 78 102 80 C104 98, 56 98, 58 80 Z" fill="#ffffff" stroke="#141414" stroke-width="2.2"/>
-                    <path d="M62 87 L98 87" stroke="#141414" stroke-width="1.5"/>
-                    <ellipse cx="50" cy="84" rx="6" ry="3.5" fill="#fb7185" opacity="0.45"/>
-                    <ellipse cx="110" cy="84" rx="6" ry="3.5" fill="#fb7185" opacity="0.45"/>
-                `;
-            } else if (expr === 'xexe') {
-                // Cười nhe răng tinh quái "XE-XE-XE" giống Hình 2 (hàng 2 bên trái)
-                faceSVG = `
-                    <path d="M53 66 L71 71" stroke="#141414" stroke-width="2.5" stroke-linecap="round"/>
-                    <path d="M107 66 L89 71" stroke="#141414" stroke-width="2.5" stroke-linecap="round"/>
-                    <circle cx="63" cy="76" r="6.5" fill="#141414"/>
-                    <circle cx="61" cy="74" r="2" fill="#ffffff"/>
-                    <circle cx="97" cy="76" r="6.5" fill="#141414"/>
-                    <circle cx="95" cy="74" r="2" fill="#ffffff"/>
-                    <!-- Nụ cười nhe răng lệch tinh quái -->
-                    <path d="M62 85 L100 81 L96 93 Q78 96 62 85 Z" fill="#ffffff" stroke="#141414" stroke-width="2"/>
-                    <line x1="74" y1="84" x2="73" y2="91" stroke="#141414" stroke-width="1.5"/>
-                    <line x1="86" y1="83" x2="85" y2="92" stroke="#141414" stroke-width="1.5"/>
-                `;
-            } else if (expr === 'cool') {
-                // Đeo kính râm đen ngầu lòi + ngôi sao lấp lánh giống Hình 2 (hàng 3 bên phải)
-                faceSVG = `
-                    <polygon points="48,68 77,68 74,83 51,83" fill="#141414" stroke="#ffffff" stroke-width="1.5"/>
-                    <polygon points="83,68 112,68 109,83 86,83" fill="#141414" stroke="#ffffff" stroke-width="1.5"/>
-                    <line x1="75" y1="71" x2="85" y2="71" stroke="#141414" stroke-width="3"/>
-                    <line x1="54" y1="71" x2="62" y2="80" stroke="#ffffff" stroke-width="2"/>
-                    <line x1="89" y1="71" x2="97" y2="80" stroke="#ffffff" stroke-width="2"/>
-                    <path d="M74 90 Q84 93 90 86" stroke="#141414" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-                `;
-            } else if (expr === 'pout') {
-                // Mắt nhíu + phồng má dỗi giống Hình 2 (trung tâm & dưới giữa)
-                faceSVG = `
-                    <path d="M54 65 L72 72" stroke="#141414" stroke-width="3" stroke-linecap="round"/>
-                    <path d="M106 65 L88 72" stroke="#141414" stroke-width="3" stroke-linecap="round"/>
-                    <circle cx="64" cy="77" r="6.5" fill="#141414"/>
-                    <circle cx="96" cy="77" r="6.5" fill="#141414"/>
-                    <path d="M74 91 Q80 86 86 91" stroke="#141414" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-                    <path d="M90 87 C98 87, 98 95, 90 95" stroke="#141414" stroke-width="1.8" fill="#fed7aa"/>
-                `;
-            } else if (expr === 'blush') {
-                // Đỏ mặt gạch chéo ngại ngùng giống Hình 2 (dưới cùng bên trái)
-                faceSVG = `
-                    <circle cx="63" cy="76" r="7" fill="#141414"/>
-                    <circle cx="61" cy="73" r="2.2" fill="#ffffff"/>
-                    <circle cx="97" cy="76" r="7" fill="#141414"/>
-                    <circle cx="95" cy="73" r="2.2" fill="#ffffff"/>
-                    <ellipse cx="80" cy="86" rx="26" ry="7" fill="#fb7185" opacity="0.45"/>
-                    <line x1="60" y1="83" x2="56" y2="89" stroke="#e11d48" stroke-width="1.5"/>
-                    <line x1="68" y1="83" x2="64" y2="89" stroke="#e11d48" stroke-width="1.5"/>
-                    <line x1="96" y1="83" x2="92" y2="89" stroke="#e11d48" stroke-width="1.5"/>
-                    <line x1="104" y1="83" x2="100" y2="89" stroke="#e11d48" stroke-width="1.5"/>
-                    <path d="M73 92 Q76 89 80 92 Q84 95 87 92" stroke="#141414" stroke-width="2" fill="none"/>
-                `;
-            }
-
-            // 4. Lớp Tóc Mái & Phụ Kiện Kẹp Ngôi Sao Vàng + Kẹp Đỏ (Hình 3)
-            const frontHairAndClipsSVG = `
-                <!-- Tóc mái vòm ôm trán -->
-                <path d="M40 72 C36 38, 60 28, 80 28 C100 28, 124 38, 120 72 C112 56, 102 52, 92 58 C84 48, 72 48, 64 58 C54 52, 46 58, 40 72 Z" fill="${hairFill}"/>
-                <!-- Kẹp tóc ngôi sao màu vàng bên phải mái (Hình 3) -->
-                <polygon points="103,46 106,52 112,53 107,57 109,63 103,60 97,63 99,57 94,53 100,52" fill="#facc15" stroke="#141414" stroke-width="1.2"/>
-                <!-- Kẹp tóc bầu dục đỏ bên trái mái (Hình 3) -->
-                <ellipse cx="53" cy="58" rx="3.2" ry="6" transform="rotate(15 53 58)" fill="none" stroke="#dc2626" stroke-width="2.5"/>
-            `;
-
-            return `
-                <svg viewBox="0 0 160 225" class="w-full h-full drop-shadow-sm">
-                    ${backHairSVG}
-                    ${outfitSVG}
-                    <!-- Cổ -->
-                    <rect x="73" y="98" width="14" height="16" rx="4" fill="#fde2c8" stroke="#1e242b" stroke-width="2"/>
-                    <!-- Hai tai & Khuyên tai chấm đỏ (Hình 3) -->
-                    <circle cx="40" cy="78" r="8" fill="#fde2c8" stroke="#1e242b" stroke-width="2"/>
-                    <circle cx="39" cy="82" r="2.3" fill="#dc2626"/>
-                    <circle cx="120" cy="78" r="8" fill="#fde2c8" stroke="#1e242b" stroke-width="2"/>
-                    <circle cx="121" cy="82" r="2.3" fill="#dc2626"/>
-                    <!-- Khuôn mặt bầu bĩnh đáng yêu -->
-                    <rect x="42" y="40" width="76" height="62" rx="30" fill="#fde2c8" stroke="#1e242b" stroke-width="2.2"/>
-                    ${faceSVG}
-                    ${frontHairAndClipsSVG}
-                </svg>
-            `;
-        }
-
-        function renderCharacterEverywhere() {
-            const svgMarkup = buildCharacterSVG(state.character);
-            const cardContainer = document.getElementById('cardAvatarSVGContainer');
-            const studioContainer = document.getElementById('studioAvatarSVG');
-            const roamingContainer = document.getElementById('roamingAvatarSVGContainer');
-
-            if (cardContainer) cardContainer.innerHTML = svgMarkup;
-            if (studioContainer) studioContainer.innerHTML = svgMarkup;
-            if (roamingContainer) roamingContainer.innerHTML = svgMarkup;
-
-            // Cập nhật Background khung nhân vật
-            const bgClasses = ['bg-polka', 'bg-sketch', 'bg-doodle-grid', 'bg-starry'];
-            const miniBox = document.getElementById('miniAvatarPreviewBox');
-            const studioStage = document.getElementById('studioStageBg');
-            if (miniBox && studioStage) {
-                bgClasses.forEach(c => {
-                    miniBox.classList.remove(c);
-                    studioStage.classList.remove(c);
-                });
-                miniBox.classList.add(state.character.bg);
-                studioStage.classList.add(state.character.bg);
-            }
-
-            // Cập nhật tên & biểu cảm
-            const meta = EXPR_META[state.character.expr] || EXPR_META.cute;
-            document.getElementById('currentExprLabel').textContent = meta.label;
-            document.getElementById('companionMoodQuote').textContent = meta.quote;
-            document.getElementById('cardCompanionName').textContent = state.character.name.toUpperCase();
-            document.getElementById('roamingPetNameTag').textContent = `${state.character.name.toUpperCase()} • AI CHAT`;
-            document.getElementById('chatHeaderTitle').textContent = `Trò chuyện cùng ${state.character.name}`;
-            document.getElementById('companionNameInput').value = state.character.name;
-
-            // Đánh dấu các nút đang chọn trong phòng thay đồ
-            document.querySelectorAll('.avatar-opt').forEach(btn => {
-                const isSelected =
-                    btn.dataset.hair === state.character.hair ||
-                    btn.dataset.outfit === state.character.outfit ||
-                    btn.dataset.expr === state.character.expr ||
-                    btn.dataset.bg === state.character.bg;
-
-                if (isSelected) {
-                    btn.classList.remove('bg-white', 'text-[#1e242b]');
-                    btn.classList.add('bg-[#65b878]', 'text-white');
-                } else {
-                    btn.classList.remove('bg-[#65b878]', 'text-white');
-                    btn.classList.add('bg-white', 'text-[#1e242b]');
-                }
-            });
-        }
-
-        function setAvatarPart(part, value, ev) {
-            if (ev) ev.stopPropagation();
-            state.character[part] = value;
-            saveState();
-            renderCharacterEverywhere();
-            makePetReact(`Mình vừa đổi ${part === 'hair' ? 'kiểu tóc' : part === 'outfit' ? 'trang phục' : part === 'expr' ? 'biểu cảm' : 'phông nền'} mới nè! ✨`);
-        }
-
-        function updateCompanionName(val) {
-            state.character.name = val.trim() || 'Bina-chan';
-            saveState();
-            renderCharacterEverywhere();
-        }
-
-        function randomizeCharacter(ev) {
-            if (ev) ev.stopPropagation();
-            const hairs = ['buns', 'bob', 'ponytail', 'lowtwins'];
-            const outfits = ['starSweater', 'heartTee', 'preppy', 'denim'];
-            const exprs = ['cute', 'aaa', 'xexe', 'cool', 'pout', 'blush'];
-            const bgs = ['bg-polka', 'bg-sketch', 'bg-doodle-grid', 'bg-starry'];
-
-            state.character.hair = hairs[Math.floor(Math.random() * hairs.length)];
-            state.character.outfit = outfits[Math.floor(Math.random() * outfits.length)];
-            state.character.expr = exprs[Math.floor(Math.random() * exprs.length)];
-            state.character.bg = bgs[Math.floor(Math.random() * bgs.length)];
-            saveState();
-            renderCharacterEverywhere();
-            makePetReact('Tadaa! Diện mạo ngẫu nhiên mới toanh! AAA!! 🎉');
-        }
-
-        function triggerRandomExpression(ev) {
-            if (ev) ev.stopPropagation();
-            const exprs = ['cute', 'aaa', 'xexe', 'cool', 'pout', 'blush'];
-            const next = exprs[Math.floor(Math.random() * exprs.length)];
-            state.character.expr = next;
-            saveState();
-            renderCharacterEverywhere();
-            makePetReact(EXPR_META[next].quote);
-        }
-
-        // ==================== CƠ CHẾ NHÂN VẬT ẢO CHẠY TỚI CHỖ NGƯỜI DÙNG BẤM ====================
-       let petMoveTimeout = null;
-        let lastEdgeIndex = -1;
-
-       let petMoveTimeout = null;
-
-        // Nhân vật đứng yên ở đầu trang, chỉ nhún nhảy nhẹ và đổi câu nói tại chỗ
-        function movePetToClick(clientX, clientY, customMessage) {
-            makePetReact(customMessage);
-        }
-
-        function makePetReact(message) {
-            const bubble = document.getElementById('petSpeechBubble');
-            const petBody = document.getElementById('roamingPetBody');
-            const randomExprs = ['cute', 'aaa', 'xexe', 'cool', 'blush'];
-            state.character.expr = randomExprs[Math.floor(Math.random() * randomExprs.length)];
-            renderCharacterEverywhere();
-
-            if (bubble && message) bubble.textContent = message;
-            if (petBody) {
-                petBody.classList.remove('anim-idle', 'anim-run');
-                petBody.classList.add('anim-jump');
-                clearTimeout(petMoveTimeout);
-                petMoveTimeout = setTimeout(() => {
-                    petBody.classList.remove('anim-jump');
-                    petBody.classList.add('anim-idle');
-                }, 600);
-            }
-        }
-        // ==================== LOGIC BẢNG TUẦN & BẢNG THÁNG ====================
-        function calcStreak(habit) {
-            const all = [...(habit.historyDays || []), ...habit.days];
-            let lastIdx = all.lastIndexOf(true);
-            if (lastIdx === -1) return 0;
-            let count = 0;
-            for (let i = lastIdx; i >= 0; i--) {
-                if (all[i]) count++;
-                else break;
-            }
-            return count;
-        }
-
-        function toggleHabitDay(habitId, dayIdx, ev) {
-            if (ev) {
-                ev.stopPropagation();
-                movePetToClick(ev.clientX, ev.clientY);
-            }
-            const h = state.habits.find(item => item.id === habitId);
-            if (!h) return;
-            h.days[dayIdx] = !h.days[dayIdx];
-
-            if (h.days[dayIdx]) {
-                state.character.expr = Math.random() > 0.4 ? 'aaa' : 'cool';
-                makePetReact(`Tuyệt vời! Đã hoàn thành "${h.name}" ngày ${DAYS[dayIdx]}! 🌟`);
-            } else {
-                state.character.expr = 'pout';
-                makePetReact(`Ơ kìa, nhớ hoàn thành "${h.name}" sớm nhé! 😤`);
-            }
-
-            saveState();
-            renderAll();
-
-            // Pháo giấy khi hoàn thành cả ngày
-            if (state.habits.length > 0 && state.habits.every(item => item.days[dayIdx])) {
-                confetti({ particleCount: 90, spread: 65, origin: { y: 0.6 } });
-            }
-        }
-
-        function setCategoryFilter(cat, ev) {
-            if (ev) movePetToClick(ev.clientX, ev.clientY, `Đang lọc danh mục: ${cat.toUpperCase()} 🎯`);
-            state.categoryFilter = cat;
-            ['all', 'Kỹ năng', 'Tinh thần', 'Thể chất'].forEach(c => {
-                const btn = document.getElementById('filter-' + c);
-                if (btn) {
-                    if (c === cat) {
-                        btn.className = 'px-3 py-1 text-xs font-bold border-2 border-[#1e242b] bg-[#1e242b] text-white';
-                    } else {
-                        btn.className = 'px-3 py-1 text-xs font-bold border-2 border-[#1e242b] bg-white hover:bg-[#f4d35e]';
-                    }
-                }
-            });
-            renderWeekTable();
-        }
-
-        function switchSection(sec, ev) {
-            if (ev) movePetToClick(ev.clientX, ev.clientY);
-            ['week', 'month', 'avatar'].forEach(s => {
-                document.getElementById('section-' + s).classList.toggle('hidden', s !== sec);
-                const navBtn = document.getElementById('nav-' + s);
-                if (navBtn) {
-                    if (s === sec) {
-                        navBtn.className = 'px-3 py-1.5 bg-[#65b878] text-white border-2 border-[#1e242b] shadow-[2px_2px_0px_#1e242b]';
-                    } else {
-                        navBtn.className = 'px-3 py-1.5 bg-white hover:bg-[#f4d35e] border-2 border-[#1e242b] transition';
-                    }
-                }
-            });
-            if (sec === 'month') renderMonthlyView();
-        }
-
-        function renderWeekTable() {
-            const tbody = document.getElementById('habitTableBody');
-            const list = state.categoryFilter === 'all'
-                ? state.habits
-                : state.habits.filter(h => h.category === state.categoryFilter);
-
-            if (list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10" class="py-8 text-center text-xs font-bold text-slate-400">Chưa có thói quen nào trong mục này!</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = list.map(h => {
-                const streak = calcStreak(h);
-                const cells = h.days.map((done, dIdx) => `
-                    <td class="py-3 px-2 text-center border-r-2 border-[#1e242b]">
-                        <button onclick="toggleHabitDay(${h.id}, ${dIdx}, event)" class="w-8 h-8 border-2 border-[#1e242b] inline-flex items-center justify-center font-black text-sm transition ${
-                            done ? 'bg-[#65b878] text-white shadow-[2px_2px_0px_#1e242b]' : 'bg-[#f7f6f2] text-transparent hover:bg-[#f4d35e]/40'
-                        }">
-                            ✓
-                        </button>
-                    </td>
-                `).join('');
-
-                return `
-                    <tr class="hover:bg-[#f7f6f2] transition">
-                        <td class="py-3 px-4 border-r-2 border-[#1e242b]">
-                            <div class="flex items-center gap-2.5">
-                                <span class="w-8 h-8 border-2 border-[#1e242b] bg-[#f4d35e] flex items-center justify-center text-base">${h.icon}</span>
-                                <div>
-                                    <p class="font-extrabold text-xs sm:text-sm">${h.name}</p>
-                                    <span class="text-[10px] font-bold uppercase px-1.5 py-0.2 bg-slate-100 border border-[#1e242b]">${h.category}</span>
-                                </div>
-                            </div>
-                        </td>
-                        ${cells}
-                        <td class="py-3 px-3 text-center border-r-2 border-[#1e242b]">
-                            <span class="px-2 py-0.5 border-2 border-[#1e242b] text-xs font-black ${streak > 0 ? 'bg-[#f4d35e]' : 'bg-slate-100'}">
-                                🔥 ${streak}
-                            </span>
-                        </td>
-                        <td class="py-3 px-2 text-center">
-                            <button onclick="removeHabit(${h.id}, event)" class="text-xs font-black text-slate-400 hover:text-[#f26457]">✕</button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function renderStatsAndCharts() {
-            document.getElementById('headerWeekBadge').textContent = `TUẦN ${state.currentWeek}`;
-            document.getElementById('weekBadgePill').textContent = `TUẦN ${state.currentWeek} / THÁNG NÀY`;
-
-            const totalHabits = state.habits.length;
-            let weekDone = 0;
-            let monthDone = 0;
-            let bestStreak = 0;
-
-            state.habits.forEach(h => {
-                const wd = h.days.filter(Boolean).length;
-                const hd = (h.historyDays || []).filter(Boolean).length;
-                weekDone += wd;
-                monthDone += wd + hd;
-                const s = calcStreak(h);
-                if (s > bestStreak) bestStreak = s;
-            });
-
-            const weekPct = totalHabits > 0 ? Math.round((weekDone / (totalHabits * 7)) * 100) : 0;
-
-            document.getElementById('statWeekRate').textContent = `${weekPct}%`;
-            document.getElementById('cardChartPercent').textContent = `${weekPct}%`;
-            document.getElementById('statBestStreak').textContent = `${bestStreak} ngày`;
-            document.getElementById('cardBestStreakText').textContent = `${bestStreak} NGÀY`;
-            document.getElementById('statMonthCount').textContent = `${monthDone} lần`;
-
-            // Biểu đồ cột
-            const chart = document.getElementById('weeklyBarChart');
-            chart.innerHTML = DAYS.map((d, idx) => {
-                const cnt = state.habits.filter(h => h.days[idx]).length;
-                const pct = totalHabits > 0 ? Math.round((cnt / totalHabits) * 100) : 0;
-                const barColor = pct === 100 ? 'bg-[#65b878]' : pct >= 50 ? 'bg-[#f4d35e]' : 'bg-[#7cc6fe]';
-                return `
-                    <div class="flex flex-col items-center h-full justify-end">
-                        <span class="text-[10px] font-black mb-1">${cnt}/${totalHabits}</span>
-                        <div class="w-full h-24 border-2 border-[#1e242b] bg-[#f7f6f2] flex items-end p-0.5">
-                            <div class="w-full ${barColor} border-t border-[#1e242b] transition-all duration-300" style="height: ${Math.max(pct, 8)}%"></div>
-                        </div>
-                        <span class="text-[10px] font-extrabold mt-1">${d}</span>
-                    </div>
-                `;
-            }).join('');
-
-            // Điểm sáng & Cần chú ý
-            if (totalHabits > 0) {
-                const sorted = [...state.habits].map(h => ({ name: h.name, c: h.days.filter(Boolean).length })).sort((a, b) => b.c - a.c);
-                document.getElementById('highlightBestHabit').textContent = `${sorted[0].name} (${sorted[0].c}/7)`;
-                document.getElementById('highlightWeakHabit').textContent = `${sorted[sorted.length - 1].name} (${sorted[sorted.length - 1].c}/7)`;
-                document.getElementById('quickAISuggestion').textContent =
-                    weekPct >= 75
-                        ? `Phong độ tuần này đạt ${weekPct}% cực kỳ ấn tượng! Hãy giữ vững "${sorted[0].name}" và kéo "${sorted[sorted.length - 1].name}" lên cùng nhé!`
-                        : `Mẹo nhỏ từ ${state.character.name}: Hãy thực hiện "${sorted[sorted.length - 1].name}" chỉ trong 2 phút ngay sau khi làm "${sorted[0].name}" để tạo phản xạ tự nhiên!`;
-            }
-        }
-
-        // ==================== TỔNG KẾT TUẦN & LƯU VÀO BẢNG THÁNG ====================
-        function getWeeklyAnalysisData() {
-            const total = state.habits.length;
-            if (total === 0) return { pct: 0, rank: 'Chưa có mục tiêu', best: '-', weak: '-', solutions: ['Hãy thêm thói quen mới!'] };
-
-            const sorted = [...state.habits].map(h => ({ name: h.name, c: h.days.filter(Boolean).length })).sort((a, b) => b.c - a.c);
-            const done = sorted.reduce((s, i) => s + i.c, 0);
-            const pct = Math.round((done / (total * 7)) * 100);
-            const best = `${sorted[0].name} (${sorted[0].c}/7)`;
-            const weak = `${sorted[sorted.length - 1].name} (${sorted[sorted.length - 1].c}/7)`;
-
-            let rank = '🌱 HẠNG KHỞI ĐỘNG';
-            let solutions = [];
-            if (pct >= 80) {
-                rank = '🏆 HẠNG KIM CƯƠNG - KỶ LUẬT ĐỈNH CAO';
-                solutions = [
-                    `<strong>Khen ngợi:</strong> Cậu duy trì <em>"${sorted[0].name}"</em> quá xuất sắc!`,
-                    `<strong>Chiến lược tuần mới:</strong> Ghép <em>"${sorted[sorted.length - 1].name}"</em> ngay sau khung giờ của <em>"${sorted[0].name}"</em> để đạt trọn vẹn 100%.`
-                ];
-            } else if (pct >= 50) {
-                rank = '⚡ HẠNG VÀNG - DUY TRÌ ỔN ĐỊNH';
-                solutions = [
-                    `<strong>Điểm mạnh:</strong> <em>"${sorted[0].name}"</em> là thói quen mỏ neo rất tốt của cậu.`,
-                    `<strong>Hướng giải quyết cho "${sorted[sorted.length - 1].name}":</strong> Đừng đợi tới tối muộn mới làm. Hãy đẩy lên đầu buổi sáng hoặc giờ nghỉ trưa.`
-                ];
-            } else {
-                rank = '🌱 HẠNG KHỞI ĐỘNG - ÁP DỤNG QUY TẮC 2 PHÚT';
-                solutions = [
-                    `<strong>Đừng áp lực:</strong> Tuần qua đạt ${pct}%, nhưng cậu vẫn giữ được <em>"${sorted[0].name}"</em>.`,
-                    `<strong>Giải pháp tuần tới:</strong> Thu nhỏ mục tiêu <em>"${sorted[sorted.length - 1].name}"</em> xuống chỉ còn 2 phút thực hiện mỗi ngày để lấy lại đà liên tiếp.`
-                ];
-            }
-            return { pct, rank, best, weak, solutions };
-        }
-
-        function openWeeklyReviewModal(ev) {
-            if (ev) ev.stopPropagation();
-            const data = getWeeklyAnalysisData();
-            document.getElementById('modalReviewTitle').textContent = `TỔNG KẾT TUẦN ${state.currentWeek} & HƯỚNG GIẢI QUYẾT`;
-            document.getElementById('modalScorePct').textContent = `${data.pct}%`;
-            document.getElementById('modalRankName').textContent = data.rank;
-            document.getElementById('modalBestHabit').textContent = data.best;
-            document.getElementById('modalWeakHabit').textContent = data.weak;
-            document.getElementById('modalSolutionsList').innerHTML = data.solutions.map(s => `<p>• ${s}</p>`).join('');
-            document.getElementById('weeklyReviewModal').classList.remove('hidden');
-        }
-
-        function closeWeeklyReviewModal() {
-            document.getElementById('weeklyReviewModal').classList.add('hidden');
-        }
-
-        function confirmArchiveAndNewWeek() {
-            const data = getWeeklyAnalysisData();
-            const d = new Date();
-            state.pastWeeks.unshift({
-                week: state.currentWeek,
-                date: `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`,
-                pct: data.pct,
-                rank: data.rank,
-                best: data.best,
-                weak: data.weak,
-                advice: data.solutions[1] || data.solutions[0]
-            });
-
-            state.habits.forEach(h => {
-                if (!h.historyDays) h.historyDays = [];
-                h.historyDays.push(...h.days);
-                if (h.historyDays.length > 21) h.historyDays = h.historyDays.slice(h.historyDays.length - 21);
-                h.days = [false, false, false, false, false, false, false];
-            });
-
-            state.currentWeek += 1;
-            saveState();
-            closeWeeklyReviewModal();
-            renderAll();
-            switchSection('month');
-            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-            makePetReact('Đã lưu thành tích vào Bảng Tháng và mở sang tuần mới tinh khôi! AAA!! 🎉');
-        }
-
-        function renderMonthlyView() {
-            const container = document.getElementById('monthlyMatrixContainer');
-            container.innerHTML = state.habits.map(h => {
-                const combined = [...(h.historyDays || []), ...h.days];
-                const totalDone = combined.filter(Boolean).length;
-                let boxes = '';
-                for (let i = 0; i < 28; i++) {
-                    const done = combined[i] === true;
-                    boxes += `
-                        <div class="w-7 h-7 border-2 border-[#1e242b] flex items-center justify-center text-[10px] font-black ${
-                            done ? 'bg-[#65b878] text-white' : 'bg-white text-slate-400'
-                        }">
-                            ${i + 1}
-                        </div>
-                    `;
-                }
-                return `
-                    <div class="brutal-box p-4 bg-white flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <span class="text-lg">${h.icon}</span>
-                                <h4 class="font-extrabold text-sm uppercase">${h.name}</h4>
-                            </div>
-                            <p class="text-xs font-bold text-slate-600 mt-1">Tổng tích lũy tháng: <span class="text-[#65b878] font-black">${totalDone} / 28 ngày</span></p>
-                        </div>
-                        <div class="flex flex-wrap gap-1.5">${boxes}</div>
-                    </div>
-                `;
-            }).join('');
-
-            const archiveGrid = document.getElementById('pastWeeksArchiveGrid');
-            if (state.pastWeeks.length === 0) {
-                archiveGrid.innerHTML = `<div class="col-span-2 p-6 text-center text-xs font-bold text-slate-500 border-2 border-dashed border-[#1e242b]">Chưa có tuần nào được chốt. Cuối tuần hãy bấm "Chốt Tuần ★" để lưu vào đây nhé!</div>`;
-            } else {
-                archiveGrid.innerHTML = state.pastWeeks.map(w => `
-                    <div class="p-4 border-2 border-[#1e242b] bg-[#f7f6f2] space-y-2 text-xs">
-                        <div class="flex justify-between items-center">
-                            <span class="px-2 py-0.5 bg-[#f4d35e] border border-[#1e242b] font-black">TUẦN ${w.week}</span>
-                            <span class="font-bold text-slate-500">${w.date}</span>
-                        </div>
-                        <p class="font-extrabold text-sm">${w.rank} — <span class="text-[#65b878]">${w.pct}%</span></p>
-                        <p>🌟 Tốt nhất: <strong>${w.best}</strong> | ⚠️ Cần chú ý: <strong>${w.weak}</strong></p>
-                        <p class="text-slate-600">${w.advice}</p>
-                    </div>
-                `).join('');
-            }
-        }
-
-        function resetMonthlyHistory(ev) {
-            if (ev) ev.stopPropagation();
-            if (!confirm('Xóa lịch sử các tuần cũ và đặt lại về Tuần 1?')) return;
-            state.pastWeeks = [];
-            state.currentWeek = 1;
-            state.habits.forEach(h => h.historyDays = []);
-            saveState();
-            renderAll();
-            renderMonthlyView();
-        }
-
-        // ==================== THÊM / XÓA THÓI QUEN ====================
-        function openAddHabitModal(ev) {
-            if (ev) ev.stopPropagation();
-            document.getElementById('addHabitModal').classList.remove('hidden');
-        }
-        function closeAddHabitModal() {
-            document.getElementById('addHabitModal').classList.add('hidden');
-        }
-        function createNewHabit() {
-            const nameEl = document.getElementById('inputHabitName');
-            const catEl = document.getElementById('inputHabitCat');
-            const iconEl = document.getElementById('inputHabitIcon');
-            const name = nameEl.value.trim();
-            if (!name) return alert('Hãy nhập tên mục tiêu!');
-
-            state.habits.push({
-                id: Date.now(),
-                name,
-                category: catEl.value,
-                icon: iconEl.value.trim() || '⭐',
-                days: [false, false, false, false, false, false, false],
-                historyDays: []
-            });
-            nameEl.value = '';
-            saveState();
-            closeAddHabitModal();
-            renderAll();
-            makePetReact(`Đã thêm mục tiêu "${name}"! Mình cùng chinh phục nhé! ✨`);
-        }
-        function removeHabit(id, ev) {
-            if (ev) ev.stopPropagation();
-            if (!confirm('Xóa mục tiêu này?')) return;
-            state.habits = state.habits.filter(h => h.id !== id);
-            saveState();
-            renderAll();
-        }
-
-        // ==================== TRỢ LÝ AI TRÒ CHUYỆN & LÊN PLAN PHÁT TRIỂN BẢN THÂN ====================
-        function toggleAIChat(ev) {
-            if (ev) ev.stopPropagation();
-            const drawer = document.getElementById('aiChatDrawer');
-            drawer.classList.toggle('hidden');
-            const chatBox = document.getElementById('chatMessagesBox');
-            if (chatBox.children.length === 0) {
-                appendChatMessage('ai', `Chào cậu! Mình là <strong>${state.character.name}</strong> đây! 🎀<br>Cậu muốn mình <strong>lên Plan phát triển bản thân</strong>, chia khung giờ cho ${state.habits.length} thói quen trên bảng hay gỡ rối bệnh trì hoãn nào?`);
-            }
-        }
-
-        function toggleApiKeyBox() {
-            document.getElementById('apiKeyConfigBox').classList.toggle('hidden');
-            document.getElementById('geminiApiKeyInput').value = state.geminiApiKey || '';
-        }
-
-        function saveGeminiKey() {
-            state.geminiApiKey = document.getElementById('geminiApiKeyInput').value.trim();
-            saveState();
-            document.getElementById('apiKeyConfigBox').classList.add('hidden');
-            appendChatMessage('ai', state.geminiApiKey ? 'Đã lưu Gemini API Key! Giờ mình có thể trò chuyện sâu mọi chủ đề cùng cậu rồi! ✨' : 'Đã chuyển về chế độ Cố vấn Lập Kế Hoạch Nội Bộ miễn phí!');
-        }
-
-        function appendChatMessage(role, htmlText) {
-            const box = document.getElementById('chatMessagesBox');
-            const msgDiv = document.createElement('div');
-            if (role === 'user') {
-                msgDiv.className = 'flex justify-end';
-                msgDiv.innerHTML = `<div class="max-w-[82%] p-2.5 bg-[#f4d35e] border-2 border-[#1e242b] shadow-[2px_2px_0px_#1e242b] font-semibold">${htmlText}</div>`;
-            } else {
-                msgDiv.className = 'flex justify-start items-start gap-2';
-                msgDiv.innerHTML = `
-                    <span class="w-7 h-7 rounded-full border-2 border-[#1e242b] bg-[#65b878] text-white flex items-center justify-center font-black shrink-0">AI</span>
-                    <div class="max-w-[85%] p-2.5 bg-white border-2 border-[#1e242b] shadow-[2px_2px_0px_#1e242b] leading-relaxed">${htmlText}</div>
-                `;
-            }
-            box.appendChild(msgDiv);
-            box.scrollTop = box.scrollHeight;
-        }
-
-        function sendQuickPrompt(text) {
-            document.getElementById('chatUserInput').value = text;
-            handleSendChat();
-        }
-
-        async function handleSendChat() {
-            const input = document.getElementById('chatUserInput');
-            const query = input.value.trim();
-            if (!query) return;
-            input.value = '';
-            appendChatMessage('user', query);
-
-            // Biểu cảm nhân vật hào hứng khi trả lời
-            state.character.expr = 'aaa';
-            renderCharacterEverywhere();
-
-            // Nếu người dùng có nhập Gemini API Key thì gọi Gemini thật, nếu không dùng bộ não AI Lên Plan tích hợp sẵn
-            if (state.geminiApiKey) {
-                try {
-                    const habitSummary = state.habits.map(h => `${h.name} (${h.days.filter(Boolean).length}/7 ngày)`).join(', ');
-                    const sysPrompt = `Bạn là nhân vật ảo dễ thương tên ${state.character.name} trong sổ tay Fumayo Habit. Hãy xưng "mình" và gọi người dùng là "cậu", giọng văn ấm áp, thông minh, hay dùng biểu cảm "AAA!", "XE-XE~". Dữ liệu thói quen hiện tại của người dùng: ${habitSummary}. Hãy trả lời ngắn gọn, chia gạch đầu dòng rõ ràng để giúp người dùng lên kế hoạch phát triển bản thân. Câu hỏi: ${query}`;
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${state.geminiApiKey}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ contents: [{ parts: [{ text: sysPrompt }] }] })
-                    });
-                    const data = await res.json();
-                    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-                    if (reply) {
-                        appendChatMessage('ai', reply.replace(/\n/g, '<br>'));
-                        return;
-                    }
-                } catch (err) {
-                    // Fallback xuống bộ não tích hợp nếu API lỗi
-                }
-            }
-
-            // Bộ não Cố Vấn Lên Plan Tích Hợp Sẵn (Đọc trực tiếp dữ liệu bảng thói quen của người dùng)
-            setTimeout(() => {
-                const reply = generateSmartLocalPlan(query);
-                appendChatMessage('ai', reply);
-            }, 350);
-        }
-
-        function generateSmartLocalPlan(q) {
-            const lower = q.toLowerCase();
-            const sorted = [...state.habits].map(h => ({ name: h.name, c: h.days.filter(Boolean).length, cat: h.category })).sort((a, b) => b.c - a.c);
-            const best = sorted[0] ? sorted[0].name : 'mục tiêu chính';
-            const weak = sorted[sorted.length - 1] ? sorted[sorted.length - 1].name : 'mục tiêu mới';
-
-            if (lower.includes('plan') || lower.includes('kế hoạch') || lower.includes('lịch') || lower.includes('tuần')) {
-                return `
-                    <strong>📅 PLAN PHÁT TRIỂN BẢN THÂN CHO CẬU (Gợi ý từ ${state.character.name}):</strong><br>
-                    • <strong>Buổi sáng (Khởi động 15p):</strong> Thực hiện <em>"${weak}"</em> ngay khi tâm trí còn tỉnh táo nhất (chỉ cần 5-10 phút để giữ chuỗi!).<br>
-                    • <strong>Buổi chiều (Năng lượng vận động):</strong> Dành 15-20p cho nhóm <em>Thể chất / Kỹ năng</em> để giải phóng căng thẳng.<br>
-                    • <strong>Buổi tối (Thư giãn):</strong> Duy trì thế mạnh <em>"${best}"</em> và đánh dấu vào sổ tay trước 22h00.<br>
-                    ✨ <em>Bí quyết: Đừng cố làm hoàn hảo cả 7 ngày ngay lập tức, chỉ cần không bỏ trống 2 ngày liên tiếp là cậu đã thắng rồi! AAA!</em>
-                `;
-            }
-            if (lower.includes('trì hoãn') || lower.includes('lười') || lower.includes('nản')) {
-                return `
-                    <strong>⚡ CÔNG THỨC PHÁ BĂNG TRÌ HOÃN "XE-XE":</strong><br>
-                    1. <strong>Quy tắc 2 Phút:</strong> Với <em>"${weak}"</em>, cậu hãy tự nhủ "Mình chỉ làm đúng 2 phút thôi rồi nghỉ". Khi đã bắt đầu, não bộ sẽ tự muốn làm tiếp!<br>
-                    2. <strong>Bắt cặp thói quen (Habit Stacking):</strong> Làm <em>"${weak}"</em> ngay sau khi cậu vừa hoàn thành <em>"${best}"</em>.<br>
-                    3. <strong>Thưởng ngay lập tức:</strong> Mỗi lần tích xanh trên bảng, hãy bấm vào mình để mình nhảy ăn mừng cùng cậu nhé!
-                `;
-            }
-            if (lower.includes('phân tích') || lower.includes('tiến độ') || lower.includes('đánh giá')) {
-                const analysis = getWeeklyAnalysisData();
-                return `
-                    <strong>📊 PHÂN TÍCH NHANH BẢNG TUẦN ${state.currentWeek}:</strong><br>
-                    • <strong>Tỷ lệ hiện tại:</strong> ${analysis.pct}% (${analysis.rank})<br>
-                    • <strong>Thói quen trụ cột:</strong> ${analysis.best}<br>
-                    • <strong>Điểm cần bứt phá:</strong> ${analysis.weak}<br>
-                    👉 <em>Lời khuyên: Hôm nay cậu chỉ cần hoàn thành thêm 1 ô của "${weak}" là biểu đồ tuần sẽ tăng vọt ngay!</em>
-                `;
-            }
-            return `
-                <strong>🌟 ${state.character.name} gợi ý cho cậu nè:</strong><br>
-                Để phát triển bản thân bền vững với <strong>${state.habits.length} thói quen</strong> hiện tại, cậu hãy chia làm 3 tầng ưu tiên:<br>
-                • <strong>Ưu tiên số 1 (Giữ lửa):</strong> Giữ chuỗi cho <em>"${best}"</em>.<br>
-                • <strong>Ưu tiên số 2 (Bù đắp):</strong> Dành 5 phút mỗi ngày cho <em>"${weak}"</em>.<br>
-                • <strong>Ưu tiên số 3 (Tự thưởng):</strong> Cuối tuần bấm nút <strong>"Chốt Tuần ★"</strong> để lưu vào Bảng Tháng 28 ngày nhé! Cậu cần mình chia khung giờ cụ thể cho buổi sáng hay buổi tối nào?
-            `;
-        }
-
-        // ==================== 1. DANH NGÔN NGƯỜI NỔI TIẾNG THAY ĐỔI MỖI NGÀY ====================
-        const FAMOUS_QUOTES = [
-            { quote: "Chúng ta là những gì chúng ta lặp đi lặp lại mỗi ngày. Sự xuất sắc không phải là một hành động, mà là một thói quen.", author: "Aristotle — Triết gia Hy Lạp cổ đại" },
-            { quote: "Mỗi hành động bạn thực hiện đều là một lá phiếu bầu cho kiểu người mà bạn muốn trở thành.", author: "James Clear — Tác giả sách Atomic Habits" },
-            { quote: "Bạn không cần phải vĩ đại mới bắt đầu, nhưng bạn phải bắt đầu thì mới có thể trở nên vĩ đại.", author: "Zig Ziglar — Diễn giả & Tác giả truyền cảm hứng" },
-            { quote: "Kỷ luật là cây cầu nối giữa mục tiêu và thành tựu của bạn.", author: "Jim Rohn — Chuyên gia huấn luyện phát triển cá nhân" },
-            { quote: "Hãy biến mỗi ngày của bạn thành tác phẩm nghệ thuật tuyệt vời nhất.", author: "John Wooden — Huấn luyện viên huyền thoại" },
-            { quote: "Tương lai phụ thuộc vào những gì bạn làm trong ngày hôm nay, chứ không phải ngày mai.", author: "Mahatma Gandhi — Anh hùng dân tộc Ấn Độ" },
-            { quote: "Thành công là tổng hợp của những nỗ lực nhỏ bé được lặp đi lặp lại ngày này qua ngày khác.", author: "Robert Collier — Tác giả sách phát triển bản thân" }
-        ];
-
-        function renderDailyFamousQuote() {
-            const now = new Date();
-            const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
-            const item = FAMOUS_QUOTES[dayOfYear % FAMOUS_QUOTES.length];
-            const qEl = document.getElementById('dailyFamousQuote');
-            const aEl = document.getElementById('dailyFamousAuthor');
-            const dEl = document.getElementById('dailyQuoteDateBadge');
-            if (qEl) qEl.textContent = `"${item.quote}"`;
-            if (aEl) aEl.textContent = `— ${item.author}`;
-            if (dEl) dEl.textContent = `• NGÀY ${now.getDate()}/${now.getMonth() + 1}`;
-        }
-
-        // ==================== 2. NHẬT KÝ NGẮN MỖI NGÀY & TỔNG KẾT TUẦN ====================
-        const DIARY_EMOJIS = [
-            { icon: '🥰', label: 'Hạnh phúc' },
-            { icon: '✨', label: 'Năng lượng' },
-            { icon: '😊', label: 'Bình yên' },
-            { icon: '🤔', label: 'Suy tư' },
-            { icon: '😮‍💨', label: 'Hơi mệt' },
-            { icon: '🌧️', label: 'Tụt mood' }
-        ];
-
-        if (!state.diary) {
-            state.diary = DAYS.map(() => ({ emoji: '😊', label: 'Bình yên', note: '' }));
-        }
-        let activeDiaryDay = (new Date().getDay() + 6) % 7; // Mặc định chọn đúng thứ hôm nay (T2=0 ... CN=6)
-
-        function selectDiaryDay(idx) {
-            activeDiaryDay = idx;
-            renderDiarySection();
-        }
-
-        function selectDiaryEmoji(emoji, label) {
-            state.diary[activeDiaryDay].emoji = emoji;
-            state.diary[activeDiaryDay].label = label;
-            saveState();
-            renderDiarySection();
-        }
-
-        function saveDailyDiary() {
-            const noteVal = document.getElementById('diaryNoteInput').value.trim();
-            state.diary[activeDiaryDay].note = noteVal;
-            saveState();
-            renderDiarySection();
-            makePetReact(`Đã lưu nhật ký ngày ${DAYS[activeDiaryDay]} (${state.diary[activeDiaryDay].emoji})! Cậu làm tốt lắm! ✨`);
-        }
-
-        function renderDiarySection() {
-            const tabsEl = document.getElementById('diaryDayTabs');
-            const emojiEl = document.getElementById('diaryEmojiSelector');
-            const noteInput = document.getElementById('diaryNoteInput');
-            const stripEl = document.getElementById('diaryWeekStrip');
-            if (!tabsEl || !emojiEl || !noteInput || !stripEl) return;
-
-            tabsEl.innerHTML = DAYS.map((d, i) => `
-                <button onclick="selectDiaryDay(${i})" class="px-3 py-1 border-2 border-[#1e242b] text-xs font-black ${
-                    i === activeDiaryDay ? 'bg-[#f26457] text-white shadow-[2px_2px_0px_#1e242b]' : 'bg-white hover:bg-[#f4d35e]'
-                }">
-                    ${d} ${state.diary[i]?.note ? '✓' : ''}
-                </button>
-            `).join('');
-
-            const cur = state.diary[activeDiaryDay] || { emoji: '😊', label: 'Bình yên', note: '' };
-            emojiEl.innerHTML = DIARY_EMOJIS.map(e => `
-                <button onclick="selectDiaryEmoji('${e.icon}', '${e.label}')" class="px-2.5 py-1.5 border-2 border-[#1e242b] text-xs font-bold flex items-center gap-1 ${
-                    cur.emoji === e.icon ? 'bg-[#f4d35e] shadow-[2px_2px_0px_#1e242b]' : 'bg-white'
-                }">
-                    <span class="text-base">${e.icon}</span> <span>${e.label}</span>
-                </button>
-            `).join('');
-
-            noteInput.value = cur.note || '';
-
-            stripEl.innerHTML = DAYS.map((d, i) => {
-                const entry = state.diary[i] || { emoji: '😊', label: 'Bình yên', note: '' };
-                return `
-                    <div onclick="selectDiaryDay(${i})" class="cursor-pointer p-2 border-2 border-[#1e242b] bg-[#f7f6f2] hover:bg-[#f4d35e]/30 text-[11px]">
-                        <div class="flex justify-between items-center font-black">
-                            <span>${d}</span>
-                            <span class="text-base">${entry.emoji}</span>
-                        </div>
-                        <p class="text-[10px] text-slate-600 truncate mt-1">${entry.note || 'Chưa ghi chú...'}</p>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // ==================== 3. TỰ ĐỘNG RESET VÀO THỨ 2 HÀNG TUẦN & LƯU BẢNG THÁNG ====================
-        function getMondayKey(d) {
-            const date = new Date(d);
-            const day = date.getDay();
-            const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-            const monday = new Date(date.setDate(diff));
-            return `${monday.getFullYear()}-${monday.getMonth() + 1}-${monday.getDate()}`;
-        }
-
-        function checkAutoMondayReset() {
-            const currentMonday = getMondayKey(new Date());
-            if (!state.lastMondayKey) {
-                state.lastMondayKey = currentMonday;
-                saveState();
-                return;
-            }
-            // Nếu bước sang Thứ 2 của một tuần mới -> tự động lưu tuần cũ vào Bảng Tháng và reset các ô tick V
-            if (state.lastMondayKey !== currentMonday) {
-                const anyChecked = state.habits.some(h => h.days.some(Boolean));
-                if (anyChecked) {
-                    const data = getWeeklyAnalysisData();
-                    const diaryCount = (state.diary || []).filter(d => d.note).length;
-                    const moodList = (state.diary || []).map(d => d.emoji).join(' ');
-                    state.pastWeeks.unshift({
-                        week: state.currentWeek,
-                        date: `Tự động chốt Thứ 2 (${currentMonday})`,
-                        pct: data.pct,
-                        rank: data.rank,
-                        best: data.best,
-                        weak: data.weak,
-                        advice: `${data.solutions[0]} | 📔 Cảm xúc tuần: ${moodList} (${diaryCount}/7 ngày nhật ký)`
-                    });
-                    state.habits.forEach(h => {
-                        if (!h.historyDays) h.historyDays = [];
-                        h.historyDays.push(...h.days);
-                        if (h.historyDays.length > 21) h.historyDays = h.historyDays.slice(h.historyDays.length - 21);
-                        h.days = [false, false, false, false, false, false, false];
-                    });
-                    state.diary = DAYS.map(() => ({ emoji: '😊', label: 'Bình yên', note: '' }));
-                    state.currentWeek += 1;
-                }
-                state.lastMondayKey = currentMonday;
-                saveState();
-            }
-        }
-
-        // Bổ sung tổng kết cảm xúc Nhật ký vào Bảng Tổng Kết Tuần
-        const _origOpenReview = openWeeklyReviewModal;
-        openWeeklyReviewModal = function(ev) {
-            _origOpenReview(ev);
-            const diaryWritten = (state.diary || []).filter(d => d.note.trim() !== '').length;
-            const emojiRow = (state.diary || []).map((d, i) => `${DAYS[i]}:${d.emoji}`).join(' • ');
-            const solBox = document.getElementById('modalSolutionsList');
-            if (solBox) {
-                solBox.innerHTML += `
-                    <div class="mt-2 pt-2 border-t border-[#1e242b]">
-                        <p><strong>📔 Tổng kết Nhật ký & Cảm xúc tuần:</strong> Đã viết <strong>${diaryWritten}/7 ngày</strong> (${emojiRow}).</p>
-                    </div>
-                `;
-            }
-        };
-
-        // ==================== 4. NHẠC THEME 10 GIÂY PHONG CÁCH "TICK-TACK" (ILLIT) ====================
-        let isPlayingTheme = false;
-        function playTickTackTheme() {
-            if (isPlayingTheme) return;
-            const AudioCtx = window.AudioContext || window.webkitAudioContext;
-            if (!AudioCtx) return;
-            const ctx = new AudioCtx();
-            isPlayingTheme = true;
-
-            const btn = document.getElementById('btnPlayTheme');
-            if (btn) btn.textContent = '🎵 Đang phát Tick-Tack (10s)...';
-
-            // Giai điệu Chiptune / Synth-pop tươi sáng, nảy nhịp kiểu Tick-Tack (ILLIT) trong 10 giây
-            const bpm = 144;
-            const step = 60 / bpm / 2; // nốt móc đơn
-            const notes = [
-                659.25, 783.99, 880.00, 783.99, 1046.50, 0, 987.77, 783.99,
-                659.25, 783.99, 880.00, 1046.50, 1174.66, 1046.50, 880.00, 0,
-                587.33, 698.46, 880.00, 698.46, 987.77, 0, 880.00, 698.46,
-                659.25, 783.99, 987.77, 1046.50, 1318.51, 1046.50, 1046.50, 0
-            ];
-
-            const startTime = ctx.currentTime + 0.05;
-            const totalSteps = 48; // ~10 giây
-
-            for (let i = 0; i < totalSteps; i++) {
-                const freq = notes[i % notes.length];
-                const t = startTime + i * step;
-
-                // Tiếng "Tick-Tack" gõ nhịp dễ thương ở mỗi phách
-                const clickOsc = ctx.createOscillator();
-                const clickGain = ctx.createGain();
-                clickOsc.type = 'triangle';
-                clickOsc.frequency.setValueAtTime(i % 2 === 0 ? 1600 : 1200, t);
-                clickGain.gain.setValueAtTime(0.035, t);
-                clickGain.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
-                clickOsc.connect(clickGain);
-                clickGain.connect(ctx.destination);
-                clickOsc.start(t);
-                clickOsc.stop(t + 0.045);
-
-                // Giai điệu chính Kawaii Synth
-                if (freq > 0) {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.type = 'square';
-                    osc.frequency.setValueAtTime(freq, t);
-                    gain.gain.setValueAtTime(0.06, t);
-                    gain.gain.exponentialRampToValueAtTime(0.001, t + step * 0.85);
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.start(t);
-                    osc.stop(t + step * 0.9);
-                }
-            }
-
-            setTimeout(() => {
-                isPlayingTheme = false;
-                if (btn) btn.textContent = '🎶 Phát Nhạc Tick-Tack (10s)';
-                ctx.close();
-            }, 10000);
-        }
-
-        // Tự động phát nhạc chào mừng 10s ngay ở lần chạm đầu tiên khi vào web
-        let welcomedAudio = false;
-        window.addEventListener('pointerdown', () => {
-            if (!welcomedAudio) {
-                welcomedAudio = true;
-                playTickTackTheme();
-            }
-        }, { once: true });
-
-        function renderAll() {
-            checkAutoMondayReset();
-            renderCharacterEverywhere();
-            renderWeekTable();
-            renderStatsAndCharts();
-            renderDiarySection();
-            renderDailyFamousQuote();
-        }
-
-        renderAll();
-    </script>
+  </section>
+
+  <!-- ========== DANH NGÔN + NHẠC (FIX: chỉ còn 1 section, đã đóng đúng thẻ) ========== -->
+  <section class="px-6 sm:px-12 mt-10 relative z-10">
+    <div class="brutal-box p-6 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+      <div class="md:col-span-8 space-y-2.5">
+        <div class="inline-flex items-center gap-2 px-3 py-0.5 bg-[#f4d35e] border-2 border-[#1e242b] text-[11px] font-black uppercase"><span>🌟 THÔNG ĐIỆP PHÁT TRIỂN BẢN THÂN HÔM NAY</span><span id="dailyQuoteDateBadge" class="text-[#f26457]"></span></div>
+        <blockquote id="dailyFamousQuote" class="text-sm sm:text-base font-extrabold italic leading-relaxed bg-[#f7f6f2] p-4 border-2 border-[#1e242b]"></blockquote>
+        <p id="dailyFamousAuthor" class="text-xs font-black uppercase tracking-wider text-right text-[#f26457]"></p>
+      </div>
+      <div class="md:col-span-4 flex flex-col items-center justify-center gap-2 text-center border-t-2 md:border-t-0 md:border-l-2 border-[#1e242b] pt-4 md:pt-0 md:pl-4">
+        <span class="text-[11px] font-black uppercase text-slate-500">🎵 NHẠC CHÀO MỪNG (STYLE TICK-TACK - 10S)</span>
+        <button onclick="playTickTackTheme()" id="btnPlayTheme" class="brutal-btn w-full py-3 px-4 bg-[#f26457] text-white text-xs font-black uppercase tracking-wider">🎶 Phát Nhạc Tick-Tack (10s)</button>
+        <span class="text-[10px] font-semibold text-slate-500">*Tự động vang lên ở lần chạm đầu tiên khi mở sổ tay</span>
+      </div>
+    </div>
+  </section>
+</div><!-- FIX: đóng notebook-wrapper -->
+
+<!-- Nhân vật ảo -->
+<div id="roamingCompanion" onclick="toggleAIChat(event)" title="Bấm vào mình để trò chuyện & lên Plan nhé!">
+  <div id="petSpeechBubble" class="mb-1.5 px-3 py-1.5 bg-white border-2 border-[#1e242b] shadow-[3px_3px_0px_#1e242b] rounded-xl text-[11px] font-extrabold max-w-[210px] text-center">"Chào cậu! Tích hoàn thành mục tiêu để mình ăn mừng nha! ✨"</div>
+  <div id="roamingPetBody" class="anim-idle w-28 h-36 mx-auto relative flex items-center justify-center"><div id="roamingAvatarSVGContainer" class="w-full h-full"></div></div>
+  <div class="text-center"><span id="roamingPetNameTag" class="px-2 py-0.5 bg-[#f4d35e] border-2 border-[#1e242b] text-[10px] font-black uppercase shadow-[2px_2px_0px_#1e242b]">BINA-CHAN • AI CHAT</span></div>
+</div>
+
+<!-- Chat AI -->
+<div id="aiChatDrawer" class="fixed bottom-6 right-6 z-50 hidden w-[92vw] sm:w-[410px] brutal-box overflow-hidden">
+  <div class="bg-[#65b878] text-white p-3.5 border-b-2 border-[#1e242b] flex items-center justify-between">
+    <div class="flex items-center gap-2"><span class="text-xl">🌟</span><div><h4 id="chatHeaderTitle" class="font-extrabold text-sm uppercase leading-none">Trò Chuyện Cùng Bina-chan AI</h4><span class="text-[10px] opacity-90">Cố vấn lên Plan & Phát triển bản thân</span></div></div>
+    <div class="flex items-center gap-1.5">
+      <button onclick="toggleApiKeyBox()" title="Cài đặt Gemini API Key (Tùy chọn)" class="px-2 py-1 bg-white/20 hover:bg-white/30 text-[10px] font-bold rounded border border-white">🔑 API</button>
+      <button onclick="toggleAIChat(event)" aria-label="Đóng" class="w-7 h-7 bg-[#f26457] border-2 border-[#1e242b] text-white font-black text-xs">✕</button>
+    </div>
+  </div>
+  <div id="apiKeyConfigBox" class="hidden p-3 bg-[#f4d35e] border-b-2 border-[#1e242b] text-xs space-y-1.5">
+    <p class="font-bold text-[11px]">Nhập Gemini API Key (tùy chọn, để chat AI không giới hạn):</p>
+    <div class="flex gap-1.5"><input id="geminiApiKeyInput" type="password" placeholder="AIzaSy..." class="flex-1 px-2 py-1 border-2 border-[#1e242b] text-xs bg-white"><button onclick="saveGeminiKey()" class="px-3 py-1 bg-[#1e242b] text-white font-bold text-xs">Lưu</button></div>
+    <p class="text-[10px] text-slate-700">*Key chỉ lưu trên trình duyệt này. Nếu để trống, trợ lý nội bộ vẫn hoạt động miễn phí.</p>
+  </div>
+  <div id="chatMessagesBox" class="h-72 overflow-y-auto p-3.5 space-y-3 bg-[#f7f6f2] text-xs"></div>
+  <div class="px-3 py-2 bg-white border-t-2 border-[#1e242b] flex gap-1.5 overflow-x-auto text-[11px]">
+    <button onclick="sendQuickPrompt('Lên plan phát triển bản thân tuần này cho mình!')" class="shrink-0 px-2.5 py-1 border border-[#1e242b] bg-[#f4d35e] font-bold">📅 Lên Plan tuần mới</button>
+    <button onclick="sendQuickPrompt('Mình hay bị trì hoãn, làm sao để sửa?')" class="shrink-0 px-2.5 py-1 border border-[#1e242b] bg-[#7cc6fe]/40 font-bold">⚡ Trị bệnh trì hoãn</button>
+    <button onclick="sendQuickPrompt('Phân tích bảng thói quen hiện tại của mình')" class="shrink-0 px-2.5 py-1 border border-[#1e242b] bg-[#65b878]/30 font-bold">📊 Phân tích tiến độ</button>
+    <button onclick="sendQuickPrompt('Gợi ý lịch sinh hoạt buổi sáng tràn năng lượng')" class="shrink-0 px-2.5 py-1 border border-[#1e242b] bg-pink-100 font-bold">☀️ Routine buổi sáng</button>
+  </div>
+  <div class="p-3 bg-white border-t-2 border-[#1e242b] flex gap-2">
+    <input id="chatUserInput" type="text" placeholder="Hỏi cách lên plan, chia thời gian, tâm sự..." onkeydown="if(event.key==='Enter')handleSendChat()" class="flex-1 px-3 py-2 border-2 border-[#1e242b] text-xs font-medium focus:outline-none">
+    <button onclick="handleSendChat()" class="brutal-btn px-4 py-2 bg-[#f26457] text-white text-xs font-extrabold uppercase">Gửi</button>
+  </div>
+</div>
+
+<!-- Modal tổng kết tuần -->
+<div id="weeklyReviewModal" class="fixed inset-0 z-50 hidden bg-black/50 flex items-center justify-center p-4">
+  <div class="brutal-box max-w-lg w-full overflow-hidden max-h-[92vh] overflow-y-auto">
+    <div class="bg-[#f4d35e] p-4 border-b-2 border-[#1e242b] flex justify-between items-center">
+      <h3 id="modalReviewTitle" class="font-extrabold text-base uppercase">BẢN TỔNG KẾT TUẦN 1 & GIẢI PHÁP</h3>
+      <button onclick="closeWeeklyReviewModal()" aria-label="Đóng" class="w-7 h-7 bg-white border-2 border-[#1e242b] font-black text-xs">✕</button>
+    </div>
+    <div class="p-5 space-y-4 text-xs">
+      <div class="grid grid-cols-2 border-2 border-[#1e242b]">
+        <div class="p-3 bg-[#65b878] text-white border-r-2 border-[#1e242b]"><p class="uppercase font-bold text-[10px]">Tỷ lệ đạt mục tiêu</p><p id="modalScorePct" class="text-3xl font-black mt-1">0%</p><p id="modalRankName" class="font-bold mt-1">Đang đánh giá...</p></div>
+        <div class="p-3 bg-[#f7f6f2] space-y-1.5 flex flex-col justify-center"><p>🌟 <strong>Tốt nhất:</strong> <span id="modalBestHabit">-</span></p><p>⚠️ <strong>Cần chú ý:</strong> <span id="modalWeakHabit">-</span></p></div>
+      </div>
+      <div class="space-y-2">
+        <h4 class="font-black uppercase text-xs bg-[#7cc6fe] inline-block px-2 py-0.5 border border-[#1e242b]">💡 HƯỚNG GIẢI QUYẾT CHO TUẦN TỚI:</h4>
+        <div id="modalSolutionsList" class="p-3.5 border-2 border-[#1e242b] bg-[#f7f6f2] space-y-2 leading-relaxed"></div>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-2.5 pt-2">
+        <button onclick="closeWeeklyReviewModal()" class="brutal-btn flex-1 py-2.5 bg-white font-extrabold uppercase">Để sau</button>
+        <button onclick="confirmArchiveAndNewWeek()" class="brutal-btn flex-1 py-2.5 bg-[#65b878] text-white font-extrabold uppercase">✓ Lưu Vào Bảng Tháng & Làm Mới Tuần</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal thêm thói quen -->
+<div id="addHabitModal" class="fixed inset-0 z-50 hidden bg-black/50 flex items-center justify-center p-4">
+  <div class="brutal-box max-w-md w-full overflow-hidden">
+    <div class="bg-[#65b878] text-white p-4 border-b-2 border-[#1e242b] flex justify-between items-center">
+      <h3 class="font-extrabold text-sm uppercase">THÊM MỤC TIÊU HẰNG NGÀY MỚI</h3>
+      <button onclick="closeAddHabitModal()" aria-label="Đóng" class="w-7 h-7 bg-white text-[#1e242b] border-2 border-[#1e242b] font-black text-xs">✕</button>
+    </div>
+    <div class="p-5 space-y-3.5 text-xs">
+      <div><label for="inputHabitName" class="font-black uppercase block mb-1">Tên thói quen / Mục tiêu:</label><input id="inputHabitName" type="text" placeholder="VD: Luyện thanh 15p, Học tiếng Trung, Đọc sách..." class="w-full px-3 py-2 border-2 border-[#1e242b] font-semibold"></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label for="inputHabitCat" class="font-black uppercase block mb-1">Danh mục:</label>
+          <select id="inputHabitCat" class="w-full px-3 py-2 border-2 border-[#1e242b] font-bold bg-white"><option value="Kỹ năng">🎯 Kỹ năng</option><option value="Tinh thần">🧠 Tinh thần</option><option value="Thể chất">💪 Thể chất</option></select></div>
+        <div><label for="inputHabitIcon" class="font-black uppercase block mb-1">Biểu tượng Emoji:</label><!-- FIX: maxlength 8 để không cắt emoji nhiều ký tự --><input id="inputHabitIcon" type="text" value="⭐" maxlength="8" class="w-full px-3 py-1.5 border-2 border-[#1e242b] text-center text-base"></div>
+      </div>
+      <div class="flex gap-2 pt-2"><button onclick="closeAddHabitModal()" class="brutal-btn flex-1 py-2.5 bg-white font-extrabold uppercase">Hủy</button><button onclick="createNewHabit()" class="brutal-btn flex-1 py-2.5 bg-[#f4d35e] font-extrabold uppercase">Tạo Ngay</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const DAYS = ['T2','T3','T4','T5','T6','T7','CN'];
+const STORAGE_KEY = 'fumayo_habit_ai_studio_v3';
+const NEUTRAL_DIARY = () => DAYS.map(() => ({ emoji: '😊', label: 'Bình yên', note: '' }));
+const clone = o => JSON.parse(JSON.stringify(o));
+
+const defaultState = {
+  currentWeek: 1, categoryFilter: 'all', geminiApiKey: '',
+  character: { name: 'Bina-chan', hair: 'buns', outfit: 'starSweater', expr: 'cute', bg: 'bg-polka' },
+  habits: [
+    { id: 1, name: 'Luyện thanh / Hát 15p', category: 'Kỹ năng', icon: '🎤', days: [true,true,false,true,false,false,false], historyDays: [] },
+    { id: 2, name: 'Học tiếng Trung (20p)', category: 'Kỹ năng', icon: '🇨🇳', days: [true,true,true,false,false,false,false], historyDays: [] },
+    { id: 3, name: 'Đọc sách tâm lý', category: 'Tinh thần', icon: '📖', days: [false,true,true,true,false,false,false], historyDays: [] },
+    { id: 4, name: 'Tập thể dục / Vịnh Xuân', category: 'Thể chất', icon: '🥋', days: [true,false,true,false,false,false,false], historyDays: [] },
+    { id: 5, name: 'Uống đủ 2L nước', category: 'Thể chất', icon: '💧', days: [true,true,true,true,false,false,false], historyDays: [] }
+  ],
+  pastWeeks: [], diary: null
+};
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return clone(defaultState);
+    const p = JSON.parse(raw);
+    p.character = Object.assign(clone(defaultState.character), p.character || {});
+    p.pastWeeks = p.pastWeeks || [];
+    p.habits = p.habits || clone(defaultState.habits);
+    return p;
+  } catch (e) { return clone(defaultState); }
+}
+function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {} }
+
+let state = loadState();
+if (!Array.isArray(state.diary) || state.diary.length !== 7) state.diary = NEUTRAL_DIARY();
+let activeDiaryDay = (new Date().getDay() + 6) % 7;
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ==================== NHÂN VẬT SVG ====================
+const EXPR_META = {
+  cute:  { label: 'Đáng yêu', quote: '"Hôm nay mình cùng hoàn thành hết các mục tiêu nhé!"' },
+  aaa:   { label: 'Phấn khích AAA!', quote: '"AAA!! Cậu làm đỉnh quá đi mất!! Tiếp tục phát huy nha!"' },
+  xexe:  { label: 'Tinh quái XE-XE', quote: '"XE-XE-XE~ Mình thấy cậu vừa bấm vào đây nha!"' },
+  cool:  { label: 'Ngầu lòi ✨', quote: '"Chuỗi ngày liên tiếp đỉnh thế này phải đeo kính râm thôi! ✨"' },
+  pout:  { label: 'Phụng phịu', quote: '"Hừm... Đừng quên đánh dấu nốt các thói quen còn lại nha!"' },
+  blush: { label: 'Ngại ngùng', quote: '"Cảm ơn cậu đã ghé thăm sổ tay hôm nay nhé... 😳"' }
+};
+const K = '#141414', S = 'stroke="#1e242b" stroke-width="2.2"';
+
+const HAIR_BACK = {
+  buns: `<path d="M46 42C30 16 18 28 38 48Z" fill="${K}"/><ellipse cx="43" cy="43" rx="6" ry="3" transform="rotate(-30 43 43)" fill="#b91c1c"/><path d="M114 42C130 16 142 28 122 48Z" fill="${K}"/><ellipse cx="117" cy="43" rx="6" ry="3" transform="rotate(30 117 43)" fill="#b91c1c"/><path d="M36 65Q30 95 24 104Q38 106 46 98Z" fill="${K}"/><path d="M124 65Q130 95 136 104Q122 106 114 98Z" fill="${K}"/>`,
+  bob: `<path d="M34 60Q28 96 22 102Q40 106 50 96Z" fill="${K}"/><path d="M126 60Q132 96 138 102Q120 106 110 96Z" fill="${K}"/>`,
+  ponytail: `<ellipse cx="105" cy="36" rx="9" ry="5" transform="rotate(25 105 36)" fill="#991b1b"/><path d="M106 34C138 28 148 68 126 96C118 82 118 58 102 44Z" fill="${K}"/>`,
+  lowtwins: `<path d="M42 88C22 86 18 106 36 112C44 112 48 100 44 90Z" fill="#3b2314"/><path d="M118 88C138 86 142 106 124 112C116 112 112 100 116 90Z" fill="#3b2314"/>`
+};
+const OUTFITS = {
+  starSweater: `<path d="M56 156L50 206H78L80 168L82 206H110L104 156Z" fill="#93b7cc" ${S}/><path d="M48 207Q48 216 64 216H76V207Z" fill="#fff" ${S}/><path d="M84 207V216H96Q112 216 112 207Z" fill="#fff" ${S}/><path d="M98 112C126 120 130 158 102 164Z" fill="#b91c1c" ${S}/><path d="M48 110C34 122 36 154 52 160H108C124 154 126 122 112 110Z" fill="#18181b" ${S}/><path d="M94 110Q102 135 106 158" stroke="#b91c1c" stroke-width="5" fill="none"/><polygon points="80,121 84,130 94,131 86,138 88,148 80,143 72,148 74,138 66,131 76,130" fill="#facc15" stroke="#1e242b" stroke-width="1.2"/>`,
+  heartTee: `<path d="M56 156L54 206H78L80 170L82 206H106L104 156Z" fill="#475569" ${S}/><path d="M46 110C34 124 38 152 54 158H106C122 152 126 124 114 110Z" fill="#fff" ${S}/><path d="M74 128H86L85 138L80 143L75 138Z" fill="#1e242b"/>`,
+  preppy: `<path d="M52 155L46 186H114L108 155Z" fill="#1e293b" ${S}/><rect x="60" y="186" width="12" height="24" fill="#fde68a" ${S}/><rect x="88" y="186" width="12" height="24" fill="#fde68a" ${S}/><path d="M48 110C36 122 40 152 54 156H106C120 152 124 122 112 110Z" fill="#fff" ${S}/><polygon points="80,114 85,122 82,146 80,150 78,146 75,122" fill="#e11d48" stroke="#1e242b" stroke-width="1.5"/>`,
+  denim: `<path d="M56 156L50 206H78L80 168L82 206H110L104 156Z" fill="#57534e" ${S}/><path d="M46 110C34 122 36 154 52 160H108C124 154 126 122 114 110Z" fill="#3b82f6" ${S}/><rect x="66" y="112" width="28" height="46" fill="#fff" stroke="#1e242b" stroke-width="1.5"/>`
+};
+const FACES = {
+  cute: `<circle cx="67" cy="60" r="2.2" fill="${K}"/><circle cx="93" cy="60" r="2.2" fill="${K}"/><ellipse cx="62" cy="76" rx="10" ry="11" fill="#fff" stroke="${K}" stroke-width="2"/><circle cx="65" cy="76" r="7.5" fill="${K}"/><circle cx="62" cy="73" r="2" fill="#fff"/><ellipse cx="98" cy="76" rx="10" ry="11" fill="#fff" stroke="${K}" stroke-width="2"/><circle cx="95" cy="76" r="7.5" fill="${K}"/><circle cx="92" cy="73" r="2" fill="#fff"/><ellipse cx="52" cy="88" rx="7" ry="4" fill="#f97316" opacity=".35"/><ellipse cx="108" cy="88" rx="7" ry="4" fill="#f97316" opacity=".35"/><path d="M77 91Q80 89 83 91" stroke="${K}" stroke-width="2" fill="none" stroke-linecap="round"/>`,
+  aaa: `<path d="M52 72Q62 62 72 72M88 72Q98 62 108 72" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M58 80Q80 78 102 80C104 98 56 98 58 80Z" fill="#fff" stroke="${K}" stroke-width="2.2"/><path d="M62 87H98" stroke="${K}" stroke-width="1.5"/><ellipse cx="50" cy="84" rx="6" ry="3.5" fill="#fb7185" opacity=".45"/><ellipse cx="110" cy="84" rx="6" ry="3.5" fill="#fb7185" opacity=".45"/>`,
+  xexe: `<path d="M53 66L71 71M107 66L89 71" stroke="${K}" stroke-width="2.5" stroke-linecap="round"/><circle cx="63" cy="76" r="6.5" fill="${K}"/><circle cx="61" cy="74" r="2" fill="#fff"/><circle cx="97" cy="76" r="6.5" fill="${K}"/><circle cx="95" cy="74" r="2" fill="#fff"/><path d="M62 85L100 81L96 93Q78 96 62 85Z" fill="#fff" stroke="${K}" stroke-width="2"/><path d="M74 84L73 91M86 83L85 92" stroke="${K}" stroke-width="1.5"/>`,
+  cool: `<polygon points="48,68 77,68 74,83 51,83" fill="${K}" stroke="#fff" stroke-width="1.5"/><polygon points="83,68 112,68 109,83 86,83" fill="${K}" stroke="#fff" stroke-width="1.5"/><line x1="75" y1="71" x2="85" y2="71" stroke="${K}" stroke-width="3"/><path d="M54 71L62 80M89 71L97 80" stroke="#fff" stroke-width="2"/><path d="M74 90Q84 93 90 86" stroke="${K}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`,
+  pout: `<path d="M54 65L72 72M106 65L88 72" stroke="${K}" stroke-width="3" stroke-linecap="round"/><circle cx="64" cy="77" r="6.5" fill="${K}"/><circle cx="96" cy="77" r="6.5" fill="${K}"/><path d="M74 91Q80 86 86 91" stroke="${K}" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M90 87C98 87 98 95 90 95" stroke="${K}" stroke-width="1.8" fill="#fed7aa"/>`,
+  blush: `<circle cx="63" cy="76" r="7" fill="${K}"/><circle cx="61" cy="73" r="2.2" fill="#fff"/><circle cx="97" cy="76" r="7" fill="${K}"/><circle cx="95" cy="73" r="2.2" fill="#fff"/><ellipse cx="80" cy="86" rx="26" ry="7" fill="#fb7185" opacity=".45"/><path d="M60 83L56 89M68 83L64 89M96 83L92 89M104 83L100 89" stroke="#e11d48" stroke-width="1.5"/><path d="M73 92Q76 89 80 92Q84 95 87 92" stroke="${K}" stroke-width="2" fill="none"/>`
+};
+
+function buildCharacterSVG(c) {
+  const hairFill = c.hair === 'lowtwins' ? '#3b2314' : K;
+  return `<svg viewBox="0 0 160 225" class="w-full h-full" role="img" aria-label="Nhân vật ${escapeHtml(c.name)}">
+    ${HAIR_BACK[c.hair] || ''}${OUTFITS[c.outfit] || ''}
+    <rect x="73" y="98" width="14" height="16" rx="4" fill="#fde2c8" ${S}/>
+    <circle cx="40" cy="78" r="8" fill="#fde2c8" ${S}/><circle cx="39" cy="82" r="2.3" fill="#dc2626"/>
+    <circle cx="120" cy="78" r="8" fill="#fde2c8" ${S}/><circle cx="121" cy="82" r="2.3" fill="#dc2626"/>
+    <rect x="42" y="40" width="76" height="62" rx="30" fill="#fde2c8" ${S}/>
+    ${FACES[c.expr] || FACES.cute}
+    <path d="M40 72C36 38 60 28 80 28C100 28 124 38 120 72C112 56 102 52 92 58C84 48 72 48 64 58C54 52 46 58 40 72Z" fill="${hairFill}"/>
+    <polygon points="103,46 106,52 112,53 107,57 109,63 103,60 97,63 99,57 94,53 100,52" fill="#facc15" stroke="${K}" stroke-width="1.2"/>
+    <ellipse cx="53" cy="58" rx="3.2" ry="6" transform="rotate(15 53 58)" fill="none" stroke="#dc2626" stroke-width="2.5"/>
+  </svg>`;
+}
+
+function renderCharacterEverywhere() {
+  const svg = buildCharacterSVG(state.character);
+  ['cardAvatarSVGContainer', 'studioAvatarSVG', 'roamingAvatarSVGContainer'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.innerHTML = svg;
+  });
+  const bgs = ['bg-polka','bg-sketch','bg-doodle-grid','bg-starry'];
+  ['miniAvatarPreviewBox', 'studioStageBg'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { bgs.forEach(b => el.classList.remove(b)); el.classList.add(state.character.bg); }
+  });
+  const meta = EXPR_META[state.character.expr] || EXPR_META.cute;
+  const n = state.character.name;
+  document.getElementById('currentExprLabel').textContent = meta.label;
+  document.getElementById('companionMoodQuote').textContent = meta.quote;
+  document.getElementById('cardCompanionName').textContent = n.toUpperCase();
+  document.getElementById('roamingPetNameTag').textContent = `${n.toUpperCase()} • AI CHAT`;
+  document.getElementById('chatHeaderTitle').textContent = `Trò chuyện cùng ${n}`;
+  // FIX: không ghi đè ô tên khi đang gõ (trước đây làm mất dấu cách)
+  const nameInput = document.getElementById('companionNameInput');
+  if (nameInput && document.activeElement !== nameInput) nameInput.value = n;
+
+  document.querySelectorAll('.avatar-opt').forEach(btn => {
+    const d = btn.dataset;
+    const on = d.hair === state.character.hair || d.outfit === state.character.outfit || d.expr === state.character.expr || d.bg === state.character.bg;
+    btn.classList.toggle('bg-[#65b878]', on); btn.classList.toggle('text-white', on); btn.classList.toggle('bg-white', !on);
+  });
+}
+
+const PART_LABEL = { hair: 'kiểu tóc', outfit: 'trang phục', expr: 'biểu cảm', bg: 'phông nền' };
+function setAvatarPart(part, value, ev) {
+  if (ev) ev.stopPropagation();
+  state.character[part] = value;
+  saveState(); renderCharacterEverywhere();
+  makePetReact(`Mình vừa đổi ${PART_LABEL[part]} mới nè! ✨`); // FIX: không random lại biểu cảm
+}
+function updateCompanionName(val) {
+  state.character.name = val.trim() || 'Bina-chan';
+  saveState(); renderCharacterEverywhere();
+}
+const pick = a => a[Math.floor(Math.random() * a.length)];
+function randomizeCharacter(ev) {
+  if (ev) ev.stopPropagation();
+  Object.assign(state.character, {
+    hair: pick(['buns','bob','ponytail','lowtwins']), outfit: pick(['starSweater','heartTee','preppy','denim']),
+    expr: pick(Object.keys(EXPR_META)), bg: pick(['bg-polka','bg-sketch','bg-doodle-grid','bg-starry'])
+  });
+  saveState(); renderCharacterEverywhere();
+  makePetReact('Tadaa! Diện mạo ngẫu nhiên mới toanh! AAA!! 🎉');
+}
+function triggerRandomExpression(ev) {
+  if (ev) ev.stopPropagation();
+  const next = pick(Object.keys(EXPR_META));
+  makePetReact(EXPR_META[next].quote, next);
+}
+
+// ==================== NHÂN VẬT PHẢN ỨNG (FIX: khai báo 1 lần duy nhất) ====================
+let petMoveTimeout = null;
+const PET_PHRASES = ['Mình ở đây nè! ✨', 'Cố lên nhé, cậu làm được! 💪', 'XE-XE~ mình thấy cậu rồi nha!', 'Từng chút một thôi, AAA! 🌟'];
+
+function movePetToClick(x, y, msg) { makePetReact(msg || pick(PET_PHRASES)); }
+
+function makePetReact(message, expr) {
+  const bubble = document.getElementById('petSpeechBubble');
+  const body = document.getElementById('roamingPetBody');
+  if (expr && EXPR_META[expr]) { state.character.expr = expr; saveState(); renderCharacterEverywhere(); }
+  if (bubble && message) bubble.textContent = message;
+  if (body) {
+    body.classList.remove('anim-idle'); body.classList.add('anim-jump');
+    clearTimeout(petMoveTimeout);
+    petMoveTimeout = setTimeout(() => { body.classList.remove('anim-jump'); body.classList.add('anim-idle'); }, 650);
+  }
+}
+
+// ==================== BẢNG TUẦN / THÁNG ====================
+function calcStreak(h) {
+  const all = [...(h.historyDays || []), ...h.days];
+  let i = all.lastIndexOf(true), c = 0;
+  if (i === -1) return 0;
+  for (; i >= 0 && all[i]; i--) c++;
+  return c;
+}
+
+function toggleHabitDay(id, dayIdx, ev) {
+  if (ev) ev.stopPropagation();
+  const h = state.habits.find(x => x.id === id);
+  if (!h) return;
+  h.days[dayIdx] = !h.days[dayIdx];
+  if (h.days[dayIdx]) makePetReact(`Tuyệt vời! Đã hoàn thành "${h.name}" ngày ${DAYS[dayIdx]}! 🌟`, Math.random() > 0.4 ? 'aaa' : 'cool');
+  else makePetReact(`Ơ kìa, nhớ hoàn thành "${h.name}" sớm nhé! 😤`, 'pout');
+  saveState(); renderAll();
+  if (state.habits.length && state.habits.every(x => x.days[dayIdx]) && typeof confetti === 'function')
+    confetti({ particleCount: 90, spread: 65, origin: { y: 0.6 } });
+}
+
+function setCategoryFilter(cat, ev) {
+  if (ev) movePetToClick(0, 0, `Đang lọc danh mục: ${cat === 'all' ? 'TẤT CẢ' : cat.toUpperCase()} 🎯`);
+  state.categoryFilter = cat; saveState();
+  renderFilterButtons(); renderWeekTable();
+}
+function renderFilterButtons() {
+  ['all','Kỹ năng','Tinh thần','Thể chất'].forEach(c => {
+    const b = document.getElementById('filter-' + c);
+    if (b) b.className = 'px-3 py-1 text-xs font-bold border-2 border-[#1e242b] ' + (c === state.categoryFilter ? 'bg-[#1e242b] text-white' : 'bg-white hover:bg-[#f4d35e]');
+  });
+}
+
+function switchSection(sec, ev) {
+  if (ev) movePetToClick(0, 0);
+  ['week','month','avatar'].forEach(s => {
+    document.getElementById('section-' + s).classList.toggle('hidden', s !== sec);
+    const nb = document.getElementById('nav-' + s);
+    if (nb) nb.className = s === sec
+      ? 'px-3 py-1.5 bg-[#65b878] text-white border-2 border-[#1e242b] shadow-[2px_2px_0px_#1e242b]'
+      : 'px-3 py-1.5 bg-white hover:bg-[#f4d35e] border-2 border-[#1e242b] transition';
+  });
+  if (sec === 'month') renderMonthlyView();
+}
+
+function renderWeekTable() {
+  const tbody = document.getElementById('habitTableBody');
+  const list = state.categoryFilter === 'all' ? state.habits : state.habits.filter(h => h.category === state.categoryFilter);
+  if (!list.length) { tbody.innerHTML = `<tr><td colspan="10" class="py-8 text-center text-xs font-bold text-slate-400">Chưa có thói quen nào trong mục này!</td></tr>`; return; }
+  tbody.innerHTML = list.map(h => {
+    const streak = calcStreak(h);
+    const cells = h.days.map((done, d) => `<td class="py-3 px-2 text-center border-r-2 border-[#1e242b]"><button aria-label="${DAYS[d]}" aria-pressed="${done}" onclick="toggleHabitDay(${h.id},${d},event)" class="w-8 h-8 border-2 border-[#1e242b] inline-flex items-center justify-center font-black text-sm transition ${done ? 'bg-[#65b878] text-white shadow-[2px_2px_0px_#1e242b]' : 'bg-[#f7f6f2] text-transparent hover:bg-[#f4d35e]/40'}">✓</button></td>`).join('');
+    return `<tr class="hover:bg-[#f7f6f2] transition">
+      <td class="py-3 px-4 border-r-2 border-[#1e242b]"><div class="flex items-center gap-2.5">
+        <span class="w-8 h-8 border-2 border-[#1e242b] bg-[#f4d35e] flex items-center justify-center text-base">${escapeHtml(h.icon)}</span>
+        <div><p class="font-extrabold text-xs sm:text-sm">${escapeHtml(h.name)}</p><span class="text-[10px] font-bold uppercase px-1.5 bg-slate-100 border border-[#1e242b]">${escapeHtml(h.category)}</span></div></div></td>
+      ${cells}
+      <td class="py-3 px-3 text-center border-r-2 border-[#1e242b]"><span class="px-2 py-0.5 border-2 border-[#1e242b] text-xs font-black ${streak > 0 ? 'bg-[#f4d35e]' : 'bg-slate-100'}">🔥 ${streak}</span></td>
+      <td class="py-3 px-2 text-center"><button aria-label="Xóa" onclick="removeHabit(${h.id},event)" class="text-xs font-black text-slate-400 hover:text-[#f26457]">✕</button></td></tr>`;
+  }).join('');
+}
+
+function renderStatsAndCharts() {
+  document.getElementById('headerWeekBadge').textContent = `TUẦN ${state.currentWeek}`;
+  document.getElementById('weekBadgePill').textContent = `TUẦN ${state.currentWeek} / THÁNG NÀY`;
+  const total = state.habits.length;
+  let weekDone = 0, monthDone = 0, best = 0;
+  state.habits.forEach(h => {
+    const wd = h.days.filter(Boolean).length;
+    weekDone += wd; monthDone += wd + (h.historyDays || []).filter(Boolean).length;
+    best = Math.max(best, calcStreak(h));
+  });
+  const pct = total ? Math.round(weekDone / (total * 7) * 100) : 0;
+  document.getElementById('statWeekRate').textContent = pct + '%';
+  document.getElementById('cardChartPercent').textContent = pct + '%';
+  document.getElementById('statBestStreak').textContent = best + ' ngày';
+  document.getElementById('cardBestStreakText').textContent = best + ' NGÀY';
+  document.getElementById('statMonthCount').textContent = monthDone + ' lần';
+
+  document.getElementById('weeklyBarChart').innerHTML = DAYS.map((d, i) => {
+    const cnt = state.habits.filter(h => h.days[i]).length;
+    const p = total ? Math.round(cnt / total * 100) : 0;
+    const col = p === 100 ? 'bg-[#65b878]' : p >= 50 ? 'bg-[#f4d35e]' : 'bg-[#7cc6fe]';
+    return `<div class="flex flex-col items-center h-full justify-end"><span class="text-[10px] font-black mb-1">${cnt}/${total}</span>
+      <div class="w-full h-24 border-2 border-[#1e242b] bg-[#f7f6f2] flex items-end p-0.5"><div class="w-full ${col} border-t border-[#1e242b] transition-all duration-300" style="height:${Math.max(p, 8)}%"></div></div>
+      <span class="text-[10px] font-extrabold mt-1">${d}</span></div>`;
+  }).join('');
+
+  if (total) {
+    const s = state.habits.map(h => ({ name: h.name, c: h.days.filter(Boolean).length })).sort((a, b) => b.c - a.c);
+    const top = s[0], low = s[s.length - 1];
+    document.getElementById('highlightBestHabit').textContent = `${top.name} (${top.c}/7)`;
+    document.getElementById('highlightWeakHabit').textContent = `${low.name} (${low.c}/7)`;
+    document.getElementById('quickAISuggestion').textContent = pct >= 75
+      ? `Phong độ tuần này đạt ${pct}% cực kỳ ấn tượng! Hãy giữ vững "${top.name}" và kéo "${low.name}" lên cùng nhé!`
+      : `Mẹo nhỏ từ ${state.character.name}: Hãy làm "${low.name}" chỉ trong 2 phút ngay sau khi làm "${top.name}" để tạo phản xạ tự nhiên!`;
+  } else {
+    document.getElementById('highlightBestHabit').textContent = '-';
+    document.getElementById('highlightWeakHabit').textContent = '-';
+  }
+}
+
+// ==================== TỔNG KẾT TUẦN ====================
+function getWeeklyAnalysisData() {
+  const total = state.habits.length;
+  if (!total) return { pct: 0, rank: 'Chưa có mục tiêu', best: '-', weak: '-', solutions: ['Hãy thêm thói quen mới!'] };
+  const s = state.habits.map(h => ({ name: escapeHtml(h.name), raw: h.name, c: h.days.filter(Boolean).length })).sort((a, b) => b.c - a.c);
+  const pct = Math.round(s.reduce((a, i) => a + i.c, 0) / (total * 7) * 100);
+  const top = s[0], low = s[s.length - 1];
+  let rank, solutions;
+  if (pct >= 80) {
+    rank = '🏆 HẠNG KIM CƯƠNG - KỶ LUẬT ĐỈNH CAO';
+    solutions = [`<strong>Khen ngợi:</strong> Cậu duy trì <em>"${top.name}"</em> quá xuất sắc!`, `<strong>Chiến lược tuần mới:</strong> Ghép <em>"${low.name}"</em> ngay sau khung giờ của <em>"${top.name}"</em> để đạt trọn vẹn 100%.`];
+  } else if (pct >= 50) {
+    rank = '⚡ HẠNG VÀNG - DUY TRÌ ỔN ĐỊNH';
+    solutions = [`<strong>Điểm mạnh:</strong> <em>"${top.name}"</em> là thói quen mỏ neo rất tốt của cậu.`, `<strong>Hướng giải quyết cho "${low.name}":</strong> Đừng đợi tới tối muộn mới làm. Hãy đẩy lên đầu buổi sáng hoặc giờ nghỉ trưa.`];
+  } else {
+    rank = '🌱 HẠNG KHỞI ĐỘNG - ÁP DỤNG QUY TẮC 2 PHÚT';
+    solutions = [`<strong>Đừng áp lực:</strong> Tuần qua đạt ${pct}%, nhưng cậu vẫn giữ được <em>"${top.name}"</em>.`, `<strong>Giải pháp tuần tới:</strong> Thu nhỏ mục tiêu <em>"${low.name}"</em> xuống chỉ còn 2 phút mỗi ngày để lấy lại đà liên tiếp.`];
+  }
+  return { pct, rank, best: `${top.raw} (${top.c}/7)`, weak: `${low.raw} (${low.c}/7)`, solutions };
+}
+
+// FIX: gộp luôn phần tổng kết nhật ký vào hàm gốc, không ghi đè hàm nữa
+function openWeeklyReviewModal(ev) {
+  if (ev) ev.stopPropagation();
+  const d = getWeeklyAnalysisData();
+  const written = state.diary.filter(x => x.note.trim()).length;
+  const moods = state.diary.map((x, i) => `${DAYS[i]}:${x.emoji}`).join(' • ');
+  document.getElementById('modalReviewTitle').textContent = `TỔNG KẾT TUẦN ${state.currentWeek} & HƯỚNG GIẢI QUYẾT`;
+  document.getElementById('modalScorePct').textContent = d.pct + '%';
+  document.getElementById('modalRankName').textContent = d.rank;
+  document.getElementById('modalBestHabit').textContent = d.best;
+  document.getElementById('modalWeakHabit').textContent = d.weak;
+  document.getElementById('modalSolutionsList').innerHTML = d.solutions.map(s => `<p>• ${s}</p>`).join('') +
+    `<div class="mt-2 pt-2 border-t border-[#1e242b]"><p><strong>📔 Nhật ký & cảm xúc tuần:</strong> đã viết <strong>${written}/7 ngày</strong> (${moods}).</p></div>`;
+  document.getElementById('weeklyReviewModal').classList.remove('hidden');
+}
+function closeWeeklyReviewModal() { document.getElementById('weeklyReviewModal').classList.add('hidden'); }
+
+function resetDiaryState() {
+  state.diary = NEUTRAL_DIARY();
+  const ni = document.getElementById('diaryNoteInput');
+  if (ni) ni.dataset.day = '';
+}
+function archiveCurrentWeek(dateLabel, extraAdvice) {
+  const d = getWeeklyAnalysisData();
+  state.pastWeeks.unshift({ week: state.currentWeek, date: dateLabel, pct: d.pct, rank: d.rank, best: d.best, weak: d.weak, advice: extraAdvice || d.solutions[1] || d.solutions[0] });
+  state.habits.forEach(h => {
+    h.historyDays = [...(h.historyDays || []), ...h.days].slice(-21);
+    h.days = [false, false, false, false, false, false, false];
+  });
+  resetDiaryState();
+  state.currentWeek += 1;
+}
+function confirmArchiveAndNewWeek() {
+  const t = new Date();
+  archiveCurrentWeek(`${t.getDate()}/${t.getMonth() + 1}/${t.getFullYear()}`);
+  state.lastMondayKey = getMondayKey(t);
+  saveState(); closeWeeklyReviewModal(); renderAll(); switchSection('month');
+  if (typeof confetti === 'function') confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+  makePetReact('Đã lưu thành tích vào Bảng Tháng và mở sang tuần mới tinh khôi! AAA!! 🎉', 'aaa');
+}
+
+function renderMonthlyView() {
+  document.getElementById('monthlyMatrixContainer').innerHTML = state.habits.map(h => {
+    const combined = [...(h.historyDays || []), ...h.days];
+    let boxes = '';
+    for (let i = 0; i < 28; i++) boxes += `<div class="w-7 h-7 border-2 border-[#1e242b] flex items-center justify-center text-[10px] font-black ${combined[i] === true ? 'bg-[#65b878] text-white' : 'bg-white text-slate-400'}">${i + 1}</div>`;
+    return `<div class="brutal-box p-4 flex flex-col md:flex-row md:items-center justify-between gap-4"><div>
+      <div class="flex items-center gap-2"><span class="text-lg">${escapeHtml(h.icon)}</span><h4 class="font-extrabold text-sm uppercase">${escapeHtml(h.name)}</h4></div>
+      <p class="text-xs font-bold text-slate-600 mt-1">Tổng tích lũy tháng: <span class="text-[#65b878] font-black">${combined.filter(Boolean).length} / 28 ngày</span></p></div>
+      <div class="flex flex-wrap gap-1.5">${boxes}</div></div>`;
+  }).join('');
+  const grid = document.getElementById('pastWeeksArchiveGrid');
+  grid.innerHTML = !state.pastWeeks.length
+    ? `<div class="col-span-2 p-6 text-center text-xs font-bold text-slate-500 border-2 border-dashed border-[#1e242b]">Chưa có tuần nào được chốt. Cuối tuần hãy bấm "Chốt Tuần ★" để lưu vào đây nhé!</div>`
+    : state.pastWeeks.map(w => `<div class="p-4 border-2 border-[#1e242b] bg-[#f7f6f2] space-y-2 text-xs">
+        <div class="flex justify-between items-center"><span class="px-2 py-0.5 bg-[#f4d35e] border border-[#1e242b] font-black">TUẦN ${w.week}</span><span class="font-bold text-slate-500">${escapeHtml(w.date)}</span></div>
+        <p class="font-extrabold text-sm">${w.rank} — <span class="text-[#65b878]">${w.pct}%</span></p>
+        <p>🌟 Tốt nhất: <strong>${escapeHtml(w.best)}</strong> | ⚠️ Cần chú ý: <strong>${escapeHtml(w.weak)}</strong></p>
+        <p class="text-slate-600">${w.advice}</p></div>`).join('');
+}
+
+function resetMonthlyHistory(ev) {
+  if (ev) ev.stopPropagation();
+  if (!confirm('Xóa lịch sử các tuần cũ và đặt lại về Tuần 1?')) return;
+  state.pastWeeks = []; state.currentWeek = 1;
+  state.habits.forEach(h => h.historyDays = []);
+  saveState(); renderAll(); renderMonthlyView();
+}
+
+// ==================== THÊM / XÓA THÓI QUEN ====================
+function openAddHabitModal(ev) { if (ev) ev.stopPropagation(); document.getElementById('addHabitModal').classList.remove('hidden'); }
+function closeAddHabitModal() { document.getElementById('addHabitModal').classList.add('hidden'); }
+function createNewHabit() {
+  const nameEl = document.getElementById('inputHabitName');
+  const name = nameEl.value.trim();
+  if (!name) return alert('Hãy nhập tên mục tiêu!');
+  state.habits.push({ id: Date.now(), name, category: document.getElementById('inputHabitCat').value, icon: document.getElementById('inputHabitIcon').value.trim() || '⭐', days: [false,false,false,false,false,false,false], historyDays: [] });
+  nameEl.value = '';
+  saveState(); closeAddHabitModal(); renderAll();
+  makePetReact(`Đã thêm mục tiêu "${name}"! Mình cùng chinh phục nhé! ✨`);
+}
+function removeHabit(id, ev) {
+  if (ev) ev.stopPropagation();
+  if (!confirm('Xóa mục tiêu này?')) return;
+  state.habits = state.habits.filter(h => h.id !== id);
+  saveState(); renderAll();
+}
+
+// ==================== CHAT AI ====================
+function toggleAIChat(ev) {
+  if (ev) ev.stopPropagation();
+  document.getElementById('aiChatDrawer').classList.toggle('hidden');
+  const box = document.getElementById('chatMessagesBox');
+  if (!box.children.length) appendChatMessage('ai', `Chào cậu! Mình là <strong>${escapeHtml(state.character.name)}</strong> đây! 🎀<br>Cậu muốn mình <strong>lên Plan phát triển bản thân</strong>, chia khung giờ cho ${state.habits.length} thói quen trên bảng hay gỡ rối bệnh trì hoãn nào?`);
+}
+function toggleApiKeyBox() {
+  document.getElementById('apiKeyConfigBox').classList.toggle('hidden');
+  document.getElementById('geminiApiKeyInput').value = state.geminiApiKey || '';
+}
+function saveGeminiKey() {
+  state.geminiApiKey = document.getElementById('geminiApiKeyInput').value.trim();
+  saveState();
+  document.getElementById('apiKeyConfigBox').classList.add('hidden');
+  appendChatMessage('ai', state.geminiApiKey ? 'Đã lưu Gemini API Key! Giờ mình có thể trò chuyện sâu mọi chủ đề cùng cậu rồi! ✨' : 'Đã chuyển về chế độ Cố vấn Lập Kế Hoạch nội bộ miễn phí!');
+}
+function appendChatMessage(role, html) {
+  const box = document.getElementById('chatMessagesBox');
+  const m = document.createElement('div');
+  if (role === 'user') {
+    m.className = 'flex justify-end';
+    m.innerHTML = `<div class="max-w-[82%] p-2.5 bg-[#f4d35e] border-2 border-[#1e242b] shadow-[2px_2px_0px_#1e242b] font-semibold">${html}</div>`;
+  } else {
+    m.className = 'flex justify-start items-start gap-2';
+    m.innerHTML = `<span class="w-7 h-7 rounded-full border-2 border-[#1e242b] bg-[#65b878] text-white flex items-center justify-center font-black shrink-0">AI</span><div class="max-w-[85%] p-2.5 bg-white border-2 border-[#1e242b] shadow-[2px_2px_0px_#1e242b] leading-relaxed">${html}</div>`;
+  }
+  box.appendChild(m); box.scrollTop = box.scrollHeight;
+}
+function sendQuickPrompt(t) { document.getElementById('chatUserInput').value = t; handleSendChat(); }
+
+async function handleSendChat() {
+  const input = document.getElementById('chatUserInput');
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+  appendChatMessage('user', escapeHtml(q));   // FIX: escape nội dung người dùng
+  makePetReact(null, 'aaa');
+
+  if (state.geminiApiKey) {
+    try {
+      const sum = state.habits.map(h => `${h.name} (${h.days.filter(Boolean).length}/7 ngày)`).join(', ');
+      const prompt = `Bạn là nhân vật ảo dễ thương tên ${state.character.name} trong sổ tay Fumayo Habit. Hãy xưng "mình" và gọi người dùng là "cậu", giọng văn ấm áp, thông minh, hay dùng biểu cảm "AAA!", "XE-XE~". Dữ liệu thói quen hiện tại của người dùng: ${sum}. Hãy trả lời ngắn gọn, chia gạch đầu dòng rõ ràng để giúp người dùng lên kế hoạch phát triển bản thân. Câu hỏi: ${q}`;
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(state.geminiApiKey)}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+      });
+      const data = await res.json();
+      const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (reply) {
+        appendChatMessage('ai', escapeHtml(reply).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>'));
+        return;
+      }
+    } catch (err) { /* rơi xuống trợ lý nội bộ */ }
+  }
+  setTimeout(() => appendChatMessage('ai', generateSmartLocalPlan(q)), 350);
+}
+
+function generateSmartLocalPlan(q) {
+  const l = q.toLowerCase();
+  const s = state.habits.map(h => ({ name: escapeHtml(h.name), c: h.days.filter(Boolean).length })).sort((a, b) => b.c - a.c);
+  const best = s[0] ? s[0].name : 'mục tiêu chính';
+  const weak = s.length ? s[s.length - 1].name : 'mục tiêu mới';
+  const me = escapeHtml(state.character.name);
+  if (/plan|kế hoạch|lịch|tuần/.test(l) && !/phân tích|tiến độ/.test(l)) return `<strong>📅 PLAN PHÁT TRIỂN BẢN THÂN (gợi ý từ ${me}):</strong><br>• <strong>Buổi sáng (15p):</strong> Làm <em>"${weak}"</em> khi đầu óc còn tỉnh táo nhất (5-10 phút là đủ giữ chuỗi!).<br>• <strong>Buổi chiều:</strong> Dành 15-20p cho nhóm <em>Thể chất / Kỹ năng</em> để giải phóng căng thẳng.<br>• <strong>Buổi tối:</strong> Duy trì thế mạnh <em>"${best}"</em> và đánh dấu vào sổ tay trước 22h00.<br>✨ <em>Bí quyết: chỉ cần không bỏ trống 2 ngày liên tiếp là cậu đã thắng rồi! AAA!</em>`;
+  if (/trì hoãn|lười|nản/.test(l)) return `<strong>⚡ CÔNG THỨC PHÁ BĂNG TRÌ HOÃN "XE-XE":</strong><br>1. <strong>Quy tắc 2 phút:</strong> Với <em>"${weak}"</em>, hãy tự nhủ "chỉ làm 2 phút thôi". Bắt đầu rồi, não sẽ muốn làm tiếp!<br>2. <strong>Bắt cặp thói quen:</strong> Làm <em>"${weak}"</em> ngay sau khi hoàn thành <em>"${best}"</em>.<br>3. <strong>Thưởng ngay:</strong> Mỗi lần tích xanh, mình sẽ nhảy ăn mừng cùng cậu!`;
+  if (/phân tích|tiến độ|đánh giá/.test(l)) { const a = getWeeklyAnalysisData(); return `<strong>📊 PHÂN TÍCH NHANH TUẦN ${state.currentWeek}:</strong><br>• <strong>Tỷ lệ hiện tại:</strong> ${a.pct}% (${a.rank})<br>• <strong>Trụ cột:</strong> ${escapeHtml(a.best)}<br>• <strong>Cần bứt phá:</strong> ${escapeHtml(a.weak)}<br>👉 <em>Hôm nay chỉ cần thêm 1 ô của "${weak}" là biểu đồ tuần tăng vọt!</em>`; }
+  if (/sáng|routine/.test(l)) return `<strong>☀️ ROUTINE BUỔI SÁNG:</strong><br>• 6:30 – Uống 1 cốc nước, vươn vai 2 phút.<br>• 6:40 – Làm <em>"${weak}"</em> trước khi cầm điện thoại.<br>• 7:00 – Tích vào sổ tay để nhận cổ vũ từ ${me}!`;
+  return `<strong>🌟 ${me} gợi ý cho cậu nè:</strong><br>Với <strong>${state.habits.length} thói quen</strong> hiện tại, hãy chia 3 tầng ưu tiên:<br>• <strong>Số 1 (giữ lửa):</strong> Giữ chuỗi cho <em>"${best}"</em>.<br>• <strong>Số 2 (bù đắp):</strong> 5 phút mỗi ngày cho <em>"${weak}"</em>.<br>• <strong>Số 3 (tự thưởng):</strong> Cuối tuần bấm <strong>"Chốt Tuần ★"</strong> để lưu vào Bảng Tháng. Cậu cần mình chia khung giờ cụ thể không?`;
+}
+
+// ==================== DANH NGÔN ====================
+const FAMOUS_QUOTES = [
+  { quote: 'Chúng ta là những gì chúng ta lặp đi lặp lại mỗi ngày. Sự xuất sắc không phải là một hành động, mà là một thói quen.', author: 'Aristotle — Triết gia Hy Lạp cổ đại' },
+  { quote: 'Mỗi hành động bạn thực hiện đều là một lá phiếu bầu cho kiểu người mà bạn muốn trở thành.', author: 'James Clear — Tác giả sách Atomic Habits' },
+  { quote: 'Bạn không cần phải vĩ đại mới bắt đầu, nhưng bạn phải bắt đầu thì mới có thể trở nên vĩ đại.', author: 'Zig Ziglar — Diễn giả & Tác giả truyền cảm hứng' },
+  { quote: 'Kỷ luật là cây cầu nối giữa mục tiêu và thành tựu của bạn.', author: 'Jim Rohn — Chuyên gia huấn luyện phát triển cá nhân' },
+  { quote: 'Hãy biến mỗi ngày của bạn thành tác phẩm nghệ thuật tuyệt vời nhất.', author: 'John Wooden — Huấn luyện viên huyền thoại' },
+  { quote: 'Tương lai phụ thuộc vào những gì bạn làm trong ngày hôm nay, chứ không phải ngày mai.', author: 'Mahatma Gandhi — Anh hùng dân tộc Ấn Độ' },
+  { quote: 'Thành công là tổng hợp của những nỗ lực nhỏ bé được lặp đi lặp lại ngày này qua ngày khác.', author: 'Robert Collier — Tác giả sách phát triển bản thân' }
+];
+function renderDailyFamousQuote() {
+  const now = new Date();
+  const doy = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
+  const it = FAMOUS_QUOTES[doy % FAMOUS_QUOTES.length];
+  document.getElementById('dailyFamousQuote').textContent = `"${it.quote}"`;
+  document.getElementById('dailyFamousAuthor').textContent = `— ${it.author}`;
+  document.getElementById('dailyQuoteDateBadge').textContent = `• NGÀY ${now.getDate()}/${now.getMonth() + 1}`;
+}
+
+// ==================== NHẬT KÝ ====================
+const DIARY_EMOJIS = [
+  { icon: '🥰', label: 'Hạnh phúc' }, { icon: '✨', label: 'Năng lượng' }, { icon: '😊', label: 'Bình yên' },
+  { icon: '🤔', label: 'Suy tư' }, { icon: '😮‍💨', label: 'Hơi mệt' }, { icon: '🌧️', label: 'Tụt mood' }
+];
+function stashDiaryDraft() {
+  const ni = document.getElementById('diaryNoteInput');
+  if (ni && ni.dataset.day === String(activeDiaryDay)) state.diary[activeDiaryDay].note = ni.value.trim();
+}
+function selectDiaryDay(i) { stashDiaryDraft(); activeDiaryDay = i; saveState(); renderDiarySection(); }
+function selectDiaryEmoji(emoji, label) {
+  stashDiaryDraft();
+  state.diary[activeDiaryDay].emoji = emoji; state.diary[activeDiaryDay].label = label;
+  saveState(); renderDiarySection();
+}
+function saveDailyDiary() {
+  state.diary[activeDiaryDay].note = document.getElementById('diaryNoteInput').value.trim();
+  saveState(); renderDiarySection();
+  makePetReact(`Đã lưu nhật ký ngày ${DAYS[activeDiaryDay]} (${state.diary[activeDiaryDay].emoji})! Cậu làm tốt lắm! ✨`);
+}
+function renderDiarySection() {
+  const noteInput = document.getElementById('diaryNoteInput');
+  const cur = state.diary[activeDiaryDay];
+  document.getElementById('diaryDayTabs').innerHTML = DAYS.map((d, i) => `<button onclick="selectDiaryDay(${i})" class="px-3 py-1 border-2 border-[#1e242b] text-xs font-black ${i === activeDiaryDay ? 'bg-[#f26457] text-white shadow-[2px_2px_0px_#1e242b]' : 'bg-white hover:bg-[#f4d35e]'}">${d} ${state.diary[i].note ? '✓' : ''}</button>`).join('');
+  document.getElementById('diaryEmojiSelector').innerHTML = DIARY_EMOJIS.map(e => `<button onclick="selectDiaryEmoji('${e.icon}','${e.label}')" class="px-2.5 py-1.5 border-2 border-[#1e242b] text-xs font-bold flex items-center gap-1 ${cur.emoji === e.icon ? 'bg-[#f4d35e] shadow-[2px_2px_0px_#1e242b]' : 'bg-white'}"><span class="text-base">${e.icon}</span> <span>${e.label}</span></button>`).join('');
+  // FIX: chỉ nạp lại textarea khi đổi ngày, không xóa chữ đang gõ khi tick thói quen
+  if (noteInput.dataset.day !== String(activeDiaryDay)) { noteInput.value = cur.note || ''; noteInput.dataset.day = String(activeDiaryDay); }
+  document.getElementById('diaryWeekStrip').innerHTML = DAYS.map((d, i) => {
+    const e = state.diary[i];
+    return `<div onclick="selectDiaryDay(${i})" class="cursor-pointer p-2 border-2 border-[#1e242b] bg-[#f7f6f2] hover:bg-[#f4d35e]/30 text-[11px]"><div class="flex justify-between items-center font-black"><span>${d}</span><span class="text-base">${e.emoji}</span></div><p class="text-[10px] text-slate-600 truncate mt-1">${escapeHtml(e.note) || 'Chưa ghi chú...'}</p></div>`;
+  }).join('');
+}
+
+// ==================== TỰ ĐỘNG CHỐT TUẦN VÀO THỨ 2 ====================
+function getMondayKey(d) {
+  const date = new Date(d), day = date.getDay();
+  date.setDate(date.getDate() - day + (day === 0 ? -6 : 1));
+  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+}
+function checkAutoMondayReset() {
+  const cur = getMondayKey(new Date());
+  if (!state.lastMondayKey) { state.lastMondayKey = cur; saveState(); return; }
+  if (state.lastMondayKey === cur) return;
+  if (state.habits.some(h => h.days.some(Boolean))) {
+    const moods = state.diary.map(d => d.emoji).join(' ');
+    const n = state.diary.filter(d => d.note).length;
+    const d = getWeeklyAnalysisData();
+    archiveCurrentWeek(`Tự động chốt Thứ 2 (${cur})`, `${d.solutions[0]} | 📔 Cảm xúc tuần: ${moods} (${n}/7 ngày nhật ký)`);
+  }
+  state.lastMondayKey = cur; saveState();
+}
+
+// ==================== NHẠC TICK-TACK ====================
+let isPlayingTheme = false;
+function playTickTackTheme() {
+  if (isPlayingTheme) return;
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return;
+  const ctx = new AC();
+  isPlayingTheme = true;
+  const btn = document.getElementById('btnPlayTheme');
+  if (btn) btn.textContent = '🎵 Đang phát Tick-Tack (10s)...';
+  const step = 60 / 144 / 2;
+  const notes = [659.25,783.99,880,783.99,1046.5,0,987.77,783.99, 659.25,783.99,880,1046.5,1174.66,1046.5,880,0, 587.33,698.46,880,698.46,987.77,0,880,698.46, 659.25,783.99,987.77,1046.5,1318.51,1046.5,1046.5,0];
+  const t0 = ctx.currentTime + 0.05;
+  for (let i = 0; i < 48; i++) {
+    const t = t0 + i * step;
+    const tick = ctx.createOscillator(), tg = ctx.createGain();
+    tick.type = 'triangle'; tick.frequency.setValueAtTime(i % 2 ? 1200 : 1600, t);
+    tg.gain.setValueAtTime(0.035, t); tg.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+    tick.connect(tg); tg.connect(ctx.destination); tick.start(t); tick.stop(t + 0.045);
+    const f = notes[i % notes.length];
+    if (f > 0) {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'square'; o.frequency.setValueAtTime(f, t);
+      g.gain.setValueAtTime(0.06, t); g.gain.exponentialRampToValueAtTime(0.001, t + step * 0.85);
+      o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t + step * 0.9);
+    }
+  }
+  setTimeout(() => { isPlayingTheme = false; if (btn) btn.textContent = '🎶 Phát Nhạc Tick-Tack (10s)'; ctx.close(); }, 10000);
+}
+window.addEventListener('pointerdown', () => playTickTackTheme(), { once: true });
+
+// ==================== KHỞI TẠO ====================
+function renderAll() {
+  checkAutoMondayReset();
+  renderCharacterEverywhere();
+  renderFilterButtons();
+  renderWeekTable();
+  renderStatsAndCharts();
+  renderDiarySection();
+  renderDailyFamousQuote();
+}
+renderAll();
+</script>
 </body>
 </html>
